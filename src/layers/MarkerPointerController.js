@@ -35,11 +35,11 @@ export default class MarkerLayerRender {
 
     this.detectingPosition = detectingPosition; // 是否检测位置变化
 
-    this.activeNames = [...(this?.config?.extraActiveName ?? []), this.config.name];
+    this.activeNames = [...(this?.config?.extraActiveName ?? []), this.config.name];//! 图层啥时候激活
 
     // 添加页面可见性变化监听
     document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-  }
+  }   
 
   // 获取地图工具类实例
   getGdMapUtilsIns(id = 'gisMap') {
@@ -69,9 +69,6 @@ export default class MarkerLayerRender {
 
     // 处理数据
     this.dataList.forEach((item) => {
-      //   const { jd, wd, title } = item;
-      // 创建标记 用户自己决定创建marker类型
-
       this.createOverlay(gdMapUtils, this.config, item);
     });
 

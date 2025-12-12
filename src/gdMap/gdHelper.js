@@ -4,6 +4,7 @@ const gdHelperMixin = {
    * @param lnglat [xxx,xx]
    * @param zoom 地图层级
    */
+  //TODO  setGDMapCenter  你可以为后期迭代做准备
   setCenter(lnglat, zoom) {
     if (zoom !== undefined) {
       this.map.setZoomAndCenter(zoom, lnglat); //同时设置地图层级与中心点
@@ -74,7 +75,7 @@ const gdHelperMixin = {
     return new this.AMap.LngLat(lng, lat, noWrap);
   },
 
-  // 加载第三方图层
+  //TODO 函数并不通用 加载第三方图层
   createWMSTileLayer(options) {
     let layer = new this.AMap.TileLayer.WMS({
       url: options.wmstxdz,
@@ -102,7 +103,7 @@ const gdHelperMixin = {
     delete this.mapTitleLayers[id];
   },
 
-  // 海量点数据
+  //TODO  海量点数据
   createLabelLayer({ zoom = [1, 20], zIndex = 1000, collision = true, layerClassName, ...rest }) {
     const labelLayer = new this.AMap.LabelsLayer({
       zIndex,
@@ -111,7 +112,7 @@ const gdHelperMixin = {
       ...rest,
     });
     labelLayer.setMap(this.map);
-    // HACK: labelLayer获取图层节点方式与原来不同，获取可以抽象marker图层,与labelLayer图层,实现多态
+    // HACK: labelLayer获取图层节点方式与原来不同，获取可以抽象marker图层, labelLayer图层,实现多态
     // this.overlayGroupManagerMap.set(layerClassName,labelLayer);
     return labelLayer;
   },
@@ -150,7 +151,8 @@ const gdHelperMixin = {
   clearInfoWindow() {
     this.map.clearInfoWindow();
   },
-
+   
+  //[ ] gdHelper.js中this.map.xxx得方法可以转移到gdUtils.js实例上，mapUtils
   /* 打开高德信息弹框 */
   openInfoWindow(infoWindow, ...rest) {
     infoWindow.open(this.map, ...rest);
@@ -162,9 +164,11 @@ const gdHelperMixin = {
       ...paths,
     });
   },
+
   clearOverlays() {
     this.map.clearMap(); // 清除地图上的所有覆盖物
   },
+  
   removeSingleOverlay(overlay) {
     this.map.remove(overlay); // 清除地图上某个覆盖物
   },

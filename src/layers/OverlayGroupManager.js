@@ -142,7 +142,7 @@ export default class OverlayGroupManager {
     // 保存激活状态
     this.activesMarkerIds.push(marker.getExtData().id);
   }
-  // 点位全选是否打开
+  //[ ]  待重构
   toggleAllPointTitles(selector, val) {
     // this.refreshMap(); //重新加载图层
     const elms = document.querySelectorAll('.amap-marker'); //获取所有的marker元素
@@ -229,7 +229,6 @@ const gdMixin = {
       image: imageUrl, // 图标图片 URL
       size: new AMap.Size(...iconOpts.size), // 图标大小
       imageSize: new AMap.Size(...iconOpts.imageSize), // 图片实际大小
-      // anchor: "bottom-center", // 图标锚点位置
     });
   },
 };
