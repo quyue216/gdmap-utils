@@ -1,6 +1,6 @@
 import GdMapUtils from '@/utils/gdMap/gdMapUtils.js';
 
-export default class MarkerLayerRender {
+export default class MarkerLayer {
   dataList = []; // 数据列表
 
   // 去掉私密属性标识

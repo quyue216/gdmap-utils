@@ -5,7 +5,7 @@ import GdMapUtils from '@/utils/gdMap/gdMapUtils.js';
 CollectionPointLayerController
 */
 // 海量点图层渲染封装
-export default class CollectionPointLayerController {
+export default class MarkerClusterLayer {
   dataList = []; // 数据列表
 
   // 去掉私有属性标识

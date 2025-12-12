@@ -2,7 +2,7 @@ import useEnvSanStore from "@/store/modules/envSan.js";
 import GdMapUtils from '@/utils/gdMap/gdMapUtils.js';
 
 // 海量点图层渲染封装
-export default class LabelLayerRender {
+export default class LabelMarkerLayer {
 
   dataList = []; // 数据列表
 
