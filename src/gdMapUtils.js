@@ -32,6 +32,7 @@ class GdMapUtils {
    * 加载地图和初始化地图分开
    * @param {Object} options 加载高德初始化地图配置
    */
+  //TODO  构造函数能够接收this.map对象
   constructor(options) {
     if (!options) {
       this.error('请传入配置对象');
@@ -175,7 +176,7 @@ class GdMapUtils {
     this.getOverlayGroupManager(type).bindEventMarker(clickType, callback); // 绑定事件到图层管理器
   }
 
-  //创建点位
+  //创建点位  
   createMarker(type, Opts) {
     const overlayGroupManager = this.createOverlayGroupManager(Opts, type); // 关联图层管理器
     // 创建图标
