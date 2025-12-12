@@ -4,6 +4,7 @@ const gdHelperMixin = {
    * @param lnglat [xxx,xx]
    * @param zoom 地图层级
    */
+  
   //TODO  setGDMapCenter  你可以为后期迭代做准备
   setCenter(lnglat, zoom) {
     if (zoom !== undefined) {
@@ -73,34 +74,6 @@ const gdHelperMixin = {
    */
   LngLat(lng, lat, noWrap = false) {
     return new this.AMap.LngLat(lng, lat, noWrap);
-  },
-
-  //TODO 函数并不通用 加载第三方图层
-  createWMSTileLayer(options) {
-    let layer = new this.AMap.TileLayer.WMS({
-      url: options.wmstxdz,
-      blend: true,
-      tileSize: 256,
-      params: {
-        LAYERS: options.wmstcmc,
-        VERSION: '1.1.0',
-      },
-    });
-    // 设置图层的层级
-    layer.setzIndex(options.hierarchy);
-
-    layer.setMap(this.map);
-    // 保存图层信息
-    this.mapTitleLayers[options.id] = layer;
-  },
-  // 删除图层
-  removeWMSTileLayer(id) {
-    if (!this.mapTitleLayers[id]) {
-      return this.error('图层并不存在，请检查输入!');
-    }
-    // 删除图层信息
-    this.mapTitleLayers[id].setMap(null);
-    delete this.mapTitleLayers[id];
   },
 
   //TODO  海量点数据
