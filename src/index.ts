@@ -52,6 +52,23 @@ export class MapUtils {
     return [lat, lon];
   }
 }
-console.log("你好世界哈哈哈");
 
+
+// 导出地图工具类
 export default MapUtils;
+
+// 导出高德地图工具类
+import GdMapUtils from './gdMapUtils.js';
+export { GdMapUtils };
+
+// 导出图层管理器
+import LayerManager from './LayerManager.js';
+export { LayerManager };
+
+// 导出图层类
+import MarkerLayer from './layers/MarkerLayer.js';
+import MarkerClusterLayer from './layers/MarkerClusterLayer.js';
+import LabelMarkerLayer from './layers/LabelMarkerLayer.js';
+import OverlayGroupManager from './layers/OverlayGroupManager.js';
+
+export { MarkerLayer, MarkerClusterLayer, LabelMarkerLayer, OverlayGroupManager };
