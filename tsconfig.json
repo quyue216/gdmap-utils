@@ -16,8 +16,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "typeRoots": ["./src/types", "./node_modules/@types"],        
+    "typeRoots": ["./src/types", "./node_modules/@types"]        
   },
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","src/global/**/*"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }
