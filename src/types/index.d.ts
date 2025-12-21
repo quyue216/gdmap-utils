@@ -14,9 +14,11 @@ interface MapUtilsUseExistingOpts extends MapOptions {
   mapIns: mapIns;
 }
 
-type MapUtilsOPts = {
+type MapUtilsOpts = {
   MapUtilsUseExistingOpts: MapUtilsUseExistingOpts;
   MapUtilsCreateOpts: MapUtilsCreateOpts;
 };
 
-export type { MapUtilsOPts, mapIns };
+interface layer {}
+
+export type { MapUtilsOpts, mapIns };
