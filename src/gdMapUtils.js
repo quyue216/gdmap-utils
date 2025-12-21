@@ -28,10 +28,10 @@ class GdMapUtils {
   static mapInstance = new Map();
 
   overlayGroupManagerMap = new Map(); //HACK 是否移入到OverlayGroupManager中。
-  
+
   // 图层实例映射
   layerInstances = new Map();
-  
+
   // 图层管理器
   layerManager = LayerManager;
 
@@ -106,7 +106,7 @@ class GdMapUtils {
     return new Promise((resolve, reject) => {
       // 确保每次的AMap都是合法的所以不分开创建
       AMapLoader.load(this.loadOpts)
-        .then((AMap) => {
+        .then(AMap => {
           // 将 AMap 全局对象挂载到 window 上
           window.AMap = AMap;
 
@@ -122,7 +122,7 @@ class GdMapUtils {
 
           this.bindMapClickEvent(); //初始化绑定事件
         })
-        .catch((e) => {
+        .catch(e => {
           reject(e);
           console.error(e);
           throw new Error(e);
@@ -163,7 +163,7 @@ class GdMapUtils {
   bindMapClickEvent() {
     this.map.on('click', () => {
       if (this.clickMapRestMarkers) {
-        this.overlayGroupManagerMap.forEach((overlayGroup) => {
+        this.overlayGroupManagerMap.forEach(overlayGroup => {
           overlayGroup.resetActiveMarker(); // 清除图层上的所有覆盖物
         });
       }
@@ -183,7 +183,7 @@ class GdMapUtils {
     this.getOverlayGroupManager(type).bindEventMarker(clickType, callback); // 绑定事件到图层管理器
   }
 
-  //创建点位  
+  //创建点位
   createMarker(type, Opts) {
     const overlayGroupManager = this.createOverlayGroupManager(Opts, type); // 关联图层管理器
     // 创建图标
@@ -246,7 +246,7 @@ class GdMapUtils {
   // 清楚所有覆盖物
   removeAllOverlay() {
     //BUG 这里只能移除用overlayGroupManagerManager管理的图层
-    this.overlayGroupManagerMap.forEach((overlayGroup) => {
+    this.overlayGroupManagerMap.forEach(overlayGroup => {
       overlayGroup.OverlayGroup.clearOverlays(); // 清除图层上的所有覆盖物
     });
   }
@@ -277,17 +277,23 @@ class GdMapUtils {
   createLayer(layerType, options) {
     // 使用图层管理器创建图层控制器实例
     const layerController = this.layerManager.createLayer(layerType, options);
-    
+
     if (layerController) {
       // 存储图层实例
-      this.layerInstances.set(options?.config?.name || layerType, layerController);
-      
+      this.layerInstances.set(
+        options?.config?.name || layerType,
+        layerController
+      );
+
       // 初始化创建图层
       layerController.createLayer(this).catch(err => {
-        console.error(`[GdMapUtils Error]: Failed to create layer '${layerType}':`, err);
+        console.error(
+          `[GdMapUtils Error]: Failed to create layer '${layerType}':`,
+          err
+        );
       });
     }
-    
+
     return layerController;
   }
 
@@ -307,18 +313,18 @@ class GdMapUtils {
    */
   removeLayer(layerName) {
     const layerController = this.layerInstances.get(layerName);
-    
+
     if (layerController) {
       // 隐藏图层
       if (typeof layerController.hideLayer === 'function') {
         layerController.hideLayer();
       }
-      
+
       // 从映射中移除
       this.layerInstances.delete(layerName);
       return true;
     }
-    
+
     return false;
   }
 
@@ -337,12 +343,12 @@ class GdMapUtils {
    */
   showLayer(layerName) {
     const layerController = this.layerInstances.get(layerName);
-    
+
     if (layerController && typeof layerController.showLayer === 'function') {
       layerController.showLayer();
       return true;
     }
-    
+
     return false;
   }
 
@@ -353,12 +359,12 @@ class GdMapUtils {
    */
   hideLayer(layerName) {
     const layerController = this.layerInstances.get(layerName);
-    
+
     if (layerController && typeof layerController.hideLayer === 'function') {
       layerController.hideLayer();
       return true;
     }
-    
+
     return false;
   }
 }

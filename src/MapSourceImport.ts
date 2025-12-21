@@ -1,13 +1,11 @@
-import AMapLoader from "@amap/amap-jsapi-loader";
-import type { AMap, loaderOpts } from "./types/amap.d.ts";  //TODO   项目配置ts自动引入，移除导入信息
+import AMapLoader from '@amap/amap-jsapi-loader';
+import type { AMap, loaderOpts } from './types/amap.d.ts'; //TODO   项目配置ts自动引入，移除导入信息
 
 // AMap
 let gdAMap: AMap | null = null;
 
 class MapSourceImport {
-
   static async loadScript(opts: loaderOpts) {
-    
     // 确保每次的AMap都是合法的所以不分开创建
     return AMapLoader.load(opts)
       .then((AMap: AMap) => {
@@ -16,14 +14,11 @@ class MapSourceImport {
 
         return AMap;
       })
-      .catch((e) => {
+      .catch(e => {
         console.error(e);
         throw new Error(e);
       });
-
   }
-
 }
-
 
 export default MapSourceImport;
