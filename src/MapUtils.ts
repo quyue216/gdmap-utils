@@ -1,19 +1,26 @@
 import MapSourceImport from './MapSourceImport';
 import type {AMap, loaderOpts, MapOptions}  from './types/amap.d';
 import type {MapUtilsOpts,mapIns}  from './types/index.d'
-declare let AMap:AMap;
 
 class MapUtils {
   // 地图实例信息
   map:mapIns;
 
-   constructor(optsOrMapIns:MapUtilsOpts | mapIns ) {
+   constructor(optsOrMapIns:MapUtilsOpts | mapIns ,AMap:AMap) {
+
+    if(!(typeof AMap === 'object' && 'BaseLayer' in AMap)){
+      this.error("AMap is not exist");
+    }
 
      if(optsOrMapIns instanceof AMap.Map){
-       this.map = optsOrMapIns ;
-     }else{
+      
+      this.map = optsOrMapIns ;
+     
+    }else{
+      
       const {mountSelector,...mapOptions} = optsOrMapIns;
-       this.map = this.initMap(mountSelector,mapOptions) //地图初始化
+      
+      this.map = this.initMap(mountSelector,mapOptions) //地图初始化
      }
 
      this.bindMapClickEvent();
@@ -34,11 +41,20 @@ class MapUtils {
     return new AMap.Map(id,opts);
   }
 
+  error(msg:string) {
+    console.error(`[MapUtils Error]:${msg}`);
+  }
+
 }
 
-async function createMapUtils() {
 
-  // return new MapUtils()
+async function createMapUtils(optsOrMapIns:MapUtilsOpts | mapIns ,loaderOPts?:loaderOpts) {
+   let AMap = window.AMap;
+   if(loaderOPts){
+     AMap =  await  initMapSource(loaderOPts);
+   }
+
+  return new MapUtils(optsOrMapIns, AMap)
 }
 
 // 地图拆分
