@@ -56,6 +56,9 @@ class MapUtils {
   }
 }
 
+type mapUtilsIns = InstanceType<typeof MapUtils>;
+export type { mapUtilsIns };
+
 export async function createMapUtils(
   opts: MapUtilsOpts[keyof MapUtilsOpts],
   loaderOPts?: loaderOpts

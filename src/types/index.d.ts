@@ -1,9 +1,10 @@
 // 项目类型声明文件
 import type { AMap } from './amap';
+import type { mapUtilsIns } from '@/MapUtils';
 // 高德地图实例
 type mapIns = InstanceType<typeof AMap.Map>;
 
-type MarkerIns = InstanceType<typeof AMap.Marker>;
+type MarkerIns = AMap.Marker;
 
 type MapOptions = AMap.MapOptions;
 
@@ -19,6 +20,8 @@ type MapUtilsOpts = {
   MapUtilsUseExistingOpts: MapUtilsUseExistingOpts;
   MapUtilsCreateOpts: MapUtilsCreateOpts;
 };
+
+type layerType = 'markersLayer' | 'labelMarkersLayer' | 'markersClusterLayer';
 
 // 图层具备的基础方法
 interface LayerBase {
@@ -39,28 +42,43 @@ interface LayerBase {
   getAllOverlays: () => void;
 }
 
+interface overlayData<T extends object = {}> {
+  lon: number;
+  lat: number;
+  title: string;
+  id: string;
+  extData: T;
+}
+
+interface LayerOpts<V = {}, E> {
+  layerType: layerType;
+  layerName: string;
+  requestCallback: () => Array<overlayData<V>>;
+  createOverlays: (mapUtilsIns) => Array<E>;
+  getIconUrl: () => string; //overlayList中优先级更高
+}
 // 图层
-abstract class Layer {
+abstract class Layer<T = overlaysType, E = MarkerIns> {
   // 覆盖物配置数据
   overlayList: Array<{
-    iconUrl: () => string;
+    getIconUrl: () => string;
     labelShow: boolean;
     overlaySelected: boolean; // 当前marker是否被选中
   }>;
 
   // 图层类型与控制器类的映射关系
-  static layerClassMap = new Map();
+  static layerClassMap = new Map<string, T>();
 
   static registerLayer(layerType: string, layerClass: Function);
   // 图层名称
   layerName: string;
 
   //TODO  待定
-  layerType: any;
+  layerType: layerType;
 
-  uuid: string;
+  uuid: string; //图层名称+随机数
 
-  constructor();
+  constructor(opts: LayerOpts);
 
   //创建覆盖物
   createOverlays: () => void;
@@ -84,16 +102,19 @@ abstract class Layer {
 
   //图层重载
   reload: () => void;
+
+  add(overlays: Array<E>): void;
+
+  remove(overlays: Array<E>): void;
 }
 
-type layerIns = InstanceType<typeof Layer>;
-
 // 图层管理器
-interface layerManger<T = Layer> {
+interface layerManger<T = Layer, K = InstanceType<T>> {
+  //它可以形参接收this.map
   //layers: 图层存在于layer时才会显示
   layers: Map<string, T>;
 
-  addLayer(layer: layerIns): void;
+  addLayer(layer: K): void;
 
   removeLayer(layerIdOrLayer: layer | string): void;
 
@@ -109,20 +130,31 @@ interface layerManger<T = Layer> {
 }
 
 //TODO 事件处理
-abstract class markersLayer implements LayerBase {
-  rawLayer: InstanceType<AMap.OverlayGroup>;
+abstract class overlaysLayer<T, LayerType> implements LayerBase {
+  rawLayer: LayerType;
 
-  add(markers: Array<MarkerIns>): void;
+  //创建覆盖物
+  createOverlays: () => Array<T>;
 
-  remove(markers: Array<MarkerIns>): void;
+  add(markers: Array<T>): void;
+
+  remove(markers: Array<T>): void;
 
   hide(): void;
 
   show(): void;
 
-  getAllOverlays(): void;
+  getAllOverlay(): void;
 
   destroy: () => void;
+
+  reload: () => void;
+
+  //高亮marker
+  highlightOverLay: () => void;
+
+  //覆盖物自动适应
+  overlayFitMap: () => void;
 }
 
 export type { MapUtilsOpts, mapIns };
