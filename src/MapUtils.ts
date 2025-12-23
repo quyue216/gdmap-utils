@@ -1,8 +1,9 @@
 import MapSourceImport from './MapSourceImport';
-import type { AMap, loaderOpts, MapOptions } from './types/amap.d';
+import type { AMap as gdAMap, loaderOpts, MapOptions } from './types/amap.d';
 import type { MapUtilsOpts, mapIns } from './types/index.d';
-import type { SetOptional } from 'type-fest';
+import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
+
 class MapUtils {
   // 地图实例信息
   map: mapIns;
@@ -11,7 +12,10 @@ class MapUtils {
 
   LayerManager: LayerManager = new LayerManager(); //组合模式
 
-  constructor(opts: MapUtilsOpts[keyof MapUtilsOpts], AMap: AMap) {
+  constructor(
+    opts: MapUtilsOpts[keyof MapUtilsOpts],
+    AMap: Simplify<typeof gdAMap>
+  ) {
     if (!(typeof AMap === 'object' && 'BaseLayer' in AMap)) {
       throw this.error('AMap is not exist');
     }
@@ -48,7 +52,7 @@ class MapUtils {
 
   initMap(id: string, opts: MapOptions): mapIns {
     //参数要作检验吗
-    return new AMap.Map(id, opts);
+    return new window.AMap.Map(id, opts);
   }
 
   error(msg: string) {
@@ -57,6 +61,7 @@ class MapUtils {
 }
 
 type mapUtilsIns = InstanceType<typeof MapUtils>;
+
 export type { mapUtilsIns };
 
 export async function createMapUtils(

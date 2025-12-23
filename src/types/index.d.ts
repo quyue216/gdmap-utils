@@ -1,6 +1,7 @@
 // 项目类型声明文件
-import type { AMap } from './amap';
-import type { mapUtilsIns } from '@/MapUtils';
+import type { MarkerOptions } from './amap';
+import type { mapUtilsIns } from '../MapUtils';
+
 // 高德地图实例
 type mapIns = InstanceType<typeof AMap.Map>;
 
@@ -56,12 +57,14 @@ interface LayerOpts<V = {}, E> {
   requestCallback: () => Array<overlayData<V>>;
   createOverlays: (mapUtilsIns) => Array<E>;
   getIconUrl: () => string; //overlayList中优先级更高
+  // overlayOpts: 命名空间的export type，你该怎么接收
 }
+
 // 图层
-abstract class Layer<T = overlaysType, E = MarkerIns> {
+abstract class Layer<T, E = MarkerIns> {
   // 覆盖物配置数据
   overlayList: Array<{
-    getIconUrl: () => string;
+    getIconUrl: () => string; //局部优先级更高
     labelShow: boolean;
     overlaySelected: boolean; // 当前marker是否被选中
   }>;
@@ -72,6 +75,8 @@ abstract class Layer<T = overlaysType, E = MarkerIns> {
   static registerLayer(layerType: string, layerClass: Function);
   // 图层名称
   layerName: string;
+
+  rawLayerIns: T;
 
   //TODO  待定
   layerType: layerType;
@@ -112,13 +117,13 @@ abstract class Layer<T = overlaysType, E = MarkerIns> {
 interface layerManger<T = Layer, K = InstanceType<T>> {
   //它可以形参接收this.map
   //layers: 图层存在于layer时才会显示
-  layers: Map<string, T>;
+  layers: Map<string, T>; //组合模式
 
   addLayer(layer: K): void;
 
   removeLayer(layerIdOrLayer: layer | string): void;
 
-  show(): void;
+  show(): void; //! 你怎么知道，你要隐藏或者显示某个图层
 
   hide(): void;
 
