@@ -1,11 +1,16 @@
 // 项目类型声明文件
 import type { MarkerOptions } from './amap';
 import type { mapUtilsIns } from '../MapUtils';
+import type {
+  MarkerLayerIns,
+  LabelMarkerLayerIns,
+  MarkerClusterLayerIns,
+  LayerTypeIns,
+  LayerTypeClass,
+} from '../layers/index';
 
 // 高德地图实例
 type mapIns = InstanceType<typeof AMap.Map>;
-
-type MarkerIns = AMap.Marker;
 
 type MapOptions = AMap.MapOptions;
 
@@ -22,6 +27,23 @@ type MapUtilsOpts = {
   MapUtilsCreateOpts: MapUtilsCreateOpts;
 };
 
+interface MapUtilsLayersInfo {
+  markersLayer: {
+    layerIns: MarkerLayerIns;
+    overlayIns: AMap.Marker;
+    overlayOpts: AMap.MarkerOptions;
+  };
+  labelMarkersLayer: {
+    layerIns: LabelMarkerLayerIns;
+    overlayOpts: AMap.LabelMarkerOptions;
+    overLayIns: AMap.LabelMarker;
+  };
+  markersClusterLayer: {
+    layerIns: MarkerClusterLayerIns;
+    overlayOpts: '';
+    overlayIns: AMap.MarkerClusterer;
+  };
+} //定义图层信息
 type layerType = 'markersLayer' | 'labelMarkersLayer' | 'markersClusterLayer';
 
 // 图层具备的基础方法
@@ -49,36 +71,40 @@ interface overlayData<T extends object = {}> {
   title: string;
   id: string;
   extData: T;
+  weight: number;
 }
 
-interface LayerOpts<V = {}, E> {
-  layerType: layerType;
+interface LayerOpts<
+  T extends layerType = 'markersLayer',
+  U = {},
+  V = MapUtilsLayersInfo[T],
+> {
+  layerType: T;
   layerName: string;
-  requestCallback: () => Array<overlayData<V>>;
-  createOverlays: (mapUtilsIns) => Array<E>;
+  requestCallback: () => Array<overlayData<U>>;
+  createOverlays: (mapUtilsIns) => Array<V['overlayIns']>;
   getIconUrl: () => string; //overlayList中优先级更高
-  // overlayOpts: 命名空间的export type，你该怎么接收
+  overlayOpts: V['overlayOpts']; //命名空间的export type，你该怎么接收
 }
 
 // 图层
-abstract class Layer<T, E = MarkerIns> {
+abstract class Layer {
   // 覆盖物配置数据
   overlayList: Array<{
     getIconUrl: () => string; //局部优先级更高
-    labelShow: boolean;
+    labelShowed: boolean;
     overlaySelected: boolean; // 当前marker是否被选中
   }>;
 
   // 图层类型与控制器类的映射关系
-  static layerClassMap = new Map<string, T>();
+  static layerClassMap = new Map<string, LayerTypeClass>();
 
-  static registerLayer(layerType: string, layerClass: Function);
+  static registerLayer(layerType: layerType, layerClass: LayerTypeClass);
   // 图层名称
   layerName: string;
 
-  rawLayerIns: T;
+  rawLayerIns: LayerTypeIns;
 
-  //TODO  待定
   layerType: layerType;
 
   uuid: string; //图层名称+随机数
@@ -103,14 +129,14 @@ abstract class Layer<T, E = MarkerIns> {
   overlayFitMap: () => void;
 
   //获取所有覆盖物
-  getAllOverlay: () => void;
+  getAllOverlay<R>(): R;
 
   //图层重载
   reload: () => void;
 
-  add(overlays: Array<E>): void;
+  add<T>(overlays: Array<T>): void;
 
-  remove(overlays: Array<E>): void;
+  remove<T>(overlays: Array<T>): void;
 }
 
 // 图层管理器
