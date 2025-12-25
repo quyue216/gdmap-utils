@@ -44,7 +44,7 @@ interface MapUtilsLayersInfo {
     overlayIns: AMap.MarkerClusterer;
   };
 } //定义图层信息
-type layerType = 'markersLayer' | 'labelMarkersLayer' | 'markersClusterLayer';
+type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
 
 // 图层具备的基础方法
 interface LayerBase {
@@ -109,6 +109,8 @@ abstract class Layer {
 
   uuid: string; //图层名称+随机数
 
+  layerVisible: boolean = true;
+
   constructor(opts: LayerOpts);
 
   //创建覆盖物
@@ -140,10 +142,10 @@ abstract class Layer {
 }
 
 // 图层管理器
-interface layerManger<T = Layer, K = InstanceType<T>> {
+interface LayerManger<T = Layer, K = InstanceType<T>> {
   //它可以形参接收this.map
   //layers: 图层存在于layer时才会显示
-  layers: Map<string, T>; //组合模式
+  layers: Map<string, K>; //组合模式
 
   addLayer(layer: K): void;
 
@@ -161,8 +163,8 @@ interface layerManger<T = Layer, K = InstanceType<T>> {
 }
 
 //TODO 事件处理
-abstract class overlaysLayer<T, LayerType> implements LayerBase {
-  rawLayer: LayerType;
+interface OverlaysLayer<T, U> extends LayerBase {
+  rawLayer: U;
 
   //创建覆盖物
   createOverlays: () => Array<T>;
@@ -188,4 +190,4 @@ abstract class overlaysLayer<T, LayerType> implements LayerBase {
   overlayFitMap: () => void;
 }
 
-export type { MapUtilsOpts, mapIns };
+export type { MapUtilsOpts, mapIns, layerType, OverlaysLayer, LayerManger };

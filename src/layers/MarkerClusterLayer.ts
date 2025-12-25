@@ -1,41 +1,33 @@
-class MarkerClusterLayer {
-  dataList: any[] = [];
-  layerInstance: any = null;
-  isLayerCreated: boolean = false;
-  activeNames: any[] = [];
-  config: any = {};
-  createOverlay: Function;
-  requestCallback: Function;
+import type { OverlaysLayer } from '../types/index.d';
+class MarkerClusterLayer implements OverlaysLayer<
+  AMap.Marker,
+  AMap.OverlayGroup
+> {
+  rawLayer = new AMap.OverlayGroup();
 
-  constructor({ config, createOverlay, requestCallback }: any) {
-    this.config = config ?? {};
-    this.createOverlay = createOverlay;
-    this.requestCallback = requestCallback;
-    this.activeNames = [
-      ...(this?.config?.extraActiveName ?? []),
-      this.config.name,
-    ];
+  constructor() {}
+
+  createOverlays() {
+    return [];
   }
 
-  getGdMapUtilsIns(id: string = 'gisMap'): any {
-    return null;
-  }
+  add(markers: Array<AMap.Marker>) {}
 
-  async createLayer(gdMapUtils: any): Promise<void> {}
+  remove(markers: Array<AMap.Marker>) {}
 
-  showLayer(v: any): void {}
+  highlightOverLay() {}
 
-  shouldCreationLayer(activeName: any): boolean {
-    return false;
-  }
+  hide() {}
 
-  hideLayer(): void {}
+  show() {}
 
-  handleMapTypeChange(newVal: any, oldVal: any): void {}
+  getAllOverlay() {}
 
-  get dataOfLayer(): any[] {
-    return this.dataList;
-  }
+  destroy() {}
+
+  reload() {}
+
+  overlayFitMap() {}
 }
 
 export default MarkerClusterLayer;
