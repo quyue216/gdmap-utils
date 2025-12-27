@@ -5,7 +5,12 @@ type LayerIns = InstanceType<LayerClass>;
 export class LayerManager implements LayerManger<LayerClass> {
   layers: Map<string, LayerIns> = new Map(); //组合模式
 
-  addLayer(layer: LayerIns) {}
+  addLayer(layer: LayerIns) {
+    if (this.hasLayer(layer.layerName)) {
+      throw new Error(`Layer with name "${layer.layerName}" already exists`);
+    }
+    this.layers.set(layer.layerName, layer);
+  }
 
   removeLayer(layerIdOrLayer: LayerIns | string) {}
 
@@ -18,5 +23,9 @@ export class LayerManager implements LayerManger<LayerClass> {
   hideAll() {}
 
   reload() {}
+
+  hasLayer(layerName: string): boolean {
+    return this.layers.has(layerName);
+  }
 }
 export default LayerManager;

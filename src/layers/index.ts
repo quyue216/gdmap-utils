@@ -1,9 +1,18 @@
 import LabelMarkerLayer from './LabelMarkerLayer';
 import MarkerClusterLayer from './MarkerClusterLayer';
 import MarkerLayer from './MarkerLayer';
-import { layerType } from '../types/index.d';
+import type {
+  layerType,
+  ILayer,
+  LayerOpts,
+  MapUtilsLayersInfo,
+} from '../types/index.d';
+import type { mapUtilsIns } from '../MapUtils';
 
-class Layer {
+class Layer<
+  T extends layerType = 'markerLayer',
+  V = MapUtilsLayersInfo[T],
+> implements ILayer {
   // 图层类型与控制器类的映射关系
   static layerClassMap = new Map<string, LayerTypeClass>();
   /**
@@ -19,25 +28,37 @@ class Layer {
     //TODO 考虑是否添加注册验证
     Layer.layerClassMap.set(layerType, layerClass);
   }
-
   // 策略模式
-  layerManger: LayerTypeIns;
+  rawLayerIns: LayerTypeIns;
 
   layerVisible: boolean = true;
 
-  constructor(type: layerType) {
-    const OverlaysLayer = Layer.layerClassMap.get(type);
+  layerName: string;
+
+  mapUtils: mapUtilsIns;
+
+  constructor(opts: LayerOpts<T>, mapUtils: mapUtilsIns) {
+    const { layerType, layerName, ...rest } = opts;
+
+    const OverlaysLayer = Layer.layerClassMap.get(layerType);
 
     if (OverlaysLayer) {
-      this.layerManger = new OverlaysLayer();
+      this.rawLayerIns = new OverlaysLayer();
     } else {
-      throw new Error(''); //TODO 异常统一管理
+      throw new Error(`[Layer Error]: Invalid layer type ${layerType}`);
     }
-    // this.createOverlays();
+
+    this.layerName = layerName;
+
+    this.mapUtils = mapUtils; //上层,mapUtils的实例
+
+    Object.assign<typeof this, typeof rest>(this, rest);
   }
 
   createOverlays() {
-    return this.layerManger.createOverlays();
+    this.layerVisible = true;
+
+    return this.rawLayerIns.createOverlays();
   }
 }
 

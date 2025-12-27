@@ -1,6 +1,11 @@
 import MapSourceImport from './MapSourceImport';
 import type { AMap as gdAMap, loaderOpts, MapOptions } from './types/amap.d';
-import type { MapUtilsOpts, mapIns, layerType } from './types/index.d';
+import type {
+  MapUtilsOpts,
+  mapIns,
+  layerType,
+  LayerOpts,
+} from './types/index.d';
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
 import Layer from './layers/index';
@@ -55,10 +60,15 @@ class MapUtils {
     return new window.AMap.Map(id, opts);
   }
 
-  createLayer(type: layerType) {
-    const layer = new Layer(type);
+  createLayer<T extends layerType>(opts: LayerOpts<T>) {
+    const layer = new Layer(opts, this);
     this.LayerManager.addLayer(layer);
+    return layer;
   }
+
+  // createLayerOverlays(){
+
+  // }
 
   error(msg: string) {
     console.error(`[MapUtils Error]:${msg}`);

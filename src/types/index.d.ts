@@ -28,17 +28,17 @@ type MapUtilsOpts = {
 };
 
 interface MapUtilsLayersInfo {
-  markersLayer: {
+  markerLayer: {
     layerIns: MarkerLayerIns;
     overlayIns: AMap.Marker;
     overlayOpts: AMap.MarkerOptions;
   };
-  labelMarkersLayer: {
+  labelMarkerLayer: {
     layerIns: LabelMarkerLayerIns;
     overlayOpts: AMap.LabelMarkerOptions;
     overLayIns: AMap.LabelMarker;
   };
-  markersClusterLayer: {
+  markerClusterLayer: {
     layerIns: MarkerClusterLayerIns;
     overlayOpts: '';
     overlayIns: AMap.MarkerClusterer;
@@ -46,36 +46,22 @@ interface MapUtilsLayersInfo {
 } //定义图层信息
 type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
 
-// 图层具备的基础方法
-interface LayerBase {
-  // 原始图层对象
-  rawLayer: any;
-
-  //创建覆盖物
-  createOverlays: () => void;
-
-  //图层隐藏
-  hide: () => void;
-  //图层展示
-  show: () => void;
-
-  //图层销毁
-  destroy: () => void;
-  // 所有覆盖物获取
-  getAllOverlays: () => void;
-}
-
 interface overlayData<T extends object = {}> {
-  lon: number;
-  lat: number;
-  title: string;
-  id: string;
-  extData: T;
-  weight: number;
+  overlayData: {
+    lon: number;
+    lat: number;
+    title: string;
+    id: string;
+    extData: T;
+    weight: number;
+  };
+  // 覆盖物配置数据
+  labelShowed: boolean;
+  overlaySelected: boolean; // 当前marker是否被选中
 }
 
 interface LayerOpts<
-  T extends layerType = 'markersLayer',
+  T extends layerType = 'markerLayer',
   U = {},
   V = MapUtilsLayersInfo[T],
 > {
@@ -84,57 +70,37 @@ interface LayerOpts<
   requestCallback: () => Array<overlayData<U>>;
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>;
   getIconUrl: () => string; //overlayList中优先级更高
-  overlayOpts: V['overlayOpts']; //命名空间的export type，你该怎么接收
+  overlayOpts: V['overlayOpts']; //全局数据
 }
 
-// 图层
-abstract class Layer {
+// 图层接口
+interface ILayer {
   // 覆盖物配置数据
-  overlayList: Array<{
-    getIconUrl: () => string; //局部优先级更高
-    labelShowed: boolean;
-    overlaySelected: boolean; // 当前marker是否被选中
-  }>;
+  overlayList: Array<overlayData>;
 
-  // 图层类型与控制器类的映射关系
-  static layerClassMap = new Map<string, LayerTypeClass>();
-
-  static registerLayer(layerType: layerType, layerClass: LayerTypeClass);
-  // 图层名称
   layerName: string;
 
   rawLayerIns: LayerTypeIns;
 
   layerType: layerType;
 
-  uuid: string; //图层名称+随机数
+  layerVisible: boolean;
 
-  layerVisible: boolean = true;
+  createOverlays(): void;
 
-  constructor(opts: LayerOpts);
+  hide(): void;
 
-  //创建覆盖物
-  createOverlays: () => void;
+  show(): void;
 
-  //图层隐藏
-  hide: () => void;
-  //图层展示
-  show: () => void;
+  destroy(): void;
 
-  //图层销毁
-  destroy: () => void;
+  highlightOverLay(): void;
 
-  //高亮marker
-  highlightOverLay: () => void;
+  overlayFitMap(): void;
 
-  //覆盖物自动适应
-  overlayFitMap: () => void;
-
-  //获取所有覆盖物
   getAllOverlay<R>(): R;
 
-  //图层重载
-  reload: () => void;
+  reload(): void;
 
   add<T>(overlays: Array<T>): void;
 
@@ -142,7 +108,7 @@ abstract class Layer {
 }
 
 // 图层管理器
-interface LayerManger<T = Layer, K = InstanceType<T>> {
+interface LayerManger<T = ILayer, K = InstanceType<T>> {
   //它可以形参接收this.map
   //layers: 图层存在于layer时才会显示
   layers: Map<string, K>; //组合模式
@@ -162,8 +128,8 @@ interface LayerManger<T = Layer, K = InstanceType<T>> {
   reload(): void;
 }
 
-//TODO 事件处理
-interface OverlaysLayer<T, U> extends LayerBase {
+//TODO_1 事件处理, T and U可以用MapUtilsLayersInfo类型
+interface OverlaysLayer<T, U> {
   rawLayer: U;
 
   //创建覆盖物
@@ -190,4 +156,13 @@ interface OverlaysLayer<T, U> extends LayerBase {
   overlayFitMap: () => void;
 }
 
-export type { MapUtilsOpts, mapIns, layerType, OverlaysLayer, LayerManger };
+export type {
+  MapUtilsOpts,
+  mapIns,
+  layerType,
+  OverlaysLayer,
+  LayerManger,
+  ILayer,
+  LayerOpts,
+  MapUtilsLayersInfo,
+};

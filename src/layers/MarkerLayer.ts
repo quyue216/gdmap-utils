@@ -5,6 +5,7 @@ class MarkerLayer implements OverlaysLayer<AMap.Marker, AMap.OverlayGroup> {
   constructor() {}
 
   createOverlays() {
+    new AMap.Marker();
     return [];
   }
 
