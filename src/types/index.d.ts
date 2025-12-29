@@ -30,23 +30,23 @@ type MapUtilsOpts = {
 interface MapUtilsLayersInfo {
   markerLayer: {
     layerIns: MarkerLayerIns;
-    overlayIns: AMap.Marker;
-    overlayOpts: AMap.MarkerOptions;
+    overlayOpts: AMap.MarkerOptions; //!考虑改为简写
+    ovIns: AMap.Marker;
   };
   labelMarkerLayer: {
     layerIns: LabelMarkerLayerIns;
     overlayOpts: AMap.LabelMarkerOptions;
-    overLayIns: AMap.LabelMarker;
+    ovIns: AMap.LabelMarker;
   };
   markerClusterLayer: {
     layerIns: MarkerClusterLayerIns;
-    overlayOpts: '';
-    overlayIns: AMap.MarkerClusterer;
+    overlayOpts: AMap.LabelMarkerOptions; //TODO  AMap.LabelMarkerOptions占位
+    ovIns: AMap.MarkerClusterer;
   };
 } //定义图层信息
 type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
 
-interface overlayData<T extends object = {}> {
+export interface overlayData<T extends object = {}> {
   overlayData: {
     lon: number;
     lat: number;
@@ -61,13 +61,13 @@ interface overlayData<T extends object = {}> {
 }
 
 interface LayerOpts<
-  T extends layerType = 'markerLayer',
   U = {},
+  T extends layerType = 'markerLayer',
   V = MapUtilsLayersInfo[T],
 > {
   layerType: T;
   layerName: string;
-  requestCallback: () => Array<overlayData<U>>;
+  overlayList: Array<overlayData<U>>;
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>;
   getIconUrl: () => string; //overlayList中优先级更高
   overlayOpts: V['overlayOpts']; //全局数据

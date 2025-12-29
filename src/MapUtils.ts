@@ -1,4 +1,5 @@
 import MapSourceImport from './MapSourceImport';
+import MapMixin from './gdMap/gdHelper';
 import type { AMap as gdAMap, loaderOpts, MapOptions } from './types/amap.d';
 import type {
   MapUtilsOpts,
@@ -9,20 +10,45 @@ import type {
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
 import Layer from './layers/index';
-class MapUtils {
+
+type MapMixinType = typeof MapMixin;
+
+interface MapUtilsStatic extends MapMixinType {
+  new (
+    opts: MapUtilsOpts[keyof MapUtilsOpts],
+    AMap: Simplify<typeof gdAMap>
+  ): MapUtils;
+}
+
+export class MapUtils {
   // 地图实例信息
   map: mapIns;
 
   options: SetOptional<MapUtilsOpts['MapUtilsCreateOpts'], 'mountSelector'>;
 
-  LayerManager: LayerManager = new LayerManager(); //组合模式
+  LayerManager: LayerManager = new LayerManager();
+
+  // static initStaticMapUtils() {
+  //   Object.assign(MapUtils, MapMixin);
+  // }
+
+  static createAMapMarker = MapMixin.createAMapMarker;
+
+  static createIcon = MapMixin.createIcon;
+
+  // static error = MapMixin.error;
+  static Size = MapMixin.Size;
+
+  static Pixel = MapMixin.Pixel;
+
+  static LngLat = MapMixin.LngLat;
 
   constructor(
     opts: MapUtilsOpts[keyof MapUtilsOpts],
     AMap: Simplify<typeof gdAMap>
   ) {
     if (!(typeof AMap === 'object' && 'BaseLayer' in AMap)) {
-      throw this.error('AMap is not exist');
+      throw MapUtils.error('AMap is not exist');
     }
 
     if ('mapIns' in opts && opts.mapIns instanceof AMap.Map) {
@@ -31,7 +57,7 @@ class MapUtils {
       this.options = rest;
     } else {
       if (!('mountSelector' in opts)) {
-        throw this.error('mountSelector is not exist');
+        throw MapUtils.error('mountSelector is not exist');
       } else {
         this.options = opts;
 
@@ -60,8 +86,10 @@ class MapUtils {
     return new window.AMap.Map(id, opts);
   }
 
-  createLayer<T extends layerType>(opts: LayerOpts<T>) {
-    const layer = new Layer(opts, this);
+  createLayer<U extends {}, T extends layerType = 'markerLayer'>(
+    opts: LayerOpts<U, T>
+  ) {
+    const layer = new Layer<U, T>(opts, this);
     this.LayerManager.addLayer(layer);
     return layer;
   }
@@ -69,8 +97,18 @@ class MapUtils {
   // createLayerOverlays(){
 
   // }
+  /**
+   * 根据地图上添加的覆盖物分布情况，自动缩放地图到合适的视野级别
+   * @param {Array} overlays - 覆盖物数组，缺省为全部覆盖物
+   * @param {Boolean} immediately - 是否立即过渡
+   * @param {Array<Number>} avoid - 四周边距，上、下、左、右
+   * @param {number} maxZoom - 最大地图zoom级别
+   */
+  setFitView(...opts: Parameters<mapIns['setFitView']>): void {
+    this.map.setFitView(...opts);
+  }
 
-  error(msg: string) {
+  static error(msg: string) {
     console.error(`[MapUtils Error]:${msg}`);
   }
 }

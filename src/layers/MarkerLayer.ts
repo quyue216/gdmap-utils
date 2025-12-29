@@ -1,31 +1,150 @@
-import type { OverlaysLayer } from '../types/index.d';
-class MarkerLayer implements OverlaysLayer<AMap.Marker, AMap.OverlayGroup> {
+import type { OverlaysLayer, mapIns } from '../types/index.d';
+import { MapUtils } from '../MapUtils';
+
+// 接口约束类暂时去掉implements OverlaysLayer<AMap.Marker, AMap.OverlayGroup>
+class MarkerLayer {
   rawLayer = new AMap.OverlayGroup();
 
-  constructor() {}
+  map: mapIns;
 
-  createOverlays() {
-    new AMap.Marker();
-    return [];
+  events = new Map<MouseEventUnion, () => void>();
+
+  constructor(map: mapIns) {
+    this.map = map;
+    // @ts-expect-error
+    this.map.add(this.rawLayer);
   }
 
-  add(markers: Array<AMap.Marker>) {}
+  bindEventMarker(clickType: MouseEventUnion, callback: () => void) {
+    if (typeof callback !== 'function') {
+      MapUtils.error('Please provide an event callback function');
+      return;
+    }
 
-  remove(markers: Array<AMap.Marker>) {}
+    // 获取地图的所有点位，绑定上事件
+    this.rawLayer.on(clickType, callback);
 
-  highlightOverLay() {}
+    // 保存事件
+    this.events.set(clickType, callback);
+  }
 
-  hide() {}
+  addMarkerBindEvent(marker: InstanceType<typeof AMap.Marker>) {
+    this.events.forEach((callback, clickType) => {
+      marker.on(clickType, callback);
+    });
+  }
 
-  show() {}
+  createOverlays(ovOptList: Array<AMap.MapOptions>) {
+    const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
 
-  getAllOverlay() {}
+    this.rawLayer.addOverlays(markers);
 
-  destroy() {}
+    return markers;
+  }
 
-  reload() {}
+  add(markers: Array<AMap.MarkerOptions>) {
+    this.createOverlays(markers);
+  }
 
-  overlayFitMap() {}
+  remove(markers: Array<AMap.Marker>) {
+    this.rawLayer.removeOverlays(markers);
+  }
+
+  hide() {
+    this.rawLayer.hide();
+  }
+
+  show() {
+    this.rawLayer.show();
+  }
+
+  getAllOverlay() {
+    return this.rawLayer.getOverlays();
+  }
+
+  destroy() {
+    this.rawLayer.clearOverlays();
+    // @ts-expect-error
+    this.rawLayer.setMap(null);
+  }
+
+  reload(ovOptList: Array<AMap.MapOptions>) {
+    this.rawLayer.clearOverlays();
+
+    this.createOverlays(ovOptList);
+  }
+
+  overlayFitMap() {
+    const makers = this.getAllOverlay();
+
+    this.map.setFitView(makers);
+  }
+
+  findLayerMarker(markerId: string) {
+    if (!markerId) {
+      MapUtils.error('Please provide a markerId');
+      return;
+    }
+
+    const markers: InstanceType<typeof AMap.Marker>[] = this.getAllOverlay();
+
+    const marker = markers.find(item => {
+      return item.getExtData().id === markerId;
+    });
+
+    return marker || null; // 如果没有找到，返回null
+  }
+
+  // 设置激活的marker
+  refreshMarkerIcon(
+    marker: InstanceType<typeof AMap.Marker>,
+    iconImgUrl: string
+  ) {
+    if (!marker) {
+      // 如果没有找到对应的marker
+      return MapUtils.error('marker is not found');
+    }
+
+    const curOpts: AMap.Icon = marker.getIcon() as AMap.Icon;
+
+    const icon = MapUtils.createIcon({
+      size: curOpts.getSize() as [number, number],
+      image: iconImgUrl,
+      imageSize: curOpts.getImageSize() as [number, number],
+      imageOffset: curOpts.getImageOffset() as [number, number],
+    }); // 创建新图标
+
+    // 获取点击的标记对象
+    marker.setIcon(icon);
+  }
+
+  /* 
+   DOM过多会导致页面卡断
+  */
+  refreshOverlayLabel(
+    marker: InstanceType<typeof AMap.Marker>,
+    labelOpts?: {
+      content: string;
+      direction: string;
+      offset: [number, number] | Array<number>;
+    }
+  ) {
+    if (!marker) {
+      // 如果没有找到对应的marker
+      return MapUtils.error('marker is not found');
+    }
+    if (labelOpts) {
+      marker.setLabel(labelOpts);
+    } else {
+      let labelOpts = marker.getLabel();
+      marker.setLabel({
+        ...labelOpts,
+        content: '',
+      });
+    }
+  }
 }
 
 export default MarkerLayer;
+
+type MouseEventUnion = AMap.EventType;
