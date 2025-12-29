@@ -11,6 +11,7 @@ class LabelMarkerLayer implements OverlaysLayer<
     return [];
   }
 
+  bindEventMarker(clickType: AMap.EventType, callback: () => void) {}
   add(markers: Array<AMap.Marker>) {}
 
   remove(markers: Array<AMap.Marker>) {}

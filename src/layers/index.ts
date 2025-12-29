@@ -8,7 +8,7 @@ import type {
   MapUtilsLayersInfo,
   overlayData,
 } from '../types/index.d';
-import type { mapUtilsIns } from '../MapUtils';
+import { MapUtils, type mapUtilsIns } from '../MapUtils';
 
 // implements ILayer 暂时不实现
 class Layer<
@@ -25,7 +25,7 @@ class Layer<
    */
   static registerLayer(layerType: layerType, layerClass: LayerTypeClass) {
     if (typeof layerType !== 'string' || typeof layerClass !== 'function') {
-      console.error('[LayerManager Error]: Invalid layer type or layer class');
+      MapUtils.error('[LayerManager Error]: Invalid layer type or layer class');
       return;
     }
     //TODO 考虑是否添加注册验证
@@ -45,6 +45,8 @@ class Layer<
   overlayOpts: V['overlayOpts'];
 
   getIconUrl: () => string;
+
+  layerType: layerType;
 
   constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
@@ -67,14 +69,22 @@ class Layer<
 
     this.overlayOpts = opts.overlayOpts;
 
+    this.layerType = opts.layerType;
+
     Object.assign(this, rest);
 
     this.initLayer();
   }
 
   // 图层事件,覆盖物初始化
-  initLayer() {}
-
+  initLayer() {
+    this.createOverlays(this.overlayList, this.overlayOpts);
+  }
+  /* 
+1. 配置兼容两种marker配置? 定义公共属性名称, 根据layerType做映射
+2. Icon由外部传入
+3. 
+*/
   createOverlays(
     overlayList: Array<overlayData>,
     overlayOpts?: V['overlayOpts']
@@ -91,8 +101,22 @@ class Layer<
         position: [lon, lat],
         ...singleOpts,
       };
-      // 使用传入状态计算Icon
-      const iconUrl = this.getIconUrl.call(item);
+
+      if (this.rawLayerIns instanceof MarkerLayer) {
+        let opts: AMap.MarkerOptions = singleOpts as AMap.MarkerOptions;
+
+        if (!item.labelShowed) {
+          opts.label = undefined;
+        }
+
+        const imageUrl = this.getIconUrl.call(item);
+
+        if (typeof ovlOpts.icon === 'string') {
+          ovlOpts.icon = imageUrl;
+        } else {
+          (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
+        }
+      }
 
       return ovlOpts;
     });
@@ -102,6 +126,36 @@ class Layer<
 
   overlayFitMap() {
     this.rawLayerIns.overlayFitMap();
+  }
+
+  bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
+    this.rawLayerIns.bindEventMarker(clickType, callback);
+  }
+
+  hide() {
+    this.layerVisible = false;
+    this.rawLayerIns.hide();
+  }
+
+  show() {
+    this.layerVisible = true;
+    this.rawLayerIns.show();
+  }
+
+  getAllOverlay() {
+    return this.rawLayerIns.getAllOverlay();
+  }
+
+  destroy() {
+    this.rawLayerIns.destroy();
+  }
+
+  reload() {
+    this.rawLayerIns.reload();
+
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      this.createOverlays(this.overlayList, this.overlayOpts);
+    }
   }
 }
 

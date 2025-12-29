@@ -10,6 +10,7 @@ class MarkerClusterLayer implements OverlaysLayer<
   createOverlays() {
     return [];
   }
+  bindEventMarker(clickType: AMap.EventType, callback: () => void) {}
 
   add(markers: Array<AMap.Marker>) {}
 

@@ -7,7 +7,7 @@ class MarkerLayer {
 
   map: mapIns;
 
-  events = new Map<MouseEventUnion, () => void>();
+  events = new Map<AMap.EventType, () => void>();
 
   constructor(map: mapIns) {
     this.map = map;
@@ -15,7 +15,7 @@ class MarkerLayer {
     this.map.add(this.rawLayer);
   }
 
-  bindEventMarker(clickType: MouseEventUnion, callback: () => void) {
+  bindEventMarker(clickType: AMap.EventType, callback: () => void) {
     if (typeof callback !== 'function') {
       MapUtils.error('Please provide an event callback function');
       return;
@@ -36,6 +36,8 @@ class MarkerLayer {
 
   createOverlays(ovOptList: Array<AMap.MapOptions>) {
     const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
+
+    markers.forEach(item => this.addMarkerBindEvent(item));
 
     this.rawLayer.addOverlays(markers);
 
@@ -68,10 +70,10 @@ class MarkerLayer {
     this.rawLayer.setMap(null);
   }
 
-  reload(ovOptList: Array<AMap.MapOptions>) {
+  reload() {
     this.rawLayer.clearOverlays();
 
-    this.createOverlays(ovOptList);
+    // this.createOverlays(ovOptList);
   }
 
   overlayFitMap() {
@@ -119,7 +121,7 @@ class MarkerLayer {
   }
 
   /* 
-   DOM过多会导致页面卡断
+   DOM过多会导致页面卡顿, 用到才创建
   */
   refreshOverlayLabel(
     marker: InstanceType<typeof AMap.Marker>,
@@ -146,5 +148,3 @@ class MarkerLayer {
 }
 
 export default MarkerLayer;
-
-type MouseEventUnion = AMap.EventType;
