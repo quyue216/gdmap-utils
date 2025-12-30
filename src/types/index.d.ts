@@ -55,6 +55,7 @@ export interface overlayData<T extends object = {}> {
     extData: T;
     weight: number;
   };
+  id: string;
   // 覆盖物配置数据
   labelShowed: boolean;
   overlaySelected: boolean; // 当前marker是否被选中

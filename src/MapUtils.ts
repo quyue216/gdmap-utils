@@ -28,15 +28,10 @@ export class MapUtils {
 
   LayerManager: LayerManager = new LayerManager();
 
-  // static initStaticMapUtils() {
-  //   Object.assign(MapUtils, MapMixin);
-  // }
-
   static createAMapMarker = MapMixin.createAMapMarker;
 
   static createIcon = MapMixin.createIcon;
 
-  // static error = MapMixin.error;
   static Size = MapMixin.Size;
 
   static Pixel = MapMixin.Pixel;
@@ -94,9 +89,6 @@ export class MapUtils {
     return layer;
   }
 
-  // createLayerOverlays(){
-
-  // }
   /**
    * 根据地图上添加的覆盖物分布情况，自动缩放地图到合适的视野级别
    * @param {Array} overlays - 覆盖物数组，缺省为全部覆盖物

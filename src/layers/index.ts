@@ -81,9 +81,9 @@ class Layer<
     this.createOverlays(this.overlayList, this.overlayOpts);
   }
   /* 
-1. 配置兼容两种marker配置? 定义公共属性名称, 根据layerType做映射
-2. Icon由外部传入
-3. 
+  1. 配置兼容两种marker配置? 定义公共属性名称, 根据layerType做映射
+  2. Icon由外部传入
+  3. marker与labelMarker灵活切换
 */
   createOverlays(
     overlayList: Array<overlayData>,
@@ -129,7 +129,7 @@ class Layer<
   }
 
   bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
-    this.rawLayerIns.bindEventMarker(clickType, callback);
+    (this.rawLayerIns as MarkerLayerIns).bindEventOverlay(clickType, callback);
   }
 
   hide() {
@@ -155,6 +155,69 @@ class Layer<
 
     if (this.rawLayerIns instanceof MarkerLayer) {
       this.createOverlays(this.overlayList, this.overlayOpts);
+    }
+  }
+
+  findLayerOverlay(ovId: string) {
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      //待删除
+      this.rawLayerIns.findLayerOverlay(ovId);
+    }
+  }
+
+  add(ovs: Array<V['overlayOpts']>) {
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      //待删除
+      this.rawLayerIns.add(ovs as AMap.MarkerOptions[]);
+    }
+  }
+
+  remove(ovs: Array<V['ovIns']>) {
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      //待删除
+      this.rawLayerIns.remove(ovs as AMap.Marker[]);
+    }
+  }
+
+  refreshOverlayIcon(overlayId: string, imageUrl: string) {
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
+
+      if (!(marker instanceof AMap.Marker)) {
+        //抛异常
+        return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
+      }
+
+      const ovDataItem = this.overlayList.find(item => item.id === overlayId);
+
+      const iconImageUrl = imageUrl ?? this.getIconUrl.call(ovDataItem);
+
+      this.rawLayerIns.refreshOverlayIcon(marker, iconImageUrl);
+    }
+  }
+
+  refreshOverlayLabel(
+    overlayId: string,
+    labelOpts?: {
+      content: string;
+      direction: string;
+      offset: [number, number] | Array<number>;
+    }
+  ) {
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
+
+      if (!(marker instanceof AMap.Marker)) {
+        //抛异常
+        return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
+      }
+
+      const ovDataItem = this.overlayList.find(item => item.id === overlayId);
+
+      // 属性值转变为boolean
+      ovDataItem!.labelShowed = Boolean(labelOpts);
+
+      this.rawLayerIns.refreshOverlayLabel(marker, labelOpts);
     }
   }
 }
