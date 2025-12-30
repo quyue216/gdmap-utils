@@ -15,7 +15,7 @@ class MarkerLayer {
     this.map.add(this.rawLayer);
   }
 
-  bindEventMarker(clickType: AMap.EventType, callback: () => void) {
+  bindEventOverlay(clickType: AMap.EventType, callback: () => void) {
     if (typeof callback !== 'function') {
       MapUtils.error('Please provide an event callback function');
       return;
@@ -28,7 +28,7 @@ class MarkerLayer {
     this.events.set(clickType, callback);
   }
 
-  addMarkerBindEvent(marker: InstanceType<typeof AMap.Marker>) {
+  addOverlayBindEvent(marker: InstanceType<typeof AMap.Marker>) {
     this.events.forEach((callback, clickType) => {
       marker.on(clickType, callback);
     });
@@ -37,7 +37,7 @@ class MarkerLayer {
   createOverlays(ovOptList: Array<AMap.MapOptions>) {
     const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
 
-    markers.forEach(item => this.addMarkerBindEvent(item));
+    markers.forEach(item => this.addOverlayBindEvent(item));
 
     this.rawLayer.addOverlays(markers);
 
@@ -82,7 +82,7 @@ class MarkerLayer {
     this.map.setFitView(makers);
   }
 
-  findLayerMarker(markerId: string) {
+  findLayerOverlay(markerId: string) {
     if (!markerId) {
       MapUtils.error('Please provide a markerId');
       return;
@@ -98,7 +98,7 @@ class MarkerLayer {
   }
 
   // 设置激活的marker
-  refreshMarkerIcon(
+  refreshOverlayIcon(
     marker: InstanceType<typeof AMap.Marker>,
     iconImgUrl: string
   ) {
