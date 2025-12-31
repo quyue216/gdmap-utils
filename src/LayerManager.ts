@@ -12,7 +12,9 @@ export class LayerManager implements LayerManger<LayerClass> {
     this.layers.set(layer.layerName, layer);
   }
 
-  removeLayer(layerIdOrLayer: LayerIns | string) {}
+  removeLayer(layerIdOrLayer: LayerIns | string) {
+    //  this.layers.delete()
+  }
 
   show() {} //! 你怎么知道，你要隐藏或者显示某个图层
 

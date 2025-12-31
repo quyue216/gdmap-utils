@@ -54,7 +54,7 @@ class Layer<
     const OverlaysLayer = Layer.layerClassMap.get(layerType);
 
     if (OverlaysLayer) {
-      this.rawLayerIns = new OverlaysLayer(mapUtils.map);
+      this.rawLayerIns = new OverlaysLayer(mapUtils.map, opts.overlayLayer);
     } else {
       throw new Error(`[Layer Error]: Invalid layer type ${layerType}`);
     }
@@ -94,11 +94,12 @@ class Layer<
 
     const markerListOpts: Array<V['overlayOpts']> = overlayList.map(item => {
       const {
-        overlayData: { lon, lat },
+        overlayData: { lon, lat, extData },
       } = item;
 
       const ovlOpts = {
         position: [lon, lat],
+        extData,
         ...singleOpts,
       };
 
@@ -147,15 +148,15 @@ class Layer<
   }
 
   destroy() {
+    // this.mapUtils
+    //TODO  逻辑待补充
     this.rawLayerIns.destroy();
   }
 
   reload() {
     this.rawLayerIns.reload();
 
-    if (this.rawLayerIns instanceof MarkerLayer) {
-      this.createOverlays(this.overlayList, this.overlayOpts);
-    }
+    this.createOverlays(this.overlayList, this.overlayOpts);
   }
 
   findLayerOverlay(ovId: string) {
@@ -219,6 +220,11 @@ class Layer<
 
       this.rawLayerIns.refreshOverlayLabel(marker, labelOpts);
     }
+  }
+
+  // 返回原始图层对象
+  gdLayer() {
+    return this.rawLayerIns.rawLayer;
   }
 }
 

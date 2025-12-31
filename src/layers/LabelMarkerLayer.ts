@@ -10,6 +10,7 @@ class LabelMarkerLayer {
 
   constructor(map: mapIns, opts?: AMap.LabelsLayerOptions) {
     this.map = map;
+
     this.rawLayer = new AMap.LabelsLayer({
       collision: true,
       opacity: 1,
@@ -17,14 +18,18 @@ class LabelMarkerLayer {
       allowCollision: true,
       ...opts,
     });
+
     this.map.add(this.rawLayer);
   }
+
   //TODO marker可以直接绑定事件?
   bindEventOverlay(clickType: AMap.EventType, callback: () => void) {
     if (typeof callback !== 'function') {
       MapUtils.error('Please provide an event callback function');
       return;
     }
+
+    this.rawLayer.on(clickType, callback);
 
     this.events.set(clickType, callback);
   }
@@ -76,12 +81,11 @@ class LabelMarkerLayer {
     this.map.remove(this.rawLayer);
   }
 
-  reload(ovOptList: Array<AMap.LabelMarkerOptions>) {
+  reload() {
     // @ts-expect-error
     this.rawLayer.clear();
-    this.createOverlays(ovOptList);
   }
-  // 调用效果存疑
+  //TODO 调用效果存疑
   overlayFitMap() {
     const labelMarkers = this.getAllOverlay();
     this.map.setFitView(labelMarkers);
@@ -112,25 +116,18 @@ class LabelMarkerLayer {
       return;
     }
 
-    const curIcon = labelMarker.getIcon();
+    const iconOpts = labelMarker.getIcon();
 
-    const icon = new AMap.Icon({
-      image: iconImgUrl,
-      size: curIcon?.getSize(),
-      imageSize: curIcon?.getImageSize(),
-      imageOffset: curIcon?.getImageOffset(),
-    });
+    if (iconOpts) {
+      iconOpts.image = iconImgUrl;
 
-    labelMarker.setIcon(icon);
+      labelMarker.setIcon(iconOpts);
+    }
   }
 
   refreshOverlayLabel(
     labelMarker: InstanceType<typeof AMap.LabelMarker>,
-    labelOpts?: {
-      content: string;
-      direction: string;
-      offset: [number, number] | Array<number>;
-    }
+    labelOpts?: AMap.LabelMarkerTextOptions
   ) {
     if (!labelMarker) {
       MapUtils.error('labelMarker is not found');
@@ -138,54 +135,14 @@ class LabelMarkerLayer {
     }
 
     if (labelOpts) {
-      labelMarker.setLabel(labelOpts);
+      labelMarker.setText(labelOpts);
     } else {
-      const currentLabel = labelMarker.getLabel();
-      labelMarker.setLabel({
+      const currentLabel = labelMarker.getText();
+      labelMarker.setText({
         ...currentLabel,
         content: '',
       });
     }
-  }
-
-  getCollision() {
-    return this.rawLayer.getCollision();
-  }
-
-  setCollision(collision: boolean) {
-    this.rawLayer.setCollision(collision);
-  }
-
-  getAllowCollision() {
-    return this.rawLayer.getAllowCollision();
-  }
-
-  setAllowCollision(allowCollision: boolean) {
-    this.rawLayer.setAllowCollision(allowCollision);
-  }
-
-  getOpacity() {
-    return this.rawLayer.getOpacity();
-  }
-
-  setOpacity(opacity: number) {
-    this.rawLayer.setOpacity(opacity);
-  }
-
-  getZooms() {
-    return this.rawLayer.getZooms();
-  }
-
-  setZooms(zooms: [number, number]) {
-    this.rawLayer.setZooms(zooms);
-  }
-
-  getzIndex() {
-    return this.rawLayer.getzIndex();
-  }
-
-  setzIndex(zIndex: number) {
-    this.rawLayer.setzIndex(zIndex);
   }
 }
 

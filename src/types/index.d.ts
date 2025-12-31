@@ -72,6 +72,7 @@ interface LayerOpts<
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>;
   getIconUrl: () => string; //overlayList中优先级更高
   overlayOpts: V['overlayOpts']; //全局数据
+  overlayLayer?: AMap.LabelsLayerOptions;
 }
 
 // 图层接口
