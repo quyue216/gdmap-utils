@@ -45,3 +45,8 @@
 6. `this.layerInstance = gdMapUtils.getOverlayGroupManager(this.config.className); // 获取图层对象` 图层对象存放GdMapUtils中是否合理
 8. ts实现抽象类,接口约束图层类
 7. 工具库实现自定义事件, 用于派发自定义事件, 如`markerShowed`、`markerMouseover`等
+
+
+ "peerDependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1"
+  },

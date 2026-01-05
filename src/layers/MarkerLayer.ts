@@ -72,8 +72,6 @@ class MarkerLayer {
 
   reload() {
     this.rawLayer.clearOverlays();
-
-    // this.createOverlays(ovOptList);
   }
 
   overlayFitMap() {
@@ -121,7 +119,7 @@ class MarkerLayer {
   }
 
   /* 
-   DOM过多会导致页面卡顿, 用到才创建
+   DOM过多页面会卡顿, 用到才创建
   */
   refreshOverlayLabel(
     marker: InstanceType<typeof AMap.Marker>,

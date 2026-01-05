@@ -22,14 +22,14 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
-  externals: {
+/*   externals: {
     '@amap/amap-jsapi-loader': { // 外部依赖，不打包进 bundle
       commonjs: '@amap/amap-jsapi-loader',
       commonjs2: '@amap/amap-jsapi-loader',
       amd: '@amap/amap-jsapi-loader',
       root: 'AMapLoader'
     }
-  },
+  }, */
   module: {
     rules: [
       {

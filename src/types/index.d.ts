@@ -6,7 +6,6 @@ import type {
   LabelMarkerLayerIns,
   MarkerClusterLayerIns,
   LayerTypeIns,
-  LayerTypeClass,
 } from '../layers/index';
 
 // 高德地图实例
@@ -43,7 +42,8 @@ interface MapUtilsLayersInfo {
     overlayOpts: AMap.LabelMarkerOptions; //TODO  AMap.LabelMarkerOptions占位
     ovIns: AMap.MarkerClusterer;
   };
-} //定义图层信息
+}
+//定义图层信息
 type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
 
 export interface overlayData<T extends object = {}> {
@@ -53,7 +53,7 @@ export interface overlayData<T extends object = {}> {
     title: string;
     id: string;
     extData: T;
-    weight: number;
+    weight?: number;
   };
   id: string;
   // 覆盖物配置数据
@@ -69,44 +69,10 @@ interface LayerOpts<
   layerType: T;
   layerName: string;
   overlayList: Array<overlayData<U>>;
-  createOverlays: (mapUtilsIns) => Array<V['overlayIns']>;
+  createOverlays: (mapUtilsIns) => Array<V['overlayIns']>; // 未使用上
   getIconUrl: () => string; //overlayList中优先级更高
   overlayOpts: V['overlayOpts']; //全局数据
-  overlayLayer?: AMap.LabelsLayerOptions;
-}
-
-// 图层接口
-interface ILayer {
-  // 覆盖物配置数据
-  overlayList: Array<overlayData>;
-
-  layerName: string;
-
-  rawLayerIns: LayerTypeIns;
-
-  layerType: layerType;
-
-  layerVisible: boolean;
-
-  createOverlays(): void;
-
-  hide(): void;
-
-  show(): void;
-
-  destroy(): void;
-
-  highlightOverLay(): void;
-
-  overlayFitMap(): void;
-
-  getAllOverlay<R>(): R;
-
-  reload(): void;
-
-  add<T>(overlays: Array<T>): void;
-
-  remove<T>(overlays: Array<T>): void;
+  overlayLayer?: AMap.LabelsLayerOptions; //! labelMarker，marker渲染方式不同, labelMarker为canvas与Marker为Dom渲染 (重复定义)
 }
 
 // 图层管理器
@@ -130,14 +96,13 @@ interface LayerManger<T = ILayer, K = InstanceType<T>> {
   reload(): void;
 }
 
-//TODO_1 事件处理, T and U可以用MapUtilsLayersInfo类型
 interface OverlaysLayer<T, U> {
   rawLayer: U;
 
   //创建覆盖物
-  createOverlays: () => Array<T>;
+  createOverlays: (ovOptList: Array<any>) => Array<T>;
 
-  add(markers: Array<T>): void;
+  add(markers: Array<any>): void;
 
   remove(markers: Array<T>): void;
 
@@ -151,20 +116,21 @@ interface OverlaysLayer<T, U> {
 
   reload: () => void;
 
-  //高亮marker
-  highlightOverLay: () => void;
-
   //覆盖物自动适应
   overlayFitMap: () => void;
 }
-
+interface Window {
+  _AMapSecurityConfig?: {
+    securityJsCode: string;
+    serviceHost: string;
+  };
+}
 export type {
   MapUtilsOpts,
   mapIns,
   layerType,
   OverlaysLayer,
   LayerManger,
-  ILayer,
   LayerOpts,
   MapUtilsLayersInfo,
 };

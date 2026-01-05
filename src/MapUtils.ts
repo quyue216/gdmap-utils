@@ -12,7 +12,7 @@ import LayerManager from './LayerManager';
 import Layer from './layers/index';
 
 type MapMixinType = typeof MapMixin;
-
+// 类本质不就是函数吗
 interface MapUtilsStatic extends MapMixinType {
   new (
     opts: MapUtilsOpts[keyof MapUtilsOpts],
@@ -42,7 +42,7 @@ export class MapUtils {
     opts: MapUtilsOpts[keyof MapUtilsOpts],
     AMap: Simplify<typeof gdAMap>
   ) {
-    if (!(typeof AMap === 'object' && 'BaseLayer' in AMap)) {
+    if (!(typeof AMap === 'object' && 'Map' in AMap)) {
       throw MapUtils.error('AMap is not exist');
     }
 
@@ -127,11 +127,3 @@ export async function createMapUtils(
 export async function initMapSource(Opts: loaderOpts) {
   return await MapSourceImport.loadScript(Opts);
 }
-
-/* 
- 地图资源加载与地图初始化进行拆分吗?
- 1. 地图资源加载与构造函数耦合
-    1.1 地图资源确保加载
-    1.2 地图配置 (每次都要传入)
- 2. 单例模式, 实例对所有组件可见
-*/

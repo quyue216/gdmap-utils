@@ -3,14 +3,12 @@ import MarkerClusterLayer from './MarkerClusterLayer';
 import MarkerLayer from './MarkerLayer';
 import type {
   layerType,
-  ILayer,
   LayerOpts,
   MapUtilsLayersInfo,
   overlayData,
 } from '../types/index.d';
 import { MapUtils, type mapUtilsIns } from '../MapUtils';
 
-// implements ILayer 暂时不实现
 class Layer<
   U extends {},
   T extends layerType = 'markerLayer',
@@ -28,7 +26,7 @@ class Layer<
       MapUtils.error('[LayerManager Error]: Invalid layer type or layer class');
       return;
     }
-    //TODO 考虑是否添加注册验证
+
     Layer.layerClassMap.set(layerType, layerClass);
   }
 
@@ -110,6 +108,7 @@ class Layer<
           opts.label = undefined;
         }
 
+        // if (ovlOpts.icon) {
         const imageUrl = this.getIconUrl.call(item);
 
         if (typeof ovlOpts.icon === 'string') {
@@ -117,18 +116,21 @@ class Layer<
         } else {
           (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
         }
+        // }
       }
 
       return ovlOpts;
     });
-
-    return this.rawLayerIns.createOverlays(markerListOpts);
+    // @ts-ignore
+    return this.rawLayerIns.createOverlays(
+      markerListOpts as Array<AMap.MapOptions>
+    );
   }
 
   overlayFitMap() {
     this.rawLayerIns.overlayFitMap();
   }
-
+  //名字考虑更改吗?
   bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
     (this.rawLayerIns as MarkerLayerIns).bindEventOverlay(clickType, callback);
   }
@@ -148,8 +150,6 @@ class Layer<
   }
 
   destroy() {
-    // this.mapUtils
-    //TODO  逻辑待补充
     this.rawLayerIns.destroy();
   }
 
@@ -223,7 +223,7 @@ class Layer<
   }
 
   // 返回原始图层对象
-  gdLayer() {
+  getRawLayer() {
     return this.rawLayerIns.rawLayer;
   }
 }

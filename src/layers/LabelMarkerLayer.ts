@@ -42,7 +42,7 @@ class LabelMarkerLayer {
 
   createOverlays(ovOptList: Array<AMap.LabelMarkerOptions>) {
     const labelMarkers = ovOptList.map(item => {
-      const labelMarker = new AMap.LabelMarker(item);
+      const labelMarker = new AMap.LabelMarker(item); //包装吗?
       this.addOverlayBindEvent(labelMarker);
       return labelMarker;
     });
@@ -115,7 +115,7 @@ class LabelMarkerLayer {
       MapUtils.error('labelMarker is not found');
       return;
     }
-
+    //你需要改动
     const iconOpts = labelMarker.getIcon();
 
     if (iconOpts) {
@@ -140,7 +140,7 @@ class LabelMarkerLayer {
       const currentLabel = labelMarker.getText();
       labelMarker.setText({
         ...currentLabel,
-        content: '',
+        content: '', //清空可以生效吗
       });
     }
   }
