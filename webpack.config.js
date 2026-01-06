@@ -1,5 +1,5 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
   entry: './src/index.ts',
@@ -17,12 +17,12 @@ module.exports = {
     // 为 UMD 模块命名，提高可读性
     umdNamedDefine: true,
     // 构建前清理输出目录
-    clean: true
+    clean: true,
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
-/*   externals: {
+  /*   externals: {
     '@amap/amap-jsapi-loader': { // 外部依赖，不打包进 bundle
       commonjs: '@amap/amap-jsapi-loader',
       commonjs2: '@amap/amap-jsapi-loader',
@@ -34,18 +34,18 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          transpileOnly: true, // 不生成 .js/.map
+          compilerOptions: { noEmit: true },
+        },
+      },
+    ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Map Utils Demo',
-      template: path.resolve(__dirname, 'src', 'index.html'),
-      filename: 'index.html'
-    })
+    new ForkTsCheckerWebpackPlugin()
   ],
   devtool: 'source-map',
-  mode: 'production'
+  mode: 'production',
 };
