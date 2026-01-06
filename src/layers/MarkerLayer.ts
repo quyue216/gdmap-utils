@@ -1,5 +1,6 @@
-import type { OverlaysLayer, mapIns } from '../types/index.d';
+import type { OverlaysLayer, mapIns, overlayData } from '../types/index.d';
 import { MapUtils } from '../MapUtils';
+import type { MapUtilsConstructor } from '../MapUtils';
 
 // 接口约束类暂时去掉implements OverlaysLayer<AMap.Marker, AMap.OverlayGroup>
 class MarkerLayer {
@@ -13,6 +14,65 @@ class MarkerLayer {
     this.map = map;
     // @ts-expect-error
     this.map.add(this.rawLayer);
+  }
+
+  /**
+   * 将覆盖物数据转换为标记配置
+   * @param item 覆盖物数据
+   * @param index 索引
+   * @param getIconUrl 获取图标URL的方法
+   * @param getOverlayOpts 动态获取覆盖物配置的方法
+   * @param MapUtils MapUtils构造函数
+   * @returns 标记配置
+   */
+  static convertOverlayDataToOvlOpts<U extends {}>(
+    item: overlayData<U>,
+    index: number,
+    getIconUrl: () => string,
+    getOverlayOpts: (
+      item: overlayData<U>,
+      index: number,
+      MapUtils: MapUtilsConstructor
+    ) => any,
+    MapUtils: MapUtilsConstructor
+  ): AMap.MarkerOptions {
+    const {
+      overlayData: { lon, lat, extData },
+    } = item;
+
+    // 获取当前覆盖物项的动态配置
+    const itemOpts = getOverlayOpts(item, index, MapUtils);
+
+    const ovlOpts: any = {
+      position: [lon, lat],
+      extData,
+      ...itemOpts,
+    };
+
+    let opts: AMap.MarkerOptions = itemOpts as AMap.MarkerOptions;
+
+    if (!item.labelShowed) {
+      opts.label = undefined;
+    }
+
+    ovlOpts.icon =
+      ovlOpts.icon ??
+      MapUtils.createIcon({
+        size: [25, 34],
+        image: '',
+        imageSize: [25, 34],
+        imageOffset: [0, 0],
+      });
+
+    const imageUrl = getIconUrl.call(item);
+
+    if (typeof ovlOpts.icon === 'string') {
+      ovlOpts.icon = imageUrl;
+    } else {
+      (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
+    }
+
+    return ovlOpts as AMap.MarkerOptions;
   }
 
   bindEventOverlay(clickType: AMap.EventType, callback: () => void) {
@@ -37,7 +97,7 @@ class MarkerLayer {
   createOverlays(ovOptList: Array<AMap.MapOptions>) {
     const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
 
-    markers.forEach(item => this.addOverlayBindEvent(item));
+    // markers.forEach(item => this.addOverlayBindEvent(item));
 
     this.rawLayer.addOverlays(markers);
 
@@ -71,6 +131,10 @@ class MarkerLayer {
   }
 
   reload() {
+    this.rawLayer.clearOverlays();
+  }
+
+  clearAllOvl() {
     this.rawLayer.clearOverlays();
   }
 

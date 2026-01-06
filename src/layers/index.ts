@@ -7,7 +7,8 @@ import type {
   MapUtilsLayersInfo,
   overlayData,
 } from '../types/index.d';
-import { MapUtils, type mapUtilsIns } from '../MapUtils';
+import { MapUtils } from '../MapUtils';
+import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
 
 class Layer<
   U extends {},
@@ -44,7 +45,11 @@ class Layer<
 
   layerType: layerType;
 
-  getOverlayOpts: (item: overlayData<U>, index: number) => V['overlayOpts'];
+  getOverlayOpts: (
+    item: overlayData<U>,
+    index: number,
+    MapUtils: MapUtilsConstructor
+  ) => V['overlayOpts'];
 
   constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
@@ -83,52 +88,46 @@ class Layer<
   2. Icon由外部传入
   3. marker与labelMarker灵活切换
 */
-  createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
-    const markerListOpts: Array<V['overlayOpts']> = overlayList.map(
-      (item, index) => {
-        const {
-          overlayData: { lon, lat, extData },
-        } = item;
-
-        // 获取当前覆盖物项的动态配置
-        const itemOpts = this.getOverlayOpts(item as overlayData<U>, index);
-
-        const ovlOpts = {
-          position: [lon, lat],
-          extData,
-          ...itemOpts,
-        };
-
-        if (this.rawLayerIns instanceof MarkerLayer) {
-          let opts: AMap.MarkerOptions = itemOpts as AMap.MarkerOptions;
-
-          if (!item.labelShowed) {
-            opts.label = undefined;
-          }
-
-          ovlOpts.icon =
-            ovlOpts.icon ??
-            MapUtils.createIcon({
-              size: [25, 34],
-              image: '',
-              imageSize: [25, 34],
-              imageOffset: [0, 0],
-            });
-
-          // if (ovlOpts.icon) {
-          const imageUrl = this.getIconUrl.call(item);
-
-          if (typeof ovlOpts.icon === 'string') {
-            ovlOpts.icon = imageUrl;
-          } else {
-            (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
-          }
-          // }
-        }
-
-        return ovlOpts;
+  /**
+   * 将覆盖物数据转换为覆盖物配置
+   * @param overlayList 覆盖物数据列表
+   * @returns 覆盖物配置列表
+   */
+  convertOverlayDataToOpts(
+    overlayList: Array<overlayData<U>>
+  ): Array<V['overlayOpts']> {
+    return overlayList.map((item, index) => {
+      // 如果是标记图层，使用 MarkerLayer 的静态方法转换配置
+      if (this.rawLayerIns instanceof MarkerLayer) {
+        return MarkerLayer.convertOverlayDataToOvlOpts(
+          //后续改为从layClassMap中读取
+          item,
+          index,
+          this.getIconUrl,
+          this.getOverlayOpts,
+          MapUtils
+        ) as V['overlayOpts'];
       }
-    );
+
+      // 其他图层类型的默认转换逻辑
+      const {
+        overlayData: { lon, lat, extData },
+      } = item;
+
+      // 获取当前覆盖物项的动态配置
+      const itemOpts = this.getOverlayOpts(item, index, MapUtils);
+
+      return {
+        position: [lon, lat],
+        extData,
+        ...itemOpts,
+      } as V['overlayOpts'];
+    });
+  }
+
+  createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
+    const markerListOpts: Array<V['overlayOpts']> =
+      this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
 
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
@@ -159,7 +158,12 @@ class Layer<
   }
 
   destroy() {
-    this.rawLayerIns.destroy();
+    // @ts-ignore
+    this.mapUtils.removeLayer(this);
+  }
+
+  clearAllOvl() {
+    (this.rawLayerIns as MarkerLayerIns).clearAllOvl();
   }
 
   reload() {
@@ -175,10 +179,12 @@ class Layer<
     }
   }
 
-  add(ovs: Array<V['overlayOpts']>) {
+  add(overlayList: Array<overlayData>) {
     if (this.rawLayerIns instanceof MarkerLayer) {
+      const markerListOpts: Array<V['overlayOpts']> =
+        this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
       //待删除
-      this.rawLayerIns.add(ovs as AMap.MarkerOptions[]);
+      this.rawLayerIns.add(markerListOpts as AMap.MarkerOptions[]);
     }
   }
 
@@ -262,6 +268,8 @@ export type LayerTypeClass =
   | typeof MarkerClusterLayer;
 
 export type LayerClass = typeof Layer;
+
+export type LayerIns = InstanceType<LayerClass>;
 
 export { LabelMarkerLayer, MarkerClusterLayer, MarkerLayer };
 

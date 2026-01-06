@@ -1,6 +1,6 @@
 // 项目类型声明文件
 import type { MarkerOptions } from './amap';
-import type { mapUtilsIns } from '../MapUtils';
+import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
 import type {
   MarkerLayerIns,
   LabelMarkerLayerIns,
@@ -71,7 +71,11 @@ interface LayerOpts<
   overlayList: Array<overlayData<U>>;
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>; // 未使用上
   getIconUrl: () => string; //overlayList中优先级更高
-  getOverlayOpts: (item: overlayData<U>, index: number) => V['overlayOpts']; //动态生成覆盖物配置
+  getOverlayOpts: (
+    item: overlayData<U>,
+    index: number,
+    MapUtils: MapUtilsConstructor
+  ) => V['overlayOpts']; //动态生成覆盖物配置
   overlayLayer?: AMap.LabelsLayerOptions; //! labelMarker，marker渲染方式不同, labelMarker为canvas与Marker为Dom渲染 (重复定义)
 }
 
@@ -79,7 +83,7 @@ interface LayerOpts<
 interface LayerManger<T = ILayer, K = InstanceType<T>> {
   //它可以形参接收this.map
   //layers: 图层存在于layer时才会显示
-  layers: Map<string, K>; //组合模式
+  layers: WeakMap<K, K>; //组合模式
 
   addLayer(layer: K): void;
 

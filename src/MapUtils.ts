@@ -7,11 +7,17 @@ import type {
   layerType,
   LayerOpts,
 } from './types/index.d';
+import { LayerIns } from './layers/index';
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
 import Layer from './layers/index';
 
 type MapMixinType = typeof MapMixin;
+
+type MapUtilsConstructor = typeof MapUtils;
+
+type mapUtilsIns = InstanceType<typeof MapUtils>;
+
 // 类本质不就是函数吗
 interface MapUtilsStatic extends MapMixinType {
   new (
@@ -85,8 +91,19 @@ export class MapUtils {
     opts: LayerOpts<U, T>
   ) {
     const layer = new Layer<U, T>(opts, this);
+    // @ts-ignore
     this.LayerManager.addLayer(layer);
     return layer;
+  }
+
+  removeLayer(layer: LayerIns) {
+    const isLayerExist = this.LayerManager.hasLayer(layer);
+    if (isLayerExist) {
+      layer.clearAllOvl();
+      this.LayerManager.removeLayer(layer);
+    } else {
+      MapUtils.error(`${layer.layerName} is not exist`);
+    }
   }
 
   /**
@@ -105,9 +122,7 @@ export class MapUtils {
   }
 }
 
-type mapUtilsIns = InstanceType<typeof MapUtils>;
-
-export type { mapUtilsIns };
+export type { mapUtilsIns, MapUtilsConstructor };
 
 export async function createMapUtils(
   opts: MapUtilsOpts[keyof MapUtilsOpts],

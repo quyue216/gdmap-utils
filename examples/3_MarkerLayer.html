@@ -254,9 +254,9 @@
           loaderOpts
         );
 
-        window.cleanPoint = mapUtils.createLayer({
+        window.cleanPointLayer = mapUtils.createLayer({
           layerType: 'markerLayer',
-          layerName: 'cleanPoint',
+          layerName: 'cleanPointLayer',
           getIconUrl() {
             if (window.flag) {
               return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png';
@@ -271,7 +271,7 @@
               zIndex: 1000,
             };
           },
-          overlayList: data.map(item => {
+          overlayList: data.slice(0,10).map(item => {
             return {
               overlayData: {
                 lon: item.jd,
@@ -286,9 +286,11 @@
           }),
         });
 
-        cleanPoint.bindEventOverlays('click', () => {
+        cleanPointLayer.bindEventOverlays('click', () => {
           console.log('哈哈哈哈');
         });
+        // 图层适配
+        cleanPointLayer.overlayFitMap();
       }
     </script>
   </body>

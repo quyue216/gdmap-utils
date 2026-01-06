@@ -3,17 +3,17 @@ import type { LayerClass } from './layers/index.ts';
 
 type LayerIns = InstanceType<LayerClass>;
 export class LayerManager implements LayerManger<LayerClass> {
-  layers: Map<string, LayerIns> = new Map(); //组合模式
+  layers: WeakMap<LayerIns, LayerIns> = new WeakMap(); //组合模式
 
   addLayer(layer: LayerIns) {
-    if (this.hasLayer(layer.layerName)) {
+    if (this.hasLayer(layer)) {
       throw new Error(`Layer with name "${layer.layerName}" already exists`);
     }
-    this.layers.set(layer.layerName, layer);
+    this.layers.set(layer, layer);
   }
 
-  removeLayer(layerIdOrLayer: LayerIns | string) {
-    //  this.layers.delete()
+  removeLayer(layer: LayerIns) {
+    this.layers.delete(layer);
   }
 
   show() {} //! 你怎么知道，你要隐藏或者显示某个图层
@@ -26,8 +26,8 @@ export class LayerManager implements LayerManger<LayerClass> {
 
   reload() {}
 
-  hasLayer(layerName: string): boolean {
-    return this.layers.has(layerName);
+  hasLayer(layer: LayerIns): boolean {
+    return this.layers.has(layer);
   }
 }
 export default LayerManager;
