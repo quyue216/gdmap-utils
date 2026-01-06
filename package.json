@@ -19,21 +19,21 @@
   ],
   "author": "quyue",
   "license": "ISC",
- 
   "devDependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
+    "@amap/amap-jsapi-types": "^0.0.15",
     "@types/node": "^24.10.1",
+    "fork-ts-checker-webpack-plugin": "^9.1.0",
     "html-webpack-plugin": "^5.6.5",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "ts-loader": "^9.5.4",
+    "type-fest": "^5.3.1",
     "typescript": "^5.9.3",
     "webpack": "^5.103.0",
-    "webpack-cli": "^6.0.1",
-    "type-fest": "^5.3.1",
-    "@amap/amap-jsapi-types": "^0.0.15"
+    "webpack-cli": "^6.0.1"
   },
-  "dependencies": {},
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx,json,css,md}": [
       "prettier --write"

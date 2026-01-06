@@ -98,8 +98,8 @@ export class MapUtils {
 
   removeLayer(layer: LayerIns) {
     const isLayerExist = this.LayerManager.hasLayer(layer);
+
     if (isLayerExist) {
-      layer.clearAllOvl();
       this.LayerManager.removeLayer(layer);
     } else {
       MapUtils.error(`${layer.layerName} is not exist`);

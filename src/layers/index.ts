@@ -159,10 +159,14 @@ class Layer<
 
   destroy() {
     // @ts-ignore
-    this.mapUtils.removeLayer(this);
+    this.mapUtils.removeLayer(this); //从MapUtils中移除
+    this.rawLayerIns.destroy(); //地图层面移除
+    this.overlayList = [];
+
+    //[ ] layer实例怎么销毁
   }
 
-  clearAllOvl() {
+  clearAllOverlay() {
     (this.rawLayerIns as MarkerLayerIns).clearAllOvl();
   }
 
@@ -175,12 +179,14 @@ class Layer<
   findLayerOverlay(ovId: string) {
     if (this.rawLayerIns instanceof MarkerLayer) {
       //待删除
-      this.rawLayerIns.findLayerOverlay(ovId);
+      return this.rawLayerIns.findLayerOverlay(ovId);
     }
   }
 
   add(overlayList: Array<overlayData>) {
     if (this.rawLayerIns instanceof MarkerLayer) {
+      // this.overlayList.push(...overlayList)
+
       const markerListOpts: Array<V['overlayOpts']> =
         this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
       //待删除
