@@ -43,16 +43,14 @@ class MarkerLayer {
     // 获取当前覆盖物项的动态配置
     const itemOpts = getOverlayOpts(item, index, MapUtils);
 
-    const ovlOpts: any = {
+    const ovlOpts: AMap.MarkerOptions = {
       position: [lon, lat],
       extData,
       ...itemOpts,
     };
 
-    let opts: AMap.MarkerOptions = itemOpts as AMap.MarkerOptions;
-
     if (!item.labelShowed) {
-      opts.label = undefined;
+      ovlOpts.label = undefined;
     }
 
     ovlOpts.icon =
