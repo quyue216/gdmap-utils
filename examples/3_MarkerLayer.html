@@ -1,0 +1,295 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, user-scalable=no, width=device-width"
+    />
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <title>地图显示</title>
+    <style>
+      html,
+      body,
+      #container {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <!-- 加载地图JSAPI脚本 -->
+    <script src="../dist/index.js"></script>
+    <script>
+      const data = [
+        {
+          id: 5194,
+          sydmc: '世茂滨江花园南区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515844,
+          wd: 31.218427,
+          zt: 1,
+          sbsj: '2025-07-16 10:09:37',
+          dwsx: '1',
+        },
+        {
+          id: 2972,
+          sydmc: '滨江兰庭',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.516452,
+          wd: 31.220885,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 2842,
+          sydmc: '浦城小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.514702,
+          wd: 31.225064,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 1182,
+          sydmc: '南泉大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.521759,
+          wd: 31.219519,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 509,
+          sydmc: '东南新村',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515997,
+          wd: 31.225962,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 1603,
+          sydmc: '天后宫大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515854,
+          wd: 31.226379,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 974,
+          sydmc: '兰园小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.513274,
+          wd: 31.224613,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 3168,
+          sydmc: '百富达公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.517998,
+          wd: 31.219241,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3526,
+          sydmc: '蔚蓝海岸天科苑',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.51708,
+          wd: 31.220443,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3059,
+          sydmc: '爱建大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.517637,
+          wd: 31.222101,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3253,
+          sydmc: '竹南小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.529235,
+          wd: 31.22615,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 1465,
+          sydmc: '地铁4号线世纪大道站',
+          sydlx: '0',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.528294,
+          wd: 31.228321,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 879,
+          sydmc: '众城公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.530018,
+          wd: 31.224475,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 3067,
+          sydmc: '爵士大厦',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.529722,
+          wd: 31.225217,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 2726,
+          sydmc: '浦东南路1780弄',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.518546,
+          wd: 31.216307,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 913,
+          sydmc: '保利One56',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.513294,
+          wd: 31.21825,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 582,
+          sydmc: '东港公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.518218,
+          wd: 31.218001,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+      ];
+
+      const { createMapUtils } = MapUtils;
+
+      const loaderOpts = {
+        version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+        plugins: ['AMap.MapType', 'AMap.MoveAnimation'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
+        key: '9506c73ed67acb0a09f1aabf88df4819',
+      };
+
+      test();
+
+      async function test() {
+        const mapUtils = await createMapUtils(
+          {
+            viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
+            zoom: 11, // 初始化地图层级
+            center: [data[0].jd, data[1].wd], // 初始化地图中心点
+            mountSelector: 'container',
+          },
+          loaderOpts
+        );
+
+        window.cleanPoint = mapUtils.createLayer({
+          layerType: 'markerLayer',
+          layerName: 'cleanPoint',
+          getIconUrl() {
+            if (window.flag) {
+              return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png';
+            }
+            return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png';
+          },
+          getOverlayOpts(item, index) {
+            return {
+              anchor: 'bottom-center',
+              clickable: true,
+              zooms: [2, 20],
+              zIndex: 1000,
+            };
+          },
+          overlayList: data.map(item => {
+            return {
+              overlayData: {
+                lon: item.jd,
+                lat: item.wd,
+                title: item.sydmc,
+                id: item.id,
+                extData: item,
+              },
+              id: item.id,
+              labelShowed: true,
+            };
+          }),
+        });
+
+        cleanPoint.bindEventOverlays('click', () => {
+          console.log('哈哈哈哈');
+        });
+      }
+    </script>
+  </body>
+</html>

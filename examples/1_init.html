@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../dist/index.js"></script>
+    <script>
+      const { initMapSource } = MapUtils;
+
+      const loaderOpts = {
+        version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+        plugins: ['AMap.MapType', 'AMap.MoveAnimation'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
+        key: '9506c73ed67acb0a09f1aabf88df4819',
+      };
+
+      initMapSource(loaderOpts)
+
+    </script>
+  </body>
+</html>

@@ -40,11 +40,11 @@ class Layer<
 
   mapUtils: mapUtilsIns;
 
-  overlayOpts: V['overlayOpts'];
-
   getIconUrl: () => string;
 
   layerType: layerType;
+
+  getOverlayOpts: (item: overlayData<U>, index: number) => V['overlayOpts'];
 
   constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
@@ -65,7 +65,7 @@ class Layer<
 
     this.getIconUrl = opts.getIconUrl;
 
-    this.overlayOpts = opts.overlayOpts;
+    this.getOverlayOpts = opts.getOverlayOpts;
 
     this.layerType = opts.layerType;
 
@@ -76,53 +76,62 @@ class Layer<
 
   // 图层事件,覆盖物初始化
   initLayer() {
-    this.createOverlays(this.overlayList, this.overlayOpts);
+    this.createOverlays(this.overlayList);
   }
   /* 
   1. 配置兼容两种marker配置? 定义公共属性名称, 根据layerType做映射
   2. Icon由外部传入
   3. marker与labelMarker灵活切换
 */
-  createOverlays(
-    overlayList: Array<overlayData>,
-    overlayOpts?: V['overlayOpts']
-  ): Array<V['ovIns']> {
-    // 优先传入,当你未传递使用局部
-    const singleOpts = overlayOpts ?? this.overlayOpts;
+  createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
+    const markerListOpts: Array<V['overlayOpts']> = overlayList.map(
+      (item, index) => {
+        const {
+          overlayData: { lon, lat, extData },
+        } = item;
 
-    const markerListOpts: Array<V['overlayOpts']> = overlayList.map(item => {
-      const {
-        overlayData: { lon, lat, extData },
-      } = item;
+        // 获取当前覆盖物项的动态配置
+        const itemOpts = this.getOverlayOpts(item as overlayData<U>, index);
 
-      const ovlOpts = {
-        position: [lon, lat],
-        extData,
-        ...singleOpts,
-      };
+        const ovlOpts = {
+          position: [lon, lat],
+          extData,
+          ...itemOpts,
+        };
 
-      if (this.rawLayerIns instanceof MarkerLayer) {
-        let opts: AMap.MarkerOptions = singleOpts as AMap.MarkerOptions;
+        if (this.rawLayerIns instanceof MarkerLayer) {
+          let opts: AMap.MarkerOptions = itemOpts as AMap.MarkerOptions;
 
-        if (!item.labelShowed) {
-          opts.label = undefined;
+          if (!item.labelShowed) {
+            opts.label = undefined;
+          }
+
+          ovlOpts.icon =
+            ovlOpts.icon ??
+            MapUtils.createIcon({
+              size: [25, 34],
+              image: '',
+              imageSize: [25, 34],
+              imageOffset: [0, 0],
+            });
+
+          // if (ovlOpts.icon) {
+          const imageUrl = this.getIconUrl.call(item);
+
+          if (typeof ovlOpts.icon === 'string') {
+            ovlOpts.icon = imageUrl;
+          } else {
+            (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
+          }
+          // }
         }
 
-        // if (ovlOpts.icon) {
-        const imageUrl = this.getIconUrl.call(item);
-
-        if (typeof ovlOpts.icon === 'string') {
-          ovlOpts.icon = imageUrl;
-        } else {
-          (ovlOpts.icon as AMap.Icon).setImage(imageUrl);
-        }
-        // }
+        return ovlOpts;
       }
+    );
 
-      return ovlOpts;
-    });
-    // @ts-ignore
     return this.rawLayerIns.createOverlays(
+      // @ts-ignore
       markerListOpts as Array<AMap.MapOptions>
     );
   }
@@ -156,7 +165,7 @@ class Layer<
   reload() {
     this.rawLayerIns.reload();
 
-    this.createOverlays(this.overlayList, this.overlayOpts);
+    this.createOverlays(this.overlayList);
   }
 
   findLayerOverlay(ovId: string) {
