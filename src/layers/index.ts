@@ -41,7 +41,7 @@ class Layer<
 
   mapUtils: mapUtilsIns;
 
-  getIconUrl: () => string;
+  getIconUrl: (item: overlayData<U>) => string;
 
   layerType: layerType;
 
@@ -83,11 +83,7 @@ class Layer<
   initLayer() {
     this.createOverlays(this.overlayList);
   }
-  /* 
-  1. 配置兼容两种marker配置? 定义公共属性名称, 根据layerType做映射
-  2. Icon由外部传入
-  3. marker与labelMarker灵活切换
-*/
+
   /**
    * 将覆盖物数据转换为覆盖物配置
    * @param overlayList 覆盖物数据列表
@@ -128,7 +124,7 @@ class Layer<
   createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
     const markerListOpts: Array<V['overlayOpts']> =
       this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
-
+    //HACK 类型报错解决方式不优雅
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
       markerListOpts as Array<AMap.MapOptions>
@@ -138,7 +134,7 @@ class Layer<
   overlayFitMap() {
     this.rawLayerIns.overlayFitMap();
   }
-  //名字考虑更改吗?
+
   bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
     (this.rawLayerIns as MarkerLayerIns).bindEventOverlay(clickType, callback);
   }
@@ -154,6 +150,7 @@ class Layer<
   }
 
   getAllOverlay() {
+    // 浅拷贝规避bug
     return [...this.rawLayerIns.getAllOverlay()];
   }
 
@@ -167,6 +164,7 @@ class Layer<
   }
 
   clearAllOverlay() {
+    this.overlayList = [];
     (this.rawLayerIns as MarkerLayerIns).clearAllOvl();
   }
 
@@ -189,7 +187,7 @@ class Layer<
 
       const markerListOpts: Array<V['overlayOpts']> =
         this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
-      //待删除
+
       this.rawLayerIns.add(markerListOpts as AMap.MarkerOptions[]);
     }
   }
@@ -223,7 +221,17 @@ class Layer<
     }
   }
 
-  refreshOverlayIcon(overlayId: string, imageUrl: string) {
+  refreshOverlayIcon(overlayId: string) {
+    const ovlDataIndex = this.overlayList.findIndex(
+      ovl => ovl.id === overlayId
+    );
+
+    if (ovlDataIndex === -1) {
+      //抛异常
+      return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
+    }
+    const OvlLayer = Layer.layerClassMap.get(this.layerType);
+
     if (this.rawLayerIns instanceof MarkerLayer) {
       const marker = this.rawLayerIns.findLayerOverlay(overlayId);
 
@@ -232,11 +240,28 @@ class Layer<
         return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
       }
 
-      const ovDataItem = this.overlayList.find(item => item.id === overlayId);
+      // 函数可以动态计算label,
+      const ovlOpts = (
+        OvlLayer as typeof MarkerLayer
+      ).convertOverlayDataToOvlOpts(
+        this.overlayList[ovlDataIndex],
+        ovlDataIndex,
+        this.getIconUrl,
+        this.getOverlayOpts,
+        MapUtils
+      );
 
-      const iconImageUrl = imageUrl ?? this.getIconUrl.call(ovDataItem);
+      const iconImageUrl = this.getIconUrl(this.overlayList[ovlDataIndex]);
 
-      this.rawLayerIns.refreshOverlayIcon(marker, iconImageUrl);
+      let icon = ovlOpts.icon!;
+
+      if (typeof icon === 'string') {
+        icon = iconImageUrl;
+      } else {
+        icon.setImage(iconImageUrl);
+      }
+
+      this.rawLayerIns.refreshOverlayIcon(marker, icon);
     }
   }
 
@@ -249,28 +274,38 @@ class Layer<
       //抛异常
       return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
     }
+    const OvlLayer = Layer.layerClassMap.get(this.layerType);
 
     if (this.rawLayerIns instanceof MarkerLayer) {
       // marker拿到手
-      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
-      // 函数可以动态计算label,
-      const ovlOpts = this.getOverlayOpts(
-        this.overlayList[ovlDataIndex],
-        ovlDataIndex,
-        MapUtils
-      );
+      const marker = this.rawLayerIns.findLayerOverlay(overlayId)!;
 
       const ovDataItem = this.overlayList.find(item => item.id === overlayId);
-
       // 属性值转变为boolean
       ovDataItem!.labelShowed = labelShow;
 
+      // 函数可以动态计算label,
+      const ovlOpts = (
+        OvlLayer as typeof MarkerLayer
+      ).convertOverlayDataToOvlOpts(
+        this.overlayList[ovlDataIndex],
+        ovlDataIndex,
+        this.getIconUrl,
+        this.getOverlayOpts,
+        MapUtils
+      );
+
       if (labelShow) {
-        //@ts-ignore
-        this.rawLayerIns.refreshOverlayLabel(marker!, ovlOpts.label ?? {});
+        this.rawLayerIns.refreshOverlayLabel(
+          marker,
+          ovlOpts.label as {
+            content: string;
+            direction: string;
+            offset: [number, number] | Array<number>;
+          }
+        );
       } else {
-        //@ts-ignore
-        this.rawLayerIns.refreshOverlayLabel(marker!);
+        this.rawLayerIns.refreshOverlayLabel(marker);
       }
     }
   }

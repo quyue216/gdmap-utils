@@ -58,6 +58,7 @@
       <br><br>
       <input type="text" id="markerIdInput" placeholder="输入标记ID">
       <button id="toggleLabelBtn">切换标签显示</button>
+      <button id="refreshIconBtn">刷新图标</button>
     </div>
     <!-- 加载地图JSAPI脚本 -->
     <script src="../dist/index.js"></script>
@@ -295,7 +296,7 @@
         window.cleanPointLayer = mapUtils.createLayer({
           layerType: 'markerLayer',
           layerName: 'cleanPointLayer',
-          getIconUrl() {
+          getIconUrl(item) {
             if (window.flag) {
               return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png';
             }
@@ -307,11 +308,11 @@
               clickable: true,
               zooms: [2, 20],
               zIndex: 1000,
-              label: {
+           /*    label: {
                 content: `<div class="labelTitle">${item.overlayData.title}</div>`,
                 offset: MapUtils.Pixel(0, -5),
                 direction: 'top',
-              },
+              }, */
             };
           },
           overlayList: data.slice(0, 10).map(item => {
@@ -405,6 +406,7 @@
         // 点击切换标签显示按钮
         const toggleLabelBtn = document.getElementById('toggleLabelBtn');
         const markerIdInput = document.getElementById('markerIdInput');
+        const refreshIconBtn = document.getElementById('refreshIconBtn');
         
         toggleLabelBtn.addEventListener('click', () => {
           const markerId = markerIdInput.value;
@@ -425,6 +427,36 @@
                 cleanPointLayer.refreshOverlayLabel(id, newLabelShow);
                 
                 console.log(`标记 ${id} 的标签显示状态已切换为: ${newLabelShow ? '显示' : '隐藏'}`);
+              } else {
+                console.error('未找到指定ID的标记');
+              }
+            } catch (error) {
+              console.error('无效的标记ID');
+            }
+          } else {
+            console.error('请输入标记ID');
+          }
+        });
+        
+        // 点击刷新图标按钮
+        refreshIconBtn.addEventListener('click', () => {
+          const markerId = markerIdInput.value;
+          
+          if (markerId) {
+            try {
+              const id = parseInt(markerId);
+              
+              // 查找该标记
+              const overlayIndex = cleanPointLayer.overlayList.findIndex(item => item.id === id);
+              
+              if (overlayIndex !== -1) {
+                // 切换窗口标记，用于改变图标
+                window.flag = !window.flag;
+                
+                // 调用refreshOverlayIcon方法刷新图标
+                cleanPointLayer.refreshOverlayIcon(id);
+                
+                console.log(`标记 ${id} 的图标已刷新`);
               } else {
                 console.error('未找到指定ID的标记');
               }

@@ -71,7 +71,7 @@ interface LayerOpts<
   layerName: string;
   overlayList: Array<overlayData<U>>;
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>; // 未使用上
-  getIconUrl: () => string; //overlayList中优先级更高
+  getIconUrl: (item: overlayData<U>) => string; //overlayList中优先级更高
   getOverlayOpts: (
     item: overlayData<U>,
     index: number,

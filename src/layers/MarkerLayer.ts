@@ -12,7 +12,7 @@ class MarkerLayer {
 
   constructor(map: mapIns) {
     this.map = map;
-    // @ts-expect-error
+    //@ts-ignore
     this.map.add(this.rawLayer);
   }
 
@@ -28,7 +28,7 @@ class MarkerLayer {
   static convertOverlayDataToOvlOpts<U extends {}>(
     item: overlayData<U>,
     index: number,
-    getIconUrl: () => string,
+    getIconUrl: (item: overlayData<U>) => string,
     getOverlayOpts: (
       item: overlayData<U>,
       index: number,
@@ -51,6 +51,12 @@ class MarkerLayer {
 
     if (!item.labelShowed) {
       ovlOpts.label = undefined;
+    } else {
+      ovlOpts.label = ovlOpts.label ?? {
+        content: `<div class="markerLayer">${item.overlayData.title}</div>`,
+        offset: MapUtils.Pixel(0, -5),
+        direction: 'top',
+      };
     }
 
     ovlOpts.icon =
@@ -62,7 +68,7 @@ class MarkerLayer {
         imageOffset: [0, 0],
       });
 
-    const imageUrl = getIconUrl.call(item);
+    const imageUrl = getIconUrl(item);
 
     if (typeof ovlOpts.icon === 'string') {
       ovlOpts.icon = imageUrl;
@@ -85,7 +91,7 @@ class MarkerLayer {
     // 保存事件
     this.events.set(clickType, callback);
   }
-
+  //高德地图，marker新添加会自动绑定事件
   addOverlayBindEvent(marker: InstanceType<typeof AMap.Marker>) {
     this.events.forEach((callback, clickType) => {
       marker.on(clickType, callback);
@@ -94,8 +100,6 @@ class MarkerLayer {
 
   createOverlays(ovOptList: Array<AMap.MapOptions>) {
     const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
-
-    // markers.forEach(item => this.addOverlayBindEvent(item));
 
     this.rawLayer.addOverlays(markers);
 
@@ -124,7 +128,7 @@ class MarkerLayer {
 
   destroy() {
     this.rawLayer.clearOverlays();
-    // @ts-expect-error
+    //@ts-ignore
     this.rawLayer.setMap(null);
   }
 
@@ -160,22 +164,12 @@ class MarkerLayer {
   // 设置激活的marker
   refreshOverlayIcon(
     marker: InstanceType<typeof AMap.Marker>,
-    iconImgUrl: string
+    icon: string | AMap.Icon
   ) {
     if (!marker) {
       // 如果没有找到对应的marker
       return MapUtils.error('marker is not found');
     }
-
-    const curOpts: AMap.Icon = marker.getIcon() as AMap.Icon;
-
-    const icon = MapUtils.createIcon({
-      size: curOpts.getSize() as [number, number],
-      image: iconImgUrl,
-      imageSize: curOpts.getImageSize() as [number, number],
-      imageOffset: curOpts.getImageOffset() as [number, number],
-    }); // 创建新图标
-
     // 获取点击的标记对象
     marker.setIcon(icon);
   }
@@ -199,6 +193,7 @@ class MarkerLayer {
       marker.setLabel(labelOpts);
     } else {
       let labelOpts = marker.getLabel();
+
       marker.setLabel({
         ...labelOpts,
         content: '',
