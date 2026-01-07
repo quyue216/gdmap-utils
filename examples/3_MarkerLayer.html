@@ -59,6 +59,9 @@
       <input type="text" id="markerIdInput" placeholder="输入标记ID">
       <button id="toggleLabelBtn">切换标签显示</button>
       <button id="refreshIconBtn">刷新图标</button>
+      <br><br>
+      <button id="fitViewBtn">自适应视图</button>
+      <button id="zoomOutBtn">缩小视图</button>
     </div>
     <!-- 加载地图JSAPI脚本 -->
     <script src="../dist/index.js"></script>
@@ -466,6 +469,27 @@
           } else {
             console.error('请输入标记ID');
           }
+        });
+        
+        // 点击自适应视图按钮
+        const fitViewBtn = document.getElementById('fitViewBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        
+        fitViewBtn.addEventListener('click', () => {
+          // 调用overlayFitMap方法，使地图自适应显示所有标记
+          cleanPointLayer.overlayFitMap();
+          console.log('已调用overlayFitMap方法，地图已自适应显示所有标记');
+        });
+        
+        // 点击缩小视图按钮
+        zoomOutBtn.addEventListener('click', () => {
+          // 先缩小地图视图
+          const currentZoom = mapUtils.map.getZoom();
+          mapUtils.map.setZoom(currentZoom - 2);
+          console.log('地图已缩小，当前缩放级别:', mapUtils.map.getZoom());
+          
+          // 提示用户可以点击"自适应视图"按钮来测试效果
+          console.log('现在可以点击"自适应视图"按钮，测试overlayFitMap方法的效果');
         });
       }
     </script>
