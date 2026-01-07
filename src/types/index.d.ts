@@ -46,6 +46,7 @@ interface MapUtilsLayersInfo {
 //定义图层信息
 type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
 
+//HACK 接口名需要大写
 export interface overlayData<T extends object = {}> {
   overlayData: {
     lon: number;

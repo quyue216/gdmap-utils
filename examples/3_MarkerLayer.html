@@ -7,6 +7,7 @@
       name="viewport"
       content="initial-scale=1.0, user-scalable=no, width=device-width"
     />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset.css@5.0.2/reset.min.css">
     <link
       rel="stylesheet"
       href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
@@ -19,10 +20,42 @@
         width: 100%;
         height: 100%;
       }
+
+      .labelTitle {
+        background-color: rgba(27, 204, 253, 0.6588);
+        border-radius: 2px;
+        padding: 10px 15px;
+        font-size: 18px;
+        color: #fff;
+        border: 1px solid rgba(27, 204, 253, 0.6588);
+      }
+      
+      .control-panel {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background-color: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      
+      .control-panel button {
+        margin: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <div id="container"></div>
+    <!-- 控制按钮面板 -->
+    <div class="control-panel">
+      <button id="addBtn">添加标记</button>
+      <button id="removeBtn">删除标记</button>
+      <button id="removeByIdBtn">按ID删除</button>
+    </div>
     <!-- 加载地图JSAPI脚本 -->
     <script src="../dist/index.js"></script>
     <script>
@@ -253,7 +286,9 @@
           },
           loaderOpts
         );
+        /* 
 
+*/    
         window.cleanPointLayer = mapUtils.createLayer({
           layerType: 'markerLayer',
           layerName: 'cleanPointLayer',
@@ -263,15 +298,20 @@
             }
             return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png';
           },
-          getOverlayOpts(item, index) {
+          getOverlayOpts(item, index, MapUtils) {
             return {
               anchor: 'bottom-center',
               clickable: true,
               zooms: [2, 20],
               zIndex: 1000,
+              label: {
+                content: `<div class="display-none labelTitle">${item.overlayData.title}</div>`,
+                offset: MapUtils.Pixel(0, -5),
+                direction: 'top',
+              },
             };
           },
-          overlayList: data.slice(0,10).map(item => {
+          overlayList: data.slice(0, 10).map(item => {
             return {
               overlayData: {
                 lon: item.jd,
@@ -291,6 +331,73 @@
         });
         // 图层适配
         cleanPointLayer.overlayFitMap();
+        
+        // 为add和remove方法添加测试代码
+        const addBtn = document.getElementById('addBtn');
+        const removeBtn = document.getElementById('removeBtn');
+        const removeByIdBtn = document.getElementById('removeByIdBtn');
+        
+        // 添加新标记的计数器
+        let newMarkerId = 10000;
+        
+        // 点击添加标记按钮
+        addBtn.addEventListener('click', () => {
+          // 创建一个新的标记数据
+          const newMarker = {
+            overlayData: {
+              lon: 121.515844 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成经度
+              lat: 31.218427 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成纬度
+              title: `新标记${newMarkerId}`,
+              id: newMarkerId,
+              extData: { id: newMarkerId, sydmc: `新标记${newMarkerId}` }
+            },
+            id: newMarkerId,
+            labelShowed: true
+          };
+          
+          // 调用add方法添加标记
+          cleanPointLayer.add([newMarker]);
+          
+          console.log(`添加了新标记: ${newMarkerId}`);
+          newMarkerId++;
+        });
+        
+        // 点击删除标记按钮
+        removeBtn.addEventListener('click', () => {
+          // 获取所有标记的ID
+          const markerIds = cleanPointLayer.getAllOverlay();
+          
+          if (markerIds.length > 0) {
+            // 随机选择一个标记ID
+            const randomId = markerIds.pop();
+            
+            // 调用remove方法删除标记
+            cleanPointLayer.remove([randomId]);
+            
+            console.log(`删除了标记`,randomId);
+          } else {
+            console.log('没有可删除的标记');
+          }
+        });
+        
+        // 点击按ID删除按钮
+        removeByIdBtn.addEventListener('click', () => {
+          // 输入要删除的标记ID
+          const markerId = prompt('请输入要删除的标记ID:');
+          
+          if (markerId) {
+            try {
+              const id = parseInt(markerId);
+              
+              // 调用remove方法按ID删除标记
+              cleanPointLayer.remove([id]);
+              
+              console.log(`删除了标记: ${id}`);
+            } catch (error) {
+              console.error('无效的标记ID');
+            }
+          }
+        });
       }
     </script>
   </body>

@@ -142,7 +142,7 @@ class MarkerLayer {
     this.map.setFitView(makers);
   }
 
-  findLayerOverlay(markerId: string) {
+  findLayerOverlay(markerId: string | number) {
     if (!markerId) {
       MapUtils.error('Please provide a markerId');
       return;
