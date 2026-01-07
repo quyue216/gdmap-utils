@@ -103,6 +103,15 @@ class Layer<
           this.getOverlayOpts,
           MapUtils
         ) as V['overlayOpts'];
+      } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
+        return LabelMarkerLayer.convertOverlayDataToOvlOpts(
+          //后续改为从layClassMap中读取
+          item,
+          index,
+          this.getIconUrl,
+          this.getOverlayOpts,
+          MapUtils
+        ) as V['overlayOpts'];
       }
       //TODO 待兼容其他类型
       // 其他图层类型的默认转换逻辑
@@ -151,7 +160,7 @@ class Layer<
 
   getAllOverlay() {
     // 浅拷贝规避bug
-    return [...this.rawLayerIns.getAllOverlay()];
+    return [...this.rawLayerIns.getAllOverlay()!];
   }
 
   destroy() {

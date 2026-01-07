@@ -1,4 +1,5 @@
-import type { OverlaysLayer, mapIns } from '../types/index.d';
+import type { OverlaysLayer, mapIns, overlayData } from '../types/index.d';
+import type { MapUtilsConstructor } from '../MapUtils';
 import { MapUtils } from '../MapUtils';
 
 class LabelMarkerLayer {
@@ -22,14 +23,75 @@ class LabelMarkerLayer {
     this.map.add(this.rawLayer);
   }
 
-  //TODO marker可以直接绑定事件?
+  /**
+   * 将覆盖物数据转换为标记配置
+   * @param item 覆盖物数据
+   * @param index 索引
+   * @param getIconUrl 获取图标URL的方法
+   * @param getOverlayOpts 动态获取覆盖物配置的方法
+   * @param MapUtils MapUtils构造函数
+   * @returns 标记配置
+   */
+  static convertOverlayDataToOvlOpts<U extends {}>(
+    item: overlayData<U>,
+    index: number,
+    getIconUrl: (item: overlayData<U>) => string,
+    getOverlayOpts: (
+      item: overlayData<U>,
+      index: number,
+      MapUtils: MapUtilsConstructor
+    ) => any,
+    MapUtils: MapUtilsConstructor
+  ): AMap.LabelMarkerOptions {
+    const {
+      overlayData: { lon, lat, extData, title },
+    } = item;
+
+    // 获取当前覆盖物项的动态配置
+    const itemOpts = getOverlayOpts(item, index, MapUtils);
+
+    const ovlOpts: AMap.LabelMarkerOptions = {
+      position: [lon, lat],
+      extData,
+      ...itemOpts,
+    };
+
+    if (!item.labelShowed) {
+      ovlOpts.text = undefined;
+    } else {
+      ovlOpts.text = ovlOpts.text ?? {
+        content: title,
+        direction: 'top',
+        style: {
+          fontSize: 16,
+          strokeWidth: 5,
+        },
+        zooms: [5, 20],
+      };
+    }
+
+    const imageUrl = getIconUrl(item);
+
+    const icon = {
+      image: '',
+      size: [25, 34],
+      anchor: 'bottom-center',
+    };
+    //@ts-ignore
+    ovlOpts.icon = ovlOpts.icon ?? icon;
+    //@ts-ignore
+    ovlOpts.icon?.image = imageUrl;
+
+    return ovlOpts as AMap.LabelMarkerOptions;
+  }
+
   bindEventOverlay(clickType: AMap.EventType, callback: () => void) {
     if (typeof callback !== 'function') {
       MapUtils.error('Please provide an event callback function');
       return;
     }
 
-    this.rawLayer.on(clickType, callback);
+    this.on(clickType, callback);
 
     this.events.set(clickType, callback);
   }
@@ -46,7 +108,8 @@ class LabelMarkerLayer {
       this.addOverlayBindEvent(labelMarker);
       return labelMarker;
     });
-    // @ts-expect-error
+
+    // @ts-ignore
     this.rawLayer.add(labelMarkers);
 
     return labelMarkers;
@@ -57,7 +120,7 @@ class LabelMarkerLayer {
   }
 
   remove(markers: Array<AMap.LabelMarker>) {
-    // @ts-expect-error
+    //@ts-ignore
     this.rawLayer.remove(markers);
   }
 
@@ -69,8 +132,8 @@ class LabelMarkerLayer {
     this.rawLayer.show();
   }
 
-  getAllOverlay() {
-    // @ts-expect-error
+  getAllOverlay(): AMap.LabelMarker[] {
+    // @ts-ignore
     return this.rawLayer.getAllOverlays();
   }
 
@@ -85,7 +148,7 @@ class LabelMarkerLayer {
     // @ts-expect-error
     this.rawLayer.clear();
   }
-  //TODO 调用效果存疑
+
   overlayFitMap() {
     const labelMarkers = this.getAllOverlay();
     this.map.setFitView(labelMarkers);
@@ -143,6 +206,21 @@ class LabelMarkerLayer {
         content: '', //清空可以生效吗
       });
     }
+  }
+
+  /**
+   *
+   * labelLayer不存在on方法
+   * @param {AMap.EventType} clickType  事件类型
+   * @param {() => void} callback  事件函数
+   * @memberof LabelMarkerLayer
+   */
+  on(clickType: AMap.EventType, callback: () => void) {
+    const labelMarkers = this.getAllOverlay();
+
+    labelMarkers.forEach(labelMarker => {
+      labelMarker.on(clickType, callback);
+    });
   }
 }
 

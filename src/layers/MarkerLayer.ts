@@ -122,7 +122,7 @@ class MarkerLayer {
     this.rawLayer.show();
   }
 
-  getAllOverlay() {
+  getAllOverlay(): Array<AMap.Marker> {
     return this.rawLayer.getOverlays();
   }
 
