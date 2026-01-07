@@ -185,25 +185,30 @@ class Layer<
 
   findLayerOverlay(ovId: string | number) {
     if (this.rawLayerIns instanceof MarkerLayer) {
-      //待删除
       return this.rawLayerIns.findLayerOverlay(ovId);
+    } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
+      return this.rawLayerIns.findLayerOverlay(ovId as string);
     }
+    return null;
   }
 
   add(overlayList: Array<overlayData<U>>) {
+    const markerListOpts: Array<V['overlayOpts']> =
+      this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
+
+    this.overlayList.push(...overlayList);
+    // 类型守卫 缩小实例范围
     if (this.rawLayerIns instanceof MarkerLayer) {
-      this.overlayList.push(...overlayList);
-
-      const markerListOpts: Array<V['overlayOpts']> =
-        this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
-
       this.rawLayerIns.add(markerListOpts as AMap.MarkerOptions[]);
+    } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
+      this.rawLayerIns.add(markerListOpts as AMap.LabelMarkerOptions[]);
     }
   }
 
   remove(ovs: Array<V['ovIns']> | string[]) {
+    // 处理MarkerLayer类型
     if (this.rawLayerIns instanceof MarkerLayer) {
-      // 类型守卫：检查是否为字符串数组
+      // 类型守卫：检查是否为Marker实例数组
       const isMarkerArray = (arr: any[]): arr is AMap.Marker[] =>
         arr[0] instanceof AMap.Marker;
 
@@ -226,6 +231,33 @@ class Layer<
         );
         // 直接使用覆盖物实例数组
         this.rawLayerIns.remove(ovs as AMap.Marker[]);
+      }
+    }
+    // 处理LabelMarkerLayer类型
+    else if (this.rawLayerIns instanceof LabelMarkerLayer) {
+      // 类型守卫：检查是否为LabelMarker实例数组
+      const isLabelMarkerArray = (arr: any[]): arr is AMap.LabelMarker[] =>
+        arr[0] instanceof AMap.LabelMarker;
+
+      if (!isLabelMarkerArray(ovs)) {
+        // 根据ID查找覆盖物实例
+        const overlayInstances = ovs
+          .map(id => this.findLayerOverlay(id as string | number))
+          .filter((ovl): ovl is AMap.LabelMarker => !!ovl);
+
+        this.rawLayerIns.remove(overlayInstances);
+
+        this.overlayList = this.overlayList.filter(
+          item => !(ovs as Array<string | number>).includes(item.id)
+        );
+      } else {
+        const ids = ovs.map(item => item.getExtData().id);
+
+        this.overlayList = this.overlayList.filter(
+          item => !(ids as Array<string | number>).includes(item.id)
+        );
+        // 直接使用覆盖物实例数组
+        this.rawLayerIns.remove(ovs as AMap.LabelMarker[]);
       }
     }
   }
