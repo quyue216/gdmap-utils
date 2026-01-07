@@ -161,6 +161,11 @@ class LabelMarkerLayer {
     this.rawLayer.clear();
   }
 
+  clearAllOvl() {
+    // @ts-expect-error
+    this.rawLayer.clear();
+  }
+
   overlayFitMap() {
     const labelMarkers = this.getAllOverlay();
     this.map.setFitView(labelMarkers);
