@@ -240,28 +240,38 @@ class Layer<
     }
   }
 
-  refreshOverlayLabel(
-    overlayId: string,
-    labelOpts?: {
-      content: string;
-      direction: string;
-      offset: [number, number] | Array<number>;
-    }
-  ) {
-    if (this.rawLayerIns instanceof MarkerLayer) {
-      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
+  refreshOverlayLabel(overlayId: string | number, labelShow: boolean) {
+    const ovlDataIndex = this.overlayList.findIndex(
+      ovl => ovl.id === overlayId
+    );
 
-      if (!(marker instanceof AMap.Marker)) {
-        //抛异常
-        return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
-      }
+    if (ovlDataIndex === -1) {
+      //抛异常
+      return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
+    }
+
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      // marker拿到手
+      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
+      // 函数可以动态计算label,
+      const ovlOpts = this.getOverlayOpts(
+        this.overlayList[ovlDataIndex],
+        ovlDataIndex,
+        MapUtils
+      );
 
       const ovDataItem = this.overlayList.find(item => item.id === overlayId);
 
       // 属性值转变为boolean
-      ovDataItem!.labelShowed = Boolean(labelOpts);
+      ovDataItem!.labelShowed = labelShow;
 
-      this.rawLayerIns.refreshOverlayLabel(marker, labelOpts);
+      if (labelShow) {
+        //@ts-ignore
+        this.rawLayerIns.refreshOverlayLabel(marker!, ovlOpts.label ?? {});
+      } else {
+        //@ts-ignore
+        this.rawLayerIns.refreshOverlayLabel(marker!);
+      }
     }
   }
 

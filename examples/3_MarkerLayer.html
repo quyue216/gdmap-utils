@@ -55,6 +55,9 @@
       <button id="addBtn">添加标记</button>
       <button id="removeBtn">删除标记</button>
       <button id="removeByIdBtn">按ID删除</button>
+      <br><br>
+      <input type="text" id="markerIdInput" placeholder="输入标记ID">
+      <button id="toggleLabelBtn">切换标签显示</button>
     </div>
     <!-- 加载地图JSAPI脚本 -->
     <script src="../dist/index.js"></script>
@@ -305,7 +308,7 @@
               zooms: [2, 20],
               zIndex: 1000,
               label: {
-                content: `<div class="display-none labelTitle">${item.overlayData.title}</div>`,
+                content: `<div class="labelTitle">${item.overlayData.title}</div>`,
                 offset: MapUtils.Pixel(0, -5),
                 direction: 'top',
               },
@@ -396,6 +399,40 @@
             } catch (error) {
               console.error('无效的标记ID');
             }
+          }
+        });
+        
+        // 点击切换标签显示按钮
+        const toggleLabelBtn = document.getElementById('toggleLabelBtn');
+        const markerIdInput = document.getElementById('markerIdInput');
+        
+        toggleLabelBtn.addEventListener('click', () => {
+          const markerId = markerIdInput.value;
+          
+          if (markerId) {
+            try {
+              const id = parseInt(markerId);
+              
+              // 查找该标记当前的标签显示状态
+              const overlayIndex = cleanPointLayer.overlayList.findIndex(item => item.id === id);
+              
+              if (overlayIndex !== -1) {
+                // 获取当前标签显示状态并取反
+                const currentLabelShow = cleanPointLayer.overlayList[overlayIndex].labelShowed;
+                const newLabelShow = !currentLabelShow;
+                
+                // 调用refreshOverlayLabel方法切换标签显示状态
+                cleanPointLayer.refreshOverlayLabel(id, newLabelShow);
+                
+                console.log(`标记 ${id} 的标签显示状态已切换为: ${newLabelShow ? '显示' : '隐藏'}`);
+              } else {
+                console.error('未找到指定ID的标记');
+              }
+            } catch (error) {
+              console.error('无效的标记ID');
+            }
+          } else {
+            console.error('请输入标记ID');
           }
         });
       }
