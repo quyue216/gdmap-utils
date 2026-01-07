@@ -57,7 +57,19 @@ class LabelMarkerLayer {
     };
 
     if (!item.labelShowed) {
-      ovlOpts.text = undefined;
+      const textOpts = ovlOpts.text ?? {
+        content: title,
+        direction: 'top',
+        style: {
+          fontSize: 16,
+          strokeWidth: 5,
+        },
+        zooms: [5, 20],
+      };
+
+      textOpts.content = '';
+
+      ovlOpts.text = textOpts;
     } else {
       ovlOpts.text = ovlOpts.text ?? {
         content: title,
@@ -154,7 +166,7 @@ class LabelMarkerLayer {
     this.map.setFitView(labelMarkers);
   }
 
-  findLayerOverlay(markerId: string) {
+  findLayerOverlay(markerId: string | number) {
     if (!markerId) {
       MapUtils.error('Please provide a markerId');
       return null;
@@ -172,20 +184,14 @@ class LabelMarkerLayer {
 
   refreshOverlayIcon(
     labelMarker: InstanceType<typeof AMap.LabelMarker>,
-    iconImgUrl: string
+    iconOpts: AMap.LabelMarkerIconOptions
   ) {
     if (!labelMarker) {
       MapUtils.error('labelMarker is not found');
       return;
     }
-    //你需要改动
-    const iconOpts = labelMarker.getIcon();
 
-    if (iconOpts) {
-      iconOpts.image = iconImgUrl;
-
-      labelMarker.setIcon(iconOpts);
-    }
+    labelMarker.setIcon(iconOpts);
   }
 
   refreshOverlayLabel(
