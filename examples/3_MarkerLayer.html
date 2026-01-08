@@ -62,6 +62,14 @@
       <br><br>
       <button id="fitViewBtn">自适应视图</button>
       <button id="zoomOutBtn">缩小视图</button>
+      <br><br>
+      <button id="showBtn">显示图层</button>
+      <button id="hideBtn">隐藏图层</button>
+      <button id="getAllBtn">获取所有标记</button>
+      <br><br>
+      <button id="clearAllBtn">清空所有标记</button>
+      <button id="reloadBtn">重新加载图层</button>
+      <button id="destroyBtn">销毁图层</button>
     </div>
     <!-- 加载地图JSAPI脚本 -->
     <script src="../dist/index.js"></script>
@@ -490,6 +498,54 @@
           
           // 提示用户可以点击"自适应视图"按钮来测试效果
           console.log('现在可以点击"自适应视图"按钮，测试overlayFitMap方法的效果');
+        });
+
+        // 点击显示图层按钮
+        const showBtn = document.getElementById('showBtn');
+        showBtn.addEventListener('click', () => {
+          cleanPointLayer.show();
+          console.log('已调用show方法，图层已显示');
+        });
+
+        // 点击隐藏图层按钮
+        const hideBtn = document.getElementById('hideBtn');
+        hideBtn.addEventListener('click', () => {
+          cleanPointLayer.hide();
+          console.log('已调用hide方法，图层已隐藏');
+        });
+
+        // 点击获取所有标记按钮
+        const getAllBtn = document.getElementById('getAllBtn');
+        getAllBtn.addEventListener('click', () => {
+          const allOverlays = cleanPointLayer.getAllOverlay();
+          console.log('已调用getAllOverlay方法，所有标记:', allOverlays);
+          alert(`当前共有 ${allOverlays.length} 个标记`);
+        });
+
+        // 点击清空所有标记按钮
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        clearAllBtn.addEventListener('click', () => {
+          if (confirm('确定要清空所有标记吗？')) {
+            cleanPointLayer.clearAllOverlay();
+            console.log('已调用clearAllOverlay方法，所有标记已清空');
+          }
+        });
+
+        // 点击重新加载图层按钮
+        const reloadBtn = document.getElementById('reloadBtn');
+        reloadBtn.addEventListener('click', () => {
+          window.flag = !window.flag
+          cleanPointLayer.reload();
+          console.log('已调用reload方法，图层已重新加载');
+        });
+
+        // 点击销毁图层按钮
+        const destroyBtn = document.getElementById('destroyBtn');
+        destroyBtn.addEventListener('click', () => {
+          if (confirm('确定要销毁图层吗？销毁后将无法恢复')) {
+            cleanPointLayer.destroy();
+            console.log('已调用destroy方法，图层已销毁');
+          }
         });
       }
     </script>

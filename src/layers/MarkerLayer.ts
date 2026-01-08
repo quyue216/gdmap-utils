@@ -128,7 +128,7 @@ class MarkerLayer {
 
   destroy() {
     this.rawLayer.clearOverlays();
-    //@ts-ignore
+    //@ts-expect-error
     this.rawLayer.setMap(null);
   }
 

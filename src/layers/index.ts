@@ -133,7 +133,7 @@ class Layer<
   createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
     const markerListOpts: Array<V['overlayOpts']> =
       this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
-    //HACK 类型报错解决方式不优雅
+
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
       markerListOpts as Array<AMap.MapOptions>
