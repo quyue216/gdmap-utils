@@ -98,7 +98,7 @@ class MarkerLayer {
     });
   }
 
-  createOverlays(ovOptList: Array<AMap.MapOptions>) {
+  createOverlays(ovOptList: Array<AMap.MarkerOptions>) {
     const markers = ovOptList.map(item => MapUtils.createAMapMarker(item));
 
     this.rawLayer.addOverlays(markers);
@@ -158,7 +158,7 @@ class MarkerLayer {
       return item.getExtData().id === markerId;
     });
 
-    return marker || null; // 如果没有找到，返回null
+    return marker; // 如果没有找到，返回null
   }
 
   // 设置激活的marker

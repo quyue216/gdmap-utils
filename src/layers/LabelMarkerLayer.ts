@@ -86,13 +86,13 @@ class LabelMarkerLayer {
 
     const icon = {
       image: '',
-      size: [25, 34],
+      size: [25, 34] as [number, number],
       anchor: 'bottom-center',
     };
-    //@ts-ignore
+
     ovlOpts.icon = ovlOpts.icon ?? icon;
-    //@ts-ignore
-    ovlOpts.icon?.image = imageUrl;
+
+    ovlOpts.icon.image = imageUrl;
 
     return ovlOpts as AMap.LabelMarkerOptions;
   }
@@ -121,7 +121,7 @@ class LabelMarkerLayer {
       return labelMarker;
     });
 
-    // @ts-ignore
+    //@ts-expect-error
     this.rawLayer.add(labelMarkers);
 
     return labelMarkers;
@@ -132,7 +132,7 @@ class LabelMarkerLayer {
   }
 
   remove(markers: Array<AMap.LabelMarker>) {
-    //@ts-ignore
+    //@ts-expect-error
     this.rawLayer.remove(markers);
   }
 
@@ -145,7 +145,7 @@ class LabelMarkerLayer {
   }
 
   getAllOverlay(): AMap.LabelMarker[] {
-    // @ts-ignore
+    //@ts-expect-error
     return this.rawLayer.getAllOverlays();
   }
 
@@ -184,7 +184,7 @@ class LabelMarkerLayer {
       return item.getExtData().id === markerId;
     });
 
-    return labelMarker || null;
+    return labelMarker;
   }
 
   refreshOverlayIcon(

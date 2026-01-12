@@ -136,7 +136,7 @@ class Layer<
 
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
-      markerListOpts as Array<AMap.MapOptions>
+      markerListOpts as Array<V['overlayOpts']>
     );
   }
 
@@ -189,7 +189,7 @@ class Layer<
     } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
       return this.rawLayerIns.findLayerOverlay(ovId as string);
     }
-    return null;
+    return undefined;
   }
 
   add(overlayList: Array<overlayData<U>>) {

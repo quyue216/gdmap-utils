@@ -4,7 +4,7 @@ const gdHelperMixin = {
    * @param lnglat [xxx,xx]
    * @param zoom 地图层级
    */
-
+  //TODO  setGDMapCenter  你可以为后期迭代做准备
   //TODO  setGDMapCenter  你可以为后期迭代做准备
   setCenter(lnglat, zoom) {
     if (zoom !== undefined) {
