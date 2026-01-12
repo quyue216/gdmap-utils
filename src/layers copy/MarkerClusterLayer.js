@@ -5,7 +5,7 @@ import GdMapUtils from '@/utils/gdMap/gdMapUtils.js';
 CollectionPointLayerController
 */
 // 海量点图层渲染封装
-export default class CollectionPointLayerController {
+export default class MarkerClusterLayer {
   dataList = []; // 数据列表
 
   // 去掉私有属性标识
@@ -29,7 +29,10 @@ export default class CollectionPointLayerController {
 
     this.requestCallback = requestCallback;
 
-    this.activeNames = [...(this?.config?.extraActiveName ?? []), this.config.name]; //图层额外的激活数组
+    this.activeNames = [
+      ...(this?.config?.extraActiveName ?? []),
+      this.config.name,
+    ]; //图层额外的激活数组
   }
 
   // 获取地图工具类实例
@@ -60,7 +63,9 @@ export default class CollectionPointLayerController {
         const borderColor = 'hsla(' + Hue + ',100%,40%,1)';
         const shadowColor = 'hsla(' + Hue + ',100%,50%,1)';
         div.style.backgroundColor = bgColor;
-        const size = Math.round(30 + Math.pow(context.count / count, 1 / 5) * 20);
+        const size = Math.round(
+          30 + Math.pow(context.count / count, 1 / 5) * 20
+        );
         div.style.width = div.style.height = size + 'px';
         div.style.border = 'solid 1px ' + borderColor;
         div.style.borderRadius = size / 2 + 'px';
@@ -74,14 +79,14 @@ export default class CollectionPointLayerController {
         context.marker.setOffset(Pixel);
         context.marker.setContent(div);
       }, // 自定义聚合点样式
-      _renderMarker: (context) => {
+      _renderMarker: context => {
         // 外部控制单个marker的样式
         this.createOverlay({ context, gdMapUtils, config }); // 创建marker
       },
     });
 
     // 绑定监听控制label显示
-    this.layerInstance.on('click', (e) => {
+    this.layerInstance.on('click', e => {
       const { lnglat, marker, clusterData } = e;
 
       if (clusterData.length > 1) {
@@ -92,7 +97,13 @@ export default class CollectionPointLayerController {
 
       if (marker instanceof AMap.Marker) {
         // marker?.dom?.querySelector('.sydw-label').classList.remove('display-none');
-        gdMapUtils.trigger('pointerClick', marker, e, gdMapUtils.map, this.config);
+        gdMapUtils.trigger(
+          'pointerClick',
+          marker,
+          e,
+          gdMapUtils.map,
+          this.config
+        );
       }
     });
 
@@ -101,7 +112,11 @@ export default class CollectionPointLayerController {
 
   // 显示图层
   showLayer(v) {
-    if (this.layerInstance && this.dataList.length && this.shouldCreationLayer(v)) {
+    if (
+      this.layerInstance &&
+      this.dataList.length &&
+      this.shouldCreationLayer(v)
+    ) {
       this.layerInstance.setData(this.dataList);
     }
   }

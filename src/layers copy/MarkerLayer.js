@@ -1,6 +1,6 @@
 import GdMapUtils from '@/utils/gdMap/gdMapUtils.js';
 
-export default class MarkerLayerRender {
+export default class MarkerLayer {
   dataList = []; // 数据列表
 
   // 去掉私密属性标识
@@ -35,11 +35,17 @@ export default class MarkerLayerRender {
 
     this.detectingPosition = detectingPosition; // 是否检测位置变化
 
-    this.activeNames = [...(this?.config?.extraActiveName ?? []), this.config.name];//! 图层啥时候激活
+    this.activeNames = [
+      ...(this?.config?.extraActiveName ?? []),
+      this.config.name,
+    ]; //! 图层啥时候激活
 
     // 添加页面可见性变化监听
-    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-  }   
+    document.addEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange.bind(this)
+    );
+  }
 
   // 获取地图工具类实例
   getGdMapUtilsIns(id = 'gisMap') {
@@ -68,25 +74,33 @@ export default class MarkerLayerRender {
     if (!this.shouldCreationLayer(this.config.name)) return; // 接口请求缓慢,避免用户切换菜单
 
     // 处理数据
-    this.dataList.forEach((item) => {
+    this.dataList.forEach(item => {
       this.createOverlay(gdMapUtils, this.config, item);
     });
 
-    this.layerInstance = gdMapUtils.getOverlayGroupManager(this.config.className); // 获取图层对象
+    this.layerInstance = gdMapUtils.getOverlayGroupManager(
+      this.config.className
+    ); // 获取图层对象
 
     const markers = this.layerInstance.OverlayGroup.getOverlays();
     //HACK 名字不够可读
     gdMapUtils.trigger('markerShowed', markers);
 
     //! 不需要响应click的marker如何处理
-    gdMapUtils.bindEventMarker(this.config.className, 'click', (e) => {
+    gdMapUtils.bindEventMarker(this.config.className, 'click', e => {
       const marker = e.target;
 
       if (marker.getExtData().type === this.config.className) {
         this.layerInstance.resetActiveMarker(); // 重置激活的标记
         this.layerInstance.setActiveMarker(marker); // 设置激活的标记
         marker.setzIndex(1001);
-        gdMapUtils.trigger('pointerClick', marker, e, gdMapUtils.map, this.config);
+        gdMapUtils.trigger(
+          'pointerClick',
+          marker,
+          e,
+          gdMapUtils.map,
+          this.config
+        );
       }
     });
 
@@ -98,7 +112,11 @@ export default class MarkerLayerRender {
 
   // 显示图层
   showLayer() {
-    if (this.layerInstance && this.dataList.length && this.shouldCreationLayer()) {
+    if (
+      this.layerInstance &&
+      this.dataList.length &&
+      this.shouldCreationLayer()
+    ) {
       this.layerInstance.showOverlay(); // 显示图层
     }
   }
@@ -135,7 +153,7 @@ export default class MarkerLayerRender {
     // 修改定时器属性引用
     this.updatePointerTimer = setInterval(
       () => this.updatePointer(getGdMapUtilsIns),
-      this.config.updateTime,
+      this.config.updateTime
     );
   }
 
@@ -156,10 +174,12 @@ export default class MarkerLayerRender {
     // 比较新旧数据，找出需要更新的标记
     const changedData = this.differenceWith(newestDataList, this.dataList);
 
-    changedData.forEach((item) => {
+    changedData.forEach(item => {
       const marker = this.layerInstance.findLayerMarker(item.id);
 
-      const iconImage = item.extData.onLine ? this.config.onLineIcon : this.config.icon;
+      const iconImage = item.extData.onLine
+        ? this.config.onLineIcon
+        : this.config.icon;
       // 激活图标不需要更新位置和图标
       const activesMarkerIds = this.layerInstance.activesMarkerIds; // 获取激活的markerId
 
@@ -169,7 +189,11 @@ export default class MarkerLayerRender {
 
           marker.setPosition(getGdMapUtilsIns.LngLat(item.jd, item.wd));
 
-          const icon = getGdMapUtilsIns.createIcon(this.config.size, iconImage, this.config.size);
+          const icon = getGdMapUtilsIns.createIcon(
+            this.config.size,
+            iconImage,
+            this.config.size
+          );
 
           marker.setIcon(icon);
         } else {
@@ -184,8 +208,8 @@ export default class MarkerLayerRender {
 
   // 比较新旧数据，找出经纬度发生变化的项
   differenceWith(newData, oldData) {
-    return newData.filter((nItem) => {
-      const oldItem = oldData.find((oItem) => oItem.id === nItem.id); // 没有直接返回
+    return newData.filter(nItem => {
+      const oldItem = oldData.find(oItem => oItem.id === nItem.id); // 没有直接返回
       return !oldItem || nItem.jd !== oldItem.jd || nItem.wd !== oldItem.wd;
     });
   }
@@ -218,7 +242,10 @@ export default class MarkerLayerRender {
 
   // 销毁实例时移除事件监听
   destroy() {
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange.bind(this)
+    );
 
     this.layerInstance.OverlayGroup.clearOverlays();
   }

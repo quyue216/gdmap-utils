@@ -1,24 +1,45 @@
-.DS_Store
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+build/
+
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-**/*.log
-
-tests/**/coverage/
-tests/e2e/reports
-selenium-debug.log
+pnpm-debug.log*
+lerna-debug.log*
 
 # Editor directories and files
+.vscode/*
+!.vscode/extensions.json
 .idea
-.vscode
+.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.local
+*.sw?
 
-package-lock.json
-yarn.lock
-*.zip
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.pid
+*.seed
+*.pid.lock

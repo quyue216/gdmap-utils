@@ -4,7 +4,7 @@ const gdHelperMixin = {
    * @param lnglat [xxx,xx]
    * @param zoom 地图层级
    */
-  
+
   //TODO  setGDMapCenter  你可以为后期迭代做准备
   setCenter(lnglat, zoom) {
     if (zoom !== undefined) {
@@ -77,7 +77,13 @@ const gdHelperMixin = {
   },
 
   //TODO  海量点数据
-  createLabelLayer({ zoom = [1, 20], zIndex = 1000, collision = true, layerClassName, ...rest }) {
+  createLabelLayer({
+    zoom = [1, 20],
+    zIndex = 1000,
+    collision = true,
+    layerClassName,
+    ...rest
+  }) {
     const labelLayer = new this.AMap.LabelsLayer({
       zIndex,
       collision,
@@ -100,7 +106,10 @@ const gdHelperMixin = {
     return label;
   },
 
-  createMarkerCluster(points, { _renderClusterMarker, _renderMarker, gridSize }) {
+  createMarkerCluster(
+    points,
+    { _renderClusterMarker, _renderMarker, gridSize }
+  ) {
     return new AMap.MarkerCluster(this.map, points, {
       gridSize: gridSize, // 设置网格像素大小
       renderClusterMarker: _renderClusterMarker, // 自定义聚合点样式
@@ -110,7 +119,12 @@ const gdHelperMixin = {
   /*
     创建点位信息窗体
     */
-  createInfoWindow({ content, isCustom = true, closeWhenClickMap = true, ...rest }) {
+  createInfoWindow({
+    content,
+    isCustom = true,
+    closeWhenClickMap = true,
+    ...rest
+  }) {
     return new this.AMap.InfoWindow({
       content: content,
       isCustom,
@@ -124,7 +138,7 @@ const gdHelperMixin = {
   clearInfoWindow() {
     this.map.clearInfoWindow();
   },
-   
+
   //[ ] gdHelper.js中this.map.xxx得方法可以转移到gdUtils.js实例上，mapUtils
   /* 打开高德信息弹框 */
   openInfoWindow(infoWindow, ...rest) {
@@ -141,7 +155,7 @@ const gdHelperMixin = {
   clearOverlays() {
     this.map.clearMap(); // 清除地图上的所有覆盖物
   },
-  
+
   removeSingleOverlay(overlay) {
     this.map.remove(overlay); // 清除地图上某个覆盖物
   },

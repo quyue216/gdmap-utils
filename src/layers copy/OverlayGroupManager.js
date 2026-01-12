@@ -47,7 +47,7 @@ export default class OverlayGroupManager {
 
     let overlayList = [].concat(overlays); // 处理传入的参数为数组
 
-    overlayList.forEach((item) => {
+    overlayList.forEach(item => {
       this.addMarkerBindEvent(item); // 绑定事件
     });
 
@@ -106,7 +106,7 @@ export default class OverlayGroupManager {
     if (markerId instanceof AMap.Marker) {
       return markerId; // 如果传入的是marker对象，直接返回
     }
-    const marker = this.OverlayGroup.getOverlays().find((item) => {
+    const marker = this.OverlayGroup.getOverlays().find(item => {
       return item.getExtData().id === markerId;
     });
 
@@ -148,12 +148,12 @@ export default class OverlayGroupManager {
     const elms = document.querySelectorAll('.amap-marker'); //获取所有的marker元素
     this.allPointTitlesShow = val;
     if (!val) {
-      elms.forEach((elm) => {
+      elms.forEach(elm => {
         elm.querySelector(selector).classList.add('display-none');
         elm.querySelector('.amap-marker-label').style.pointerEvents = 'none';
       });
     } else {
-      elms.forEach((elm) => {
+      elms.forEach(elm => {
         elm.querySelector(selector).classList.remove('display-none');
         elm.querySelector('.amap-marker-label').style.pointerEvents = '';
       });
@@ -163,7 +163,7 @@ export default class OverlayGroupManager {
   //业务场景是单个图标为激活状态 重置激活的marker
   resetActiveMarker() {
     // 遍历所有的marker，重置 their icon
-    this.OverlayGroup.getOverlays().forEach((item) => {
+    this.OverlayGroup.getOverlays().forEach(item => {
       if (this.activesMarkerIds.includes(item.getExtData().id)) {
         const curOpts = item.getIcon()._opts;
 
@@ -176,7 +176,10 @@ export default class OverlayGroupManager {
 
         let labelParams = item.getLabel();
         if (!this.allPointTitlesShow) {
-          labelParams.content = addClassToDiv(labelParams?.content || '', 'display-none');
+          labelParams.content = addClassToDiv(
+            labelParams?.content || '',
+            'display-none'
+          );
         } else {
           labelParams.content = labelParams.content.replace('display-none', '');
         }
@@ -191,7 +194,7 @@ export default class OverlayGroupManager {
   // 获取点位存储的marker数据
   getDataOfMarkers() {
     if (!this.OverlayGroup) return [];
-    return this.OverlayGroup.getOverlays().map((item) => item.getExtData());
+    return this.OverlayGroup.getOverlays().map(item => item.getExtData());
   }
 
   // 错误提示
@@ -202,7 +205,7 @@ export default class OverlayGroupManager {
   //业务场景是单个图标为激活状态 重置激活的marker
   resetActiveNavMarker() {
     // 遍历所有的marker，重置 their icon
-    this.OverlayGroup.getOverlays().forEach((item) => {
+    this.OverlayGroup.getOverlays().forEach(item => {
       if (this.activesMarkerIds.includes(item.getExtData().id)) {
         const curOpts = item.getIcon()._opts;
 

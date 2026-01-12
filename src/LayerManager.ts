@@ -1,0 +1,33 @@
+import type { LayerManger } from './types/index.d.ts';
+import type { LayerClass } from './layers/index.ts';
+
+type LayerIns = InstanceType<LayerClass>;
+export class LayerManager implements LayerManger<LayerClass> {
+  layers: WeakMap<LayerIns, LayerIns> = new WeakMap(); //组合模式
+
+  addLayer(layer: LayerIns) {
+    if (this.hasLayer(layer)) {
+      throw new Error(`Layer with name "${layer.layerName}" already exists`);
+    }
+    this.layers.set(layer, layer);
+  }
+
+  removeLayer(layer: LayerIns) {
+    this.layers.delete(layer);
+  }
+
+  show() {} //! 你怎么知道，你要隐藏或者显示某个图层
+
+  hide() {}
+
+  showAll() {}
+
+  hideAll() {}
+
+  reload() {}
+
+  hasLayer(layer: LayerIns): boolean {
+    return this.layers.has(layer);
+  }
+}
+export default LayerManager;
