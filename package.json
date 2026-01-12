@@ -19,8 +19,11 @@
   ],
   "author": "quyue",
   "license": "ISC",
+  "peerDependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1"
+  },
   "devDependencies": {
-    "@amap/amap-jsapi-loader": "^1.0.1",
+    
     "@amap/amap-jsapi-types": "^0.0.15",
     "@types/node": "^24.10.1",
     "fork-ts-checker-webpack-plugin": "^9.1.0",

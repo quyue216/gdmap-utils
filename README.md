@@ -48,6 +48,3 @@
 1. Vue有全局过滤器，插件, 工具库同样支持，你注册个事件，它会默认为所有map实例绑定
 git stash save "高德库作为同等依赖" (记得取出来)
 
- "peerDependencies": {
-    "@amap/amap-jsapi-loader": "^1.0.1"
-  },
