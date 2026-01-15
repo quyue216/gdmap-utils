@@ -1,6 +1,6 @@
-import type { OverlaysLayer, mapIns, OverlayData } from '../types/index.d';
-import { MapUtils } from '../MapUtils';
-import type { MapUtilsConstructor } from '../MapUtils';
+import type { OverlaysLayer, mapIns, OverlayData } from '../../types/index.d';
+import { MapUtils } from '../../MapUtils';
+import type { MapUtilsConstructor } from '../../MapUtils';
 
 // 接口约束类暂时去掉implements OverlaysLayer<AMap.Marker, AMap.OverlayGroup>
 class MarkerLayer {

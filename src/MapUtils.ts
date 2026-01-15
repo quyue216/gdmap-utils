@@ -7,7 +7,7 @@ import type {
   MarkerLayerBaseType,
   LayerOpts,
 } from './types/index.d';
-import BaseMarkerLayer, { BaseMarkerLayerIns } from './layers/index';
+import { BaseMarkerLayerIns, BaseMarkerLayer } from './layers/index';
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
 

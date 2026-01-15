@@ -1,6 +1,6 @@
-import type { OverlaysLayer, mapIns, OverlayData } from '../types/index.d';
-import type { MapUtilsConstructor } from '../MapUtils';
-import { MapUtils } from '../MapUtils';
+import type { OverlaysLayer, mapIns, OverlayData } from '../../types';
+import type { MapUtilsConstructor } from '../../MapUtils';
+import { MapUtils } from '../../MapUtils';
 
 class LabelMarkerLayer {
   rawLayer: AMap.LabelsLayer;

@@ -1,8 +1,4 @@
-import type { OverlaysLayer } from '../types/index.d';
-class MarkerClusterLayer implements OverlaysLayer<
-  AMap.Marker,
-  AMap.OverlayGroup
-> {
+class MarkerClusterLayer {
   rawLayer = new AMap.OverlayGroup();
 
   constructor() {}
