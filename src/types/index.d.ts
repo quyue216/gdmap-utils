@@ -31,8 +31,7 @@ interface MapUtilsLayersInfo {
 //定义图层信息
 type MarkerLayerBaseType = 'markerLayer' | 'labelMarkerLayer';
 
-//HACK 接口名需要大写
-export interface overlayData<T extends object = {}> {
+export interface OverlayData<T extends object = {}> {
   overlayData: {
     lon: number;
     lat: number;
@@ -54,11 +53,11 @@ interface LayerOpts<
 > {
   layerType: T;
   layerName: string;
-  overlayList: Array<overlayData<U>>;
+  overlayList: Array<OverlayData<U>>;
   createOverlays: (mapUtilsIns) => Array<V['overlayIns']>; // 未使用上
-  getIconUrl: (item: overlayData<U>) => string; //overlayList中优先级更高
+  getIconUrl: (item: OverlayData<U>) => string; //overlayList中优先级更高
   getOverlayOpts: (
-    item: overlayData<U>,
+    item: OverlayData<U>,
     index: number,
     MapUtils: MapUtilsConstructor
   ) => V['overlayOpts']; //动态生成覆盖物配置

@@ -4,7 +4,7 @@ import type {
   MarkerLayerBaseType,
   LayerOpts,
   MapUtilsLayersInfo,
-  overlayData,
+  OverlayData,
 } from '../types/index.d';
 import { MapUtils } from '../MapUtils';
 import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
@@ -33,7 +33,7 @@ class Layer<
     Layer.layerClassMap.set(layerType, layerClass);
   }
 
-  overlayList: Array<overlayData<U>>;
+  overlayList: Array<OverlayData<U>>;
   // 策略模式
   rawLayerIns: V['layerIns'];
 
@@ -43,12 +43,12 @@ class Layer<
 
   mapUtils: mapUtilsIns;
 
-  getIconUrl: (item: overlayData<U>) => string;
+  getIconUrl: (item: OverlayData<U>) => string;
 
   layerType: MarkerLayerBaseType;
 
   getOverlayOpts: (
-    item: overlayData<U>,
+    item: OverlayData<U>,
     index: number,
     MapUtils: MapUtilsConstructor
   ) => V['overlayOpts'];
@@ -92,7 +92,7 @@ class Layer<
    * @returns 覆盖物配置列表
    */
   convertOverlayDataToOpts(
-    overlayList: Array<overlayData<U>>
+    overlayList: Array<OverlayData<U>>
   ): Array<V['overlayOpts']> {
     const OverlaysLayer = Layer.layerClassMap.get(this.layerType)!;
 
@@ -107,9 +107,9 @@ class Layer<
     });
   }
 
-  createOverlays(overlayList: Array<overlayData>): Array<V['ovIns']> {
+  createOverlays(overlayList: Array<OverlayData>): Array<V['ovIns']> {
     const markerListOpts: Array<V['overlayOpts']> =
-      this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
+      this.convertOverlayDataToOpts(overlayList as Array<OverlayData<U>>);
 
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
@@ -164,9 +164,9 @@ class Layer<
     return this.rawLayerIns.findLayerOverlay(ovId);
   }
 
-  add(overlayList: Array<overlayData<U>>) {
+  add(overlayList: Array<OverlayData<U>>) {
     const markerListOpts: Array<V['overlayOpts']> =
-      this.convertOverlayDataToOpts(overlayList as Array<overlayData<U>>);
+      this.convertOverlayDataToOpts(overlayList as Array<OverlayData<U>>);
 
     this.overlayList.push(...overlayList);
     // 类型守卫 缩小实例范围

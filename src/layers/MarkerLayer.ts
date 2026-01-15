@@ -1,4 +1,4 @@
-import type { OverlaysLayer, mapIns, overlayData } from '../types/index.d';
+import type { OverlaysLayer, mapIns, OverlayData } from '../types/index.d';
 import { MapUtils } from '../MapUtils';
 import type { MapUtilsConstructor } from '../MapUtils';
 
@@ -26,11 +26,11 @@ class MarkerLayer {
    * @returns 标记配置
    */
   static convertOverlayDataToOvlOpts<U extends {}>(
-    item: overlayData<U>,
+    item: OverlayData<U>,
     index: number,
-    getIconUrl: (item: overlayData<U>) => string,
+    getIconUrl: (item: OverlayData<U>) => string,
     getOverlayOpts: (
-      item: overlayData<U>,
+      item: OverlayData<U>,
       index: number,
       MapUtils: MapUtilsConstructor
     ) => any,
