@@ -7,29 +7,19 @@ import type {
   MarkerClusterLayerIns,
   LayerTypeIns,
 } from '../layers/index';
-
-// 高德地图实例
-type mapIns = InstanceType<typeof AMap.Map>;
-
-type MapOptions = AMap.MapOptions;
-
-interface MapUtilsCreateOpts extends MapOptions {
-  mountSelector: string;
-}
-
-interface MapUtilsUseExistingOpts extends MapOptions {
-  mapIns: mapIns;
-}
-
-type MapUtilsOpts = {
-  MapUtilsUseExistingOpts: MapUtilsUseExistingOpts;
-  MapUtilsCreateOpts: MapUtilsCreateOpts;
-};
+export type {
+  mapIns,
+  MapOptions,
+  MapUtilsCreateOpts,
+  MapUtilsUseExistingOpts,
+  MapUtilsOpts,
+  LayerManger,
+} from './MapUtils';
 
 interface MapUtilsLayersInfo {
   markerLayer: {
     layerIns: MarkerLayerIns;
-    overlayOpts: AMap.MarkerOptions; //!考虑改为简写
+    overlayOpts: AMap.MarkerOptions;
     ovIns: AMap.Marker;
   };
   labelMarkerLayer: {
@@ -72,28 +62,7 @@ interface LayerOpts<
     index: number,
     MapUtils: MapUtilsConstructor
   ) => V['overlayOpts']; //动态生成覆盖物配置
-  overlayLayer?: AMap.LabelsLayerOptions; //! labelMarker，marker渲染方式不同, labelMarker为canvas与Marker为Dom渲染 (重复定义)
-}
-
-// 图层管理器
-interface LayerManger<T = ILayer, K = InstanceType<T>> {
-  //它可以形参接收this.map
-  //layers: 图层存在于layer时才会显示
-  layers: WeakMap<K, K>; //组合模式
-
-  addLayer(layer: K): void;
-
-  removeLayer(layerIdOrLayer: layer | string): void;
-
-  show(): void; //! 你怎么知道，你要隐藏或者显示某个图层
-
-  hide(): void;
-
-  showAll(): void;
-
-  hideAll(): void;
-
-  reload(): void;
+  overlayLayer?: AMap.LabelsLayerOptions;
 }
 
 interface OverlaysLayer<T, U> {
@@ -126,8 +95,6 @@ interface Window {
   };
 }
 export type {
-  MapUtilsOpts,
-  mapIns,
   MarkerLayerBaseType,
   OverlaysLayer,
   LayerManger,
