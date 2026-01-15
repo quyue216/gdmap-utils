@@ -3,7 +3,7 @@ import MarkerLayer from './MarkerLayer';
 import type {
   MarkerLayerBaseType,
   LayerOpts,
-  MapUtilsLayersInfo,
+  BaseMarkerLayerInfo,
   OverlayData,
 } from '../types/index.d';
 import { MapUtils } from '../MapUtils';
@@ -12,7 +12,7 @@ import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
 class Layer<
   U extends object,
   T extends MarkerLayerBaseType = 'markerLayer',
-  V extends MapUtilsLayersInfo[T] = MapUtilsLayersInfo[T],
+  V extends BaseMarkerLayerInfo[T] = BaseMarkerLayerInfo[T],
 > {
   // 图层类型与控制器类的映射关系
   static layerClassMap = new Map<string, LayerTypeClass>();

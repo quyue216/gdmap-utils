@@ -7,7 +7,7 @@ import type {
   LayerTypeIns,
 } from '../layers/index';
 
-interface MapUtilsLayersInfo {
+interface BaseMarkerLayerInfo {
   markerLayer: {
     layerIns: MarkerLayerIns;
     overlayOpts: AMap.MarkerOptions;
@@ -40,7 +40,7 @@ export interface OverlayData<T extends object = {}> {
 interface LayerOpts<
   U = {},
   T extends MarkerLayerBaseType = 'markerLayer',
-  V = MapUtilsLayersInfo[T],
+  V = BaseMarkerLayerInfo[T],
 > {
   layerType: T;
   layerName: string;
@@ -80,7 +80,7 @@ interface OverlaysLayer<T, U> {
 }
 
 export type {
-  MapUtilsLayersInfo,
+  BaseMarkerLayerInfo,
   MarkerLayerBaseType,
   LayerOpts,
   OverlaysLayer,

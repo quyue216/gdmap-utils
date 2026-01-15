@@ -10,7 +10,7 @@ export type {
 
 // 从BaseMarkerLayer.d.ts导入并重新导出类型
 export type {
-  MapUtilsLayersInfo,
+  BaseMarkerLayerInfo,
   MarkerLayerBaseType,
   OverlayData,
   LayerOpts,
