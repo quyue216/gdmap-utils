@@ -16,6 +16,13 @@ type MapUtilsOpts = {
   MapUtilsCreateOpts: MapUtilsCreateOpts;
 };
 
+interface MapUtilsStatic extends MapMixinType {
+  new (
+    opts: MapUtilsOpts[keyof MapUtilsOpts],
+    AMap: Simplify<typeof gdAMap>
+  ): MapUtils;
+}
+
 // 图层管理器
 interface LayerManger<T = new (...args: any[]) => any, K = InstanceType<T>> {
   layers: WeakMap<K, K>; //组合模式
@@ -42,4 +49,5 @@ export type {
   MapUtilsUseExistingOpts,
   MapUtilsOpts,
   LayerManger,
+  MapUtilsStatic,
 };

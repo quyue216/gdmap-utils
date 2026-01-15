@@ -4,7 +4,7 @@ import type {
   MarkerLayerIns,
   LabelMarkerLayerIns,
   MarkerClusterLayerIns,
-  LayerTypeIns,
+  BaseMarkerLayerTypeIns,
 } from '../layers/index';
 
 interface BaseMarkerLayerInfo {

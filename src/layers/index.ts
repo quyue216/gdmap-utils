@@ -9,13 +9,13 @@ import type {
 import { MapUtils } from '../MapUtils';
 import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
 
-class Layer<
+class BaseMarkerLayer<
   U extends object,
   T extends MarkerLayerBaseType = 'markerLayer',
   V extends BaseMarkerLayerInfo[T] = BaseMarkerLayerInfo[T],
 > {
   // 图层类型与控制器类的映射关系
-  static layerClassMap = new Map<string, LayerTypeClass>();
+  static layerClassMap = new Map<string, BaseMarkerLayerTypeClass>();
   /**
    * 注册图层类型与控制器类的关联
    * @param {string} layerType - 图层类型
@@ -23,14 +23,14 @@ class Layer<
    */
   static registerLayer(
     layerType: MarkerLayerBaseType,
-    layerClass: LayerTypeClass
+    layerClass: BaseMarkerLayerTypeClass
   ) {
     if (typeof layerType !== 'string' || typeof layerClass !== 'function') {
       MapUtils.error('[LayerManager Error]: Invalid layer type or layer class');
       return;
     }
 
-    Layer.layerClassMap.set(layerType, layerClass);
+    BaseMarkerLayer.layerClassMap.set(layerType, layerClass);
   }
 
   overlayList: Array<OverlayData<U>>;
@@ -56,12 +56,14 @@ class Layer<
   constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
 
-    const OverlaysLayer = Layer.layerClassMap.get(layerType);
+    const OverlaysLayer = BaseMarkerLayer.layerClassMap.get(layerType);
 
     if (OverlaysLayer) {
       this.rawLayerIns = new OverlaysLayer(mapUtils.map, opts.overlayLayer);
     } else {
-      throw new Error(`[Layer Error]: Invalid layer type ${layerType}`);
+      throw new Error(
+        `[BaseMarkerLayer Error]: Invalid layer type ${layerType}`
+      );
     }
 
     this.layerName = layerName;
@@ -94,7 +96,7 @@ class Layer<
   convertOverlayDataToOpts(
     overlayList: Array<OverlayData<U>>
   ): Array<V['overlayOpts']> {
-    const OverlaysLayer = Layer.layerClassMap.get(this.layerType)!;
+    const OverlaysLayer = BaseMarkerLayer.layerClassMap.get(this.layerType)!;
 
     return overlayList.map((item, index) => {
       return OverlaysLayer.convertOverlayDataToOvlOpts(
@@ -241,9 +243,11 @@ class Layer<
 
     if (ovlDataIndex === -1) {
       //抛异常
-      return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
+      return MapUtils.error(
+        `[BaseMarkerLayer Error]: Invalid overlayId ${overlayId}`
+      );
     }
-    const OvlLayer = Layer.layerClassMap.get(this.layerType);
+    const OvlLayer = BaseMarkerLayer.layerClassMap.get(this.layerType);
 
     if (
       this.rawLayerIns instanceof MarkerLayer ||
@@ -296,7 +300,7 @@ class Layer<
       //抛异常
       return MapUtils.error(`[Layer Error]: Invalid overlayId ${overlayId}`);
     }
-    const OvlLayer = Layer.layerClassMap.get(this.layerType);
+    const OvlLayer = BaseMarkerLayer.layerClassMap.get(this.layerType);
 
     if (
       this.rawLayerIns instanceof MarkerLayer ||
@@ -350,8 +354,8 @@ class Layer<
   }
 }
 
-Layer.registerLayer('markerLayer', MarkerLayer);
-Layer.registerLayer('labelMarkerLayer', LabelMarkerLayer);
+BaseMarkerLayer.registerLayer('markerLayer', MarkerLayer);
+BaseMarkerLayer.registerLayer('labelMarkerLayer', LabelMarkerLayer);
 
 // MarkerLayer 类型
 export type MarkerLayerIns = InstanceType<typeof MarkerLayer>;
@@ -360,14 +364,16 @@ export type MarkerLayerIns = InstanceType<typeof MarkerLayer>;
 export type LabelMarkerLayerIns = InstanceType<typeof LabelMarkerLayer>;
 
 // 所有图层类型的联合类型
-export type LayerTypeIns = MarkerLayerIns | LabelMarkerLayerIns;
+export type BaseMarkerLayerTypeIns = MarkerLayerIns | LabelMarkerLayerIns;
 
-export type LayerTypeClass = typeof MarkerLayer | typeof LabelMarkerLayer;
+export type BaseMarkerLayerTypeClass =
+  | typeof MarkerLayer
+  | typeof LabelMarkerLayer;
 
-export type LayerClass = typeof Layer;
+export type BaseMarkerLayerClass = typeof BaseMarkerLayer;
 
-export type LayerIns = InstanceType<LayerClass>;
+export type BaseMarkerLayerIns = InstanceType<BaseMarkerLayerClass>;
 
 export { LabelMarkerLayer, MarkerLayer };
 
-export default Layer;
+export default BaseMarkerLayer;

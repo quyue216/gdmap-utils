@@ -1,8 +1,8 @@
 import type { LayerManger } from './types/index.d.ts';
-import type { LayerClass } from './layers/index.ts';
+import type { BaseMarkerLayerClass } from './layers/index.ts';
 
-type LayerIns = InstanceType<LayerClass>;
-export class LayerManager implements LayerManger<LayerClass> {
+type LayerIns = InstanceType<BaseMarkerLayerClass>;
+export class LayerManager implements LayerManger<BaseMarkerLayerClass> {
   layers: WeakMap<LayerIns, LayerIns> = new WeakMap(); //组合模式
 
   addLayer(layer: LayerIns) {

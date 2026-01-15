@@ -6,6 +6,7 @@ export type {
   MapUtilsUseExistingOpts,
   MapUtilsOpts,
   LayerManger,
+  MapUtilsStatic,
 } from './MapUtils';
 
 // 从BaseMarkerLayer.d.ts导入并重新导出类型

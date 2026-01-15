@@ -7,24 +7,13 @@ import type {
   MarkerLayerBaseType,
   LayerOpts,
 } from './types/index.d';
-import { LayerIns } from './layers/index';
+import BaseMarkerLayer, { BaseMarkerLayerIns } from './layers/index';
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
-import Layer from './layers/index';
-
-type MapMixinType = typeof MapMixin;
 
 type MapUtilsConstructor = typeof MapUtils;
 
 type mapUtilsIns = InstanceType<typeof MapUtils>;
-
-// 类本质不就是函数吗
-interface MapUtilsStatic extends MapMixinType {
-  new (
-    opts: MapUtilsOpts[keyof MapUtilsOpts],
-    AMap: Simplify<typeof gdAMap>
-  ): MapUtils;
-}
 
 export class MapUtils {
   // 地图实例信息
@@ -90,13 +79,13 @@ export class MapUtils {
   createLayer<U extends {}, T extends MarkerLayerBaseType = 'markerLayer'>(
     opts: LayerOpts<U, T>
   ) {
-    const layer = new Layer<U, T>(opts, this);
+    const layer = new BaseMarkerLayer<U, T>(opts, this);
     // @ts-ignore
     this.LayerManager.addLayer(layer);
     return layer;
   }
 
-  removeLayer(layer: LayerIns) {
+  removeLayer(layer: BaseMarkerLayerIns) {
     const isLayerExist = this.LayerManager.hasLayer(layer);
 
     if (isLayerExist) {
