@@ -5,9 +5,9 @@ import type {
   LayerOpts,
   BaseMarkerLayerInfo,
   OverlayData,
-} from '../../types';
-import { MapUtils } from '../../MapUtils';
-import type { MapUtilsConstructor, mapUtilsIns } from '../../MapUtils';
+} from '@/types';
+import { MapUtils } from '@/MapUtils';
+import type { MapUtilsConstructor, mapUtilsIns } from '@/MapUtils';
 
 class BaseMarkerLayer<
   U extends object,
