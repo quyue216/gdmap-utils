@@ -37,14 +37,9 @@ interface MapUtilsLayersInfo {
     overlayOpts: AMap.LabelMarkerOptions;
     ovIns: AMap.LabelMarker;
   };
-  markerClusterLayer: {
-    layerIns: MarkerClusterLayerIns;
-    overlayOpts: AMap.LabelMarkerOptions; //TODO  AMap.LabelMarkerOptions占位
-    ovIns: AMap.MarkerClusterer;
-  };
 }
 //定义图层信息
-type layerType = 'markerLayer' | 'labelMarkerLayer' | 'markerClusterLayer';
+type MarkerLayerBaseType = 'markerLayer' | 'labelMarkerLayer';
 
 //HACK 接口名需要大写
 export interface overlayData<T extends object = {}> {
@@ -64,7 +59,7 @@ export interface overlayData<T extends object = {}> {
 
 interface LayerOpts<
   U = {},
-  T extends layerType = 'markerLayer',
+  T extends MarkerLayerBaseType = 'markerLayer',
   V = MapUtilsLayersInfo[T],
 > {
   layerType: T;
@@ -133,7 +128,7 @@ interface Window {
 export type {
   MapUtilsOpts,
   mapIns,
-  layerType,
+  MarkerLayerBaseType,
   OverlaysLayer,
   LayerManger,
   LayerOpts,

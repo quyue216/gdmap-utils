@@ -4,7 +4,7 @@ import type { AMap as gdAMap, loaderOpts, MapOptions } from './types/amap.d';
 import type {
   MapUtilsOpts,
   mapIns,
-  layerType,
+  MarkerLayerBaseType,
   LayerOpts,
 } from './types/index.d';
 import { LayerIns } from './layers/index';
@@ -87,7 +87,7 @@ export class MapUtils {
     return new window.AMap.Map(id, opts);
   }
 
-  createLayer<U extends {}, T extends layerType = 'markerLayer'>(
+  createLayer<U extends {}, T extends MarkerLayerBaseType = 'markerLayer'>(
     opts: LayerOpts<U, T>
   ) {
     const layer = new Layer<U, T>(opts, this);
