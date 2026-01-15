@@ -1,8 +1,7 @@
 import LabelMarkerLayer from './LabelMarkerLayer';
-import MarkerClusterLayer from './MarkerClusterLayer';
 import MarkerLayer from './MarkerLayer';
 import type {
-  layerType,
+  MarkerLayerBaseType,
   LayerOpts,
   MapUtilsLayersInfo,
   overlayData,
@@ -12,7 +11,7 @@ import type { MapUtilsConstructor, mapUtilsIns } from '../MapUtils';
 
 class Layer<
   U extends object,
-  T extends layerType = 'markerLayer',
+  T extends MarkerLayerBaseType = 'markerLayer',
   V extends MapUtilsLayersInfo[T] = MapUtilsLayersInfo[T],
 > {
   // 图层类型与控制器类的映射关系
@@ -22,7 +21,10 @@ class Layer<
    * @param {string} layerType - 图层类型
    * @param {Function} layerClass - 图层控制器类
    */
-  static registerLayer(layerType: layerType, layerClass: LayerTypeClass) {
+  static registerLayer(
+    layerType: MarkerLayerBaseType,
+    layerClass: LayerTypeClass
+  ) {
     if (typeof layerType !== 'string' || typeof layerClass !== 'function') {
       MapUtils.error('[LayerManager Error]: Invalid layer type or layer class');
       return;
@@ -43,7 +45,7 @@ class Layer<
 
   getIconUrl: (item: overlayData<U>) => string;
 
-  layerType: layerType;
+  layerType: MarkerLayerBaseType;
 
   getOverlayOpts: (
     item: overlayData<U>,
@@ -92,41 +94,16 @@ class Layer<
   convertOverlayDataToOpts(
     overlayList: Array<overlayData<U>>
   ): Array<V['overlayOpts']> {
+    const OverlaysLayer = Layer.layerClassMap.get(this.layerType)!;
+
     return overlayList.map((item, index) => {
-      // 如果是标记图层，使用 MarkerLayer 的静态方法转换配置
-      if (this.rawLayerIns instanceof MarkerLayer) {
-        return MarkerLayer.convertOverlayDataToOvlOpts(
-          //后续改为从layClassMap中读取
-          item,
-          index,
-          this.getIconUrl,
-          this.getOverlayOpts,
-          MapUtils
-        ) as V['overlayOpts'];
-      } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
-        return LabelMarkerLayer.convertOverlayDataToOvlOpts(
-          //后续改为从layClassMap中读取
-          item,
-          index,
-          this.getIconUrl,
-          this.getOverlayOpts,
-          MapUtils
-        ) as V['overlayOpts'];
-      }
-      //TODO 待兼容其他类型
-      // 其他图层类型的默认转换逻辑
-      const {
-        overlayData: { lon, lat, extData },
-      } = item;
-
-      // 获取当前覆盖物项的动态配置
-      const itemOpts = this.getOverlayOpts(item, index, MapUtils);
-
-      return {
-        position: [lon, lat],
-        extData,
-        ...itemOpts,
-      } as V['overlayOpts'];
+      return OverlaysLayer.convertOverlayDataToOvlOpts(
+        item,
+        index,
+        this.getIconUrl,
+        this.getOverlayOpts,
+        MapUtils
+      );
     });
   }
 
@@ -136,7 +113,7 @@ class Layer<
 
     return this.rawLayerIns.createOverlays(
       // @ts-ignore
-      markerListOpts as Array<AMap.MapOptions>
+      markerListOpts
     );
   }
 
@@ -184,12 +161,7 @@ class Layer<
   }
 
   findLayerOverlay(ovId: string | number) {
-    if (this.rawLayerIns instanceof MarkerLayer) {
-      return this.rawLayerIns.findLayerOverlay(ovId);
-    } else if (this.rawLayerIns instanceof LabelMarkerLayer) {
-      return this.rawLayerIns.findLayerOverlay(ovId as string);
-    }
-    return null;
+    return this.rawLayerIns.findLayerOverlay(ovId);
   }
 
   add(overlayList: Array<overlayData<U>>) {
@@ -263,11 +235,6 @@ class Layer<
   }
 
   refreshOverlayIcon(overlayId: string) {
-    type NonClusterLayerIns = Exclude<
-      LayerTypeClass,
-      typeof MarkerClusterLayer
-    >;
-
     const ovlDataIndex = this.overlayList.findIndex(
       ovl => ovl.id === overlayId
     );
@@ -284,9 +251,7 @@ class Layer<
     ) {
       const marker = this.rawLayerIns.findLayerOverlay(overlayId);
       // 函数可以动态计算label,
-      const ovlOpts = (
-        OvlLayer as NonClusterLayerIns
-      ).convertOverlayDataToOvlOpts(
+      const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
         this.overlayList[ovlDataIndex],
         ovlDataIndex,
         this.getIconUrl,
@@ -323,12 +288,6 @@ class Layer<
   }
 
   refreshOverlayLabel(overlayId: string | number, labelShow: boolean) {
-    // 排除聚合图层
-    type NonClusterLayerIns = Exclude<
-      LayerTypeClass,
-      typeof MarkerClusterLayer
-    >;
-
     const ovlDataIndex = this.overlayList.findIndex(
       ovl => ovl.id === overlayId
     );
@@ -351,9 +310,7 @@ class Layer<
       ovDataItem!.labelShowed = labelShow;
 
       // 函数可以动态计算label,
-      const ovlOpts = (
-        OvlLayer as NonClusterLayerIns
-      ).convertOverlayDataToOvlOpts(
+      const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
         this.overlayList[ovlDataIndex],
         ovlDataIndex,
         this.getIconUrl,
@@ -395,7 +352,6 @@ class Layer<
 
 Layer.registerLayer('markerLayer', MarkerLayer);
 Layer.registerLayer('labelMarkerLayer', LabelMarkerLayer);
-Layer.registerLayer('markerClusterLayer', MarkerClusterLayer);
 
 // MarkerLayer 类型
 export type MarkerLayerIns = InstanceType<typeof MarkerLayer>;
@@ -403,24 +359,15 @@ export type MarkerLayerIns = InstanceType<typeof MarkerLayer>;
 // LabelMarkerLayer 类型
 export type LabelMarkerLayerIns = InstanceType<typeof LabelMarkerLayer>;
 
-// MarkerClusterLayer 类型
-export type MarkerClusterLayerIns = InstanceType<typeof MarkerClusterLayer>;
-
 // 所有图层类型的联合类型
-export type LayerTypeIns =
-  | MarkerLayerIns
-  | LabelMarkerLayerIns
-  | MarkerClusterLayerIns;
+export type LayerTypeIns = MarkerLayerIns | LabelMarkerLayerIns;
 
-export type LayerTypeClass =
-  | typeof MarkerLayer
-  | typeof LabelMarkerLayer
-  | typeof MarkerClusterLayer;
+export type LayerTypeClass = typeof MarkerLayer | typeof LabelMarkerLayer;
 
 export type LayerClass = typeof Layer;
 
 export type LayerIns = InstanceType<LayerClass>;
 
-export { LabelMarkerLayer, MarkerClusterLayer, MarkerLayer };
+export { LabelMarkerLayer, MarkerLayer };
 
 export default Layer;
