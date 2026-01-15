@@ -21,6 +21,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
     externals: {
     '@amap/amap-jsapi-loader': { // 外部依赖，不打包进 bundle
