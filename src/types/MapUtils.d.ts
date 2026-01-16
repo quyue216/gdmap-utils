@@ -25,7 +25,7 @@ interface MapUtilsStatic extends MapMixinType {
 
 // 图层管理器
 interface LayerManger<T = new (...args: any[]) => any, K = InstanceType<T>> {
-  layers: WeakMap<K, K>; //组合模式
+  layers: Map<string, K>; //组合模式
 
   addLayer(layer: K): void;
 
