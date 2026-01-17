@@ -124,7 +124,7 @@ class BaseMarkerLayer<
   }
 
   bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
-    (this.rawLayerIns as MarkerLayerIns).bindEventOverlay(clickType, callback);
+    this.rawLayerIns.bindEventOverlay(clickType, callback);
   }
 
   hide() {
@@ -138,7 +138,7 @@ class BaseMarkerLayer<
   }
 
   getAllOverlay() {
-    // 浅拷贝规避bug
+    // 数据进行D会影响覆盖物，浅拷贝
     return [...this.rawLayerIns.getAllOverlay()!];
   }
 
@@ -153,7 +153,7 @@ class BaseMarkerLayer<
 
   clearAllOverlay() {
     this.overlayList = [];
-    (this.rawLayerIns as MarkerLayerIns).clearAllOvl();
+    this.rawLayerIns.clearAllOvl();
   }
 
   reload() {

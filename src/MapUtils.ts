@@ -76,9 +76,10 @@ export class MapUtils {
     return new window.AMap.Map(id, opts);
   }
 
-  createLayer<U extends {}, T extends MarkerLayerBaseType = 'markerLayer'>(
-    opts: LayerOpts<U, T>
-  ) {
+  createBaseMarkerLayer<
+    U extends {},
+    T extends MarkerLayerBaseType = 'markerLayer',
+  >(opts: LayerOpts<U, T>) {
     const layer = new BaseMarkerLayer<U, T>(opts, this);
     // @ts-ignore
     this.LayerManager.addLayer(layer);
