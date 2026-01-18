@@ -179,7 +179,7 @@ class MarkerLayer {
   */
   refreshOverlayLabel(
     marker: InstanceType<typeof AMap.Marker>,
-    labelOpts?: {
+    labelOpts: {
       content: string;
       direction: string;
       offset: [number, number] | Array<number>;
@@ -189,16 +189,10 @@ class MarkerLayer {
       // 如果没有找到对应的marker
       return MapUtils.error('marker is not found');
     }
-    if (labelOpts) {
-      marker.setLabel(labelOpts);
-    } else {
-      let labelOpts = marker.getLabel();
 
-      marker.setLabel({
-        ...labelOpts,
-        content: '',
-      });
-    }
+    marker.setLabel({
+      ...labelOpts,
+    });
   }
 }
 

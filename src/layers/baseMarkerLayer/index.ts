@@ -249,49 +249,41 @@ class BaseMarkerLayer<
     }
     const OvlLayer = BaseMarkerLayer.layerClassMap.get(this.layerType);
 
-    if (
-      this.rawLayerIns instanceof MarkerLayer ||
-      this.rawLayerIns instanceof LabelMarkerLayer
-    ) {
-      const marker = this.rawLayerIns.findLayerOverlay(overlayId);
-      // 函数可以动态计算label,
-      const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
-        this.overlayList[ovlDataIndex],
-        ovlDataIndex,
-        this.getIconUrl,
-        this.getOverlayOpts,
-        MapUtils
-      );
+    const marker = this.rawLayerIns.findLayerOverlay(overlayId);
+    // 函数可以动态计算label,
+    const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
+      this.overlayList[ovlDataIndex],
+      ovlDataIndex,
+      this.getIconUrl,
+      this.getOverlayOpts,
+      MapUtils
+    );
 
-      const iconImageUrl = this.getIconUrl(this.overlayList[ovlDataIndex]);
+    const iconImageUrl = this.getIconUrl(this.overlayList[ovlDataIndex]);
 
-      if (this.rawLayerIns instanceof MarkerLayer) {
-        let icon = ovlOpts.icon! as AMap.Icon | string;
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      let icon = ovlOpts.icon! as AMap.Icon | string;
 
-        if (typeof icon === 'string') {
-          icon = iconImageUrl;
-        } else {
-          (icon as AMap.Icon).setImage(iconImageUrl);
-        }
-
-        (this.rawLayerIns as MarkerLayerIns).refreshOverlayIcon(
-          (marker as AMap.Marker)!,
-          icon
-        );
+      if (typeof icon === 'string') {
+        icon = iconImageUrl;
       } else {
-        let icon = ovlOpts.icon! as AMap.LabelMarkerIconOptions;
-
-        icon.image = iconImageUrl;
-
-        this.rawLayerIns.refreshOverlayIcon(
-          (marker as AMap.LabelMarker)!,
-          icon
-        );
+        (icon as AMap.Icon).setImage(iconImageUrl);
       }
+
+      (this.rawLayerIns as MarkerLayerIns).refreshOverlayIcon(
+        (marker as AMap.Marker)!,
+        icon
+      );
+    } else {
+      let icon = ovlOpts.icon! as AMap.LabelMarkerIconOptions;
+
+      icon.image = iconImageUrl;
+
+      this.rawLayerIns.refreshOverlayIcon((marker as AMap.LabelMarker)!, icon);
     }
   }
 
-  refreshOverlayLabel(overlayId: string | number, labelShow: boolean) {
+  refreshOverlayLabel(overlayId: string | number) {
     const ovlDataIndex = this.overlayList.findIndex(
       ovl => ovl.id === overlayId
     );
@@ -302,49 +294,32 @@ class BaseMarkerLayer<
     }
     const OvlLayer = BaseMarkerLayer.layerClassMap.get(this.layerType);
 
-    if (
-      this.rawLayerIns instanceof MarkerLayer ||
-      this.rawLayerIns instanceof LabelMarkerLayer
-    ) {
-      // marker拿到手
-      const marker = this.rawLayerIns.findLayerOverlay(overlayId)!;
+    // marker拿到手
+    const marker = this.rawLayerIns.findLayerOverlay(overlayId)!;
 
-      const ovDataItem = this.overlayList.find(item => item.id === overlayId);
-      // 属性值转变为boolean
-      ovDataItem!.labelShowed = labelShow;
+    // 函数可以动态计算label,
+    const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
+      this.overlayList[ovlDataIndex],
+      ovlDataIndex,
+      this.getIconUrl,
+      this.getOverlayOpts,
+      MapUtils
+    );
 
-      // 函数可以动态计算label,
-      const ovlOpts = OvlLayer!.convertOverlayDataToOvlOpts(
-        this.overlayList[ovlDataIndex],
-        ovlDataIndex,
-        this.getIconUrl,
-        this.getOverlayOpts,
-        MapUtils
+    if (this.rawLayerIns instanceof MarkerLayer) {
+      this.rawLayerIns.refreshOverlayLabel(
+        marker as AMap.Marker,
+        (ovlOpts as AMap.MarkerOptions).label as {
+          content: string;
+          direction: string;
+          offset: [number, number] | Array<number>;
+        }
       );
-
-      if (this.rawLayerIns instanceof MarkerLayer) {
-        if (labelShow) {
-          this.rawLayerIns.refreshOverlayLabel(
-            marker as AMap.Marker,
-            (ovlOpts as AMap.MarkerOptions).label! as {
-              content: string;
-              direction: string;
-              offset: [number, number] | Array<number>;
-            }
-          );
-        } else {
-          this.rawLayerIns.refreshOverlayLabel(marker as AMap.Marker);
-        }
-      } else {
-        if (labelShow) {
-          this.rawLayerIns.refreshOverlayLabel(
-            marker as AMap.LabelMarker,
-            ovlOpts.text as AMap.LabelMarkerTextOptions
-          );
-        } else {
-          this.rawLayerIns.refreshOverlayLabel(marker as AMap.LabelMarker);
-        }
-      }
+    } else {
+      this.rawLayerIns.refreshOverlayLabel(
+        marker as AMap.LabelMarker,
+        ovlOpts.text as AMap.LabelMarkerTextOptions
+      );
     }
   }
 
