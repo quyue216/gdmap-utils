@@ -107,6 +107,10 @@ export class MapUtils {
     this.map.setFitView(...opts);
   }
 
+  clearInfoWindow() {
+    this.map.clearInfoWindow();
+  }
+
   static error(msg: string) {
     console.error(`[MapUtils Error]:${msg}`);
   }
