@@ -284,290 +284,291 @@
         },
       ];
 
-      const { createMapUtils } = MapUtils;
+      window.onload = () => {
+        const { createMapUtils } = MapUtils;
 
-      const loaderOpts = {
-        version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
-        plugins: ['AMap.MapType', 'AMap.MoveAnimation'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
-        key: '9506c73ed67acb0a09f1aabf88df4819',
-      };
+        const loaderOpts = {
+          version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+          plugins: ['AMap.MapType', 'AMap.MoveAnimation'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
+          key: '9506c73ed67acb0a09f1aabf88df4819',
+        };
 
-      test();
+        test();
 
-      async function test() {
-        const mapUtils = await createMapUtils(
-          {
-            viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
-            zoom: 11, // 初始化地图层级
-            center: [data[0].jd, data[1].wd], // 初始化地图中心点
-            mountSelector: 'container',
-          },
-          loaderOpts
-        );
-        /* 
+        async function test() {
+          const mapUtils = await createMapUtils(
+            {
+              viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
+              zoom: 11, // 初始化地图层级
+              center: [data[0].jd, data[1].wd], // 初始化地图中心点
+              mountSelector: 'container',
+            },
+            loaderOpts
+          );
 
-*/
-        window.cleanPointLayer = mapUtils.createLayer({
-          layerType: 'labelMarkerLayer',
-          layerName: 'cleanLabelMarkerPointLayer',
-          getIconUrl(item) {
-            if (window.flag) {
-              return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png';
-            }
-            return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png';
-          },
-          getOverlayOpts(item, index, MapUtils) {
-            return {
-             name:item.name,
-              text: {
-                direction: 'top',
-                content:item.overlayData.title,
-                style: {
-                  fontSize: 18,
-                  fillColor: '#fff',
-                  strokeColor: '#37e9bd',
-                  strokeWidth: 5,
+          window.cleanPointLayer = mapUtils.createBaseMarkerLayer({
+            layerType: 'labelMarkerLayer',
+            layerName: 'cleanLabelMarkerPointLayer',
+            getIconUrl(item) {
+              if (window.flag) {
+                return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png';
+              }
+              return '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png';
+            },
+            getOverlayOpts(item, index, MapUtils) {
+              return {
+                name: item.name,
+                text: {
+                  direction: 'top',
+                  content: item.overlayData.title,
+                  style: {
+                    fontSize: 18,
+                    fillColor: '#fff',
+                    strokeColor: '#37e9bd',
+                    strokeWidth: 5,
+                  },
+                  zooms: [1, 20],
                 },
-                zooms: [1, 20],
-              },
-              /*    label: {
+                /*    label: {
                 content: `<div class="labelTitle">${item.overlayData.title}</div>`,
                 offset: MapUtils.Pixel(0, -5),
                 direction: 'top',
               }, */
-            };
-          },
-          overlayList: data.slice(0, 10).map(item => {
-            return {
-              overlayData: {
-                lon: item.jd,
-                lat: item.wd,
-                title: item.sydmc,
+              };
+            },
+            overlayList: data.slice(0, 10).map(item => {
+              return {
+                overlayData: {
+                  lon: item.jd,
+                  lat: item.wd,
+                  title: item.sydmc,
+                  id: item.id,
+                  extData: item,
+                },
                 id: item.id,
-                extData: item,
+                labelShowed: true,
+              };
+            }),
+          });
+
+          cleanPointLayer.bindEventOverlays('click', () => {
+            console.log('哈哈哈哈');
+          });
+          // 图层适配
+          cleanPointLayer.overlayFitMap();
+
+          // 为add和remove方法添加测试代码
+          const addBtn = document.getElementById('addBtn');
+          const removeBtn = document.getElementById('removeBtn');
+          const removeByIdBtn = document.getElementById('removeByIdBtn');
+
+          // 添加新标记的计数器
+          let newMarkerId = 10000;
+
+          // 点击添加标记按钮
+          addBtn.addEventListener('click', () => {
+            // 创建一个新的标记数据
+            const newMarker = {
+              overlayData: {
+                lon: 121.515844 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成经度
+                lat: 31.218427 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成纬度
+                title: `新标记${newMarkerId}`,
+                id: newMarkerId,
+                extData: { id: newMarkerId, sydmc: `新标记${newMarkerId}` },
               },
-              id: item.id,
+              id: newMarkerId,
               labelShowed: true,
             };
-          }),
-        });
-       
-        cleanPointLayer.bindEventOverlays('click', () => {
-          console.log('哈哈哈哈');
-        });
-        // 图层适配
-        cleanPointLayer.overlayFitMap();
-        
-        // 为add和remove方法添加测试代码
-        const addBtn = document.getElementById('addBtn');
-        const removeBtn = document.getElementById('removeBtn');
-        const removeByIdBtn = document.getElementById('removeByIdBtn');
 
-        // 添加新标记的计数器
-        let newMarkerId = 10000;
+            // 调用add方法添加标记
+            cleanPointLayer.add([newMarker]);
 
-        // 点击添加标记按钮
-        addBtn.addEventListener('click', () => {
-          // 创建一个新的标记数据
-          const newMarker = {
-            overlayData: {
-              lon: 121.515844 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成经度
-              lat: 31.218427 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成纬度
-              title: `新标记${newMarkerId}`,
-              id: newMarkerId,
-              extData: { id: newMarkerId, sydmc: `新标记${newMarkerId}` },
-            },
-            id: newMarkerId,
-            labelShowed: true,
-          };
+            console.log(`添加了新标记: ${newMarkerId}`);
+            newMarkerId++;
+          });
 
-          // 调用add方法添加标记
-          cleanPointLayer.add([newMarker]);
+          // 点击删除标记按钮
+          removeBtn.addEventListener('click', () => {
+            // 获取所有标记的ID
+            const markerIds = cleanPointLayer.getAllOverlay();
 
-          console.log(`添加了新标记: ${newMarkerId}`);
-          newMarkerId++;
-        });
-      
-        // 点击删除标记按钮
-        removeBtn.addEventListener('click', () => {
-          // 获取所有标记的ID
-          const markerIds = cleanPointLayer.getAllOverlay();
+            if (markerIds.length > 0) {
+              // 随机选择一个标记ID
+              const randomId = markerIds.pop();
 
-          if (markerIds.length > 0) {
-            // 随机选择一个标记ID
-            const randomId = markerIds.pop();
+              // 调用remove方法删除标记
+              cleanPointLayer.remove([randomId]);
 
-            // 调用remove方法删除标记
-            cleanPointLayer.remove([randomId]);
-
-            console.log(`删除了标记`, randomId);
-          } else {
-            console.log('没有可删除的标记');
-          }
-        });
-
-        // 点击按ID删除按钮
-        removeByIdBtn.addEventListener('click', () => {
-          // 输入要删除的标记ID
-          const markerId = prompt('请输入要删除的标记ID:');
-
-          if (markerId) {
-            try {
-              const id = parseInt(markerId);
-
-              // 调用remove方法按ID删除标记
-              cleanPointLayer.remove([id]);
-
-              console.log(`删除了标记: ${id}`);
-            } catch (error) {
-              console.error('无效的标记ID');
+              console.log(`删除了标记`, randomId);
+            } else {
+              console.log('没有可删除的标记');
             }
-          }
-        });
-        
-        // 点击切换标签显示按钮
-        const toggleLabelBtn = document.getElementById('toggleLabelBtn');
-        const markerIdInput = document.getElementById('markerIdInput');
-        const refreshIconBtn = document.getElementById('refreshIconBtn');
+          });
 
-        toggleLabelBtn.addEventListener('click', () => {
-          const markerId = markerIdInput.value;
+          // 点击按ID删除按钮
+          removeByIdBtn.addEventListener('click', () => {
+            // 输入要删除的标记ID
+            const markerId = prompt('请输入要删除的标记ID:');
 
-          if (markerId) {
-            try {
-              const id = parseInt(markerId);
+            if (markerId) {
+              try {
+                const id = parseInt(markerId);
 
-              // 查找该标记当前的标签显示状态
-              const overlayIndex = cleanPointLayer.overlayList.findIndex(
-                item => item.id === id
-              );
+                // 调用remove方法按ID删除标记
+                cleanPointLayer.remove([id]);
 
-              if (overlayIndex !== -1) {
-                // 获取当前标签显示状态并取反
-                const currentLabelShow =
-                  cleanPointLayer.overlayList[overlayIndex].labelShowed;
-                const newLabelShow = !currentLabelShow;
+                console.log(`删除了标记: ${id}`);
+              } catch (error) {
+                console.error('无效的标记ID');
+              }
+            }
+          });
 
-                // 调用refreshOverlayLabel方法切换标签显示状态
-                cleanPointLayer.refreshOverlayLabel(id, newLabelShow);
+          // 点击切换标签显示按钮
+          const toggleLabelBtn = document.getElementById('toggleLabelBtn');
+          const markerIdInput = document.getElementById('markerIdInput');
+          const refreshIconBtn = document.getElementById('refreshIconBtn');
 
-                console.log(
-                  `标记 ${id} 的标签显示状态已切换为: ${newLabelShow ? '显示' : '隐藏'}`
+          toggleLabelBtn.addEventListener('click', () => {
+            const markerId = markerIdInput.value;
+
+            if (markerId) {
+              try {
+                const id = parseInt(markerId);
+
+                // 查找该标记当前的标签显示状态
+                const overlayIndex = cleanPointLayer.overlayList.findIndex(
+                  item => item.id === id
                 );
-              } else {
-                console.error('未找到指定ID的标记');
+
+                if (overlayIndex !== -1) {
+                  // 获取当前标签显示状态并取反
+                  const currentLabelShow =
+                  cleanPointLayer.overlayList[overlayIndex].labelShowed;
+
+                 cleanPointLayer.overlayList[overlayIndex].labelShowed = !currentLabelShow;
+
+                  // 调用refreshOverlayLabel方法切换标签显示状态
+                  cleanPointLayer.refreshOverlayLabel(id);
+
+                  console.log(
+                    `标记 ${id} 的标签显示状态已切换为: ${cleanPointLayer.overlayList[overlayIndex].labelShowed ? '显示' : '隐藏'}`
+                  );
+                } else {
+                  console.error('未找到指定ID的标记');
+                }
+              } catch (error) {
+                console.error('无效的标记ID',error);
               }
-            } catch (error) {
-              console.error('无效的标记ID');
+            } else {
+              console.error('请输入标记ID');
             }
-          } else {
-            console.error('请输入标记ID');
-          }
-        });
+          });
 
-        // 点击刷新图标按钮
-        refreshIconBtn.addEventListener('click', () => {
-          const markerId = markerIdInput.value;
+          // 点击刷新图标按钮
+          refreshIconBtn.addEventListener('click', () => {
+            const markerId = markerIdInput.value;
 
-          if (markerId) {
-            try {
-              const id = parseInt(markerId);
+            if (markerId) {
+              try {
+                const id = parseInt(markerId);
 
-              // 查找该标记
-              const overlayIndex = cleanPointLayer.overlayList.findIndex(
-                item => item.id === id
-              );
+                // 查找该标记
+                const overlayIndex = cleanPointLayer.overlayList.findIndex(
+                  item => item.id === id
+                );
 
-              if (overlayIndex !== -1) {
-                // 切换窗口标记，用于改变图标
-                window.flag = !window.flag;
+                if (overlayIndex !== -1) {
+                  // 切换窗口标记，用于改变图标
+                  window.flag = !window.flag;
 
-                // 调用refreshOverlayIcon方法刷新图标
-                cleanPointLayer.refreshOverlayIcon(id);
+                  // 调用refreshOverlayIcon方法刷新图标
+                  cleanPointLayer.refreshOverlayIcon(id);
 
-                console.log(`标记 ${id} 的图标已刷新`);
-              } else {
-                console.error('未找到指定ID的标记');
+                  console.log(`标记 ${id} 的图标已刷新`);
+                } else {
+                  console.error('未找到指定ID的标记');
+                }
+              } catch (error) {
+                console.error('无效的标记ID');
               }
-            } catch (error) {
-              console.error('无效的标记ID');
+            } else {
+              console.error('请输入标记ID');
             }
-          } else {
-            console.error('请输入标记ID');
-          }
-        });
+          });
 
-        // 点击自适应视图按钮
-        const fitViewBtn = document.getElementById('fitViewBtn');
-        const zoomOutBtn = document.getElementById('zoomOutBtn');
+          // 点击自适应视图按钮
+          const fitViewBtn = document.getElementById('fitViewBtn');
+          const zoomOutBtn = document.getElementById('zoomOutBtn');
 
-        fitViewBtn.addEventListener('click', () => {
-          // 调用overlayFitMap方法，使地图自适应显示所有标记
-          cleanPointLayer.overlayFitMap();
-          console.log('已调用overlayFitMap方法，地图已自适应显示所有标记');
-        });
+          fitViewBtn.addEventListener('click', () => {
+            // 调用overlayFitMap方法，使地图自适应显示所有标记
+            cleanPointLayer.overlayFitMap();
+            console.log('已调用overlayFitMap方法，地图已自适应显示所有标记');
+          });
 
-        // 点击缩小视图按钮
-        zoomOutBtn.addEventListener('click', () => {
-          // 先缩小地图视图
-          const currentZoom = mapUtils.map.getZoom();
-          mapUtils.map.setZoom(currentZoom - 2);
-          console.log('地图已缩小，当前缩放级别:', mapUtils.map.getZoom());
+          // 点击缩小视图按钮
+          zoomOutBtn.addEventListener('click', () => {
+            // 先缩小地图视图
+            const currentZoom = mapUtils.map.getZoom();
+            mapUtils.map.setZoom(currentZoom - 2);
+            console.log('地图已缩小，当前缩放级别:', mapUtils.map.getZoom());
 
-          // 提示用户可以点击"自适应视图"按钮来测试效果
-          console.log(
-            '现在可以点击"自适应视图"按钮，测试overlayFitMap方法的效果'
-          );
-        });
+            // 提示用户可以点击"自适应视图"按钮来测试效果
+            console.log(
+              '现在可以点击"自适应视图"按钮，测试overlayFitMap方法的效果'
+            );
+          });
 
-        // 点击显示图层按钮
-        const showBtn = document.getElementById('showBtn');
-        showBtn.addEventListener('click', () => {
-          cleanPointLayer.show();
-          console.log('已调用show方法，图层已显示');
-        });
+          // 点击显示图层按钮
+          const showBtn = document.getElementById('showBtn');
+          showBtn.addEventListener('click', () => {
+            cleanPointLayer.show();
+            console.log('已调用show方法，图层已显示');
+          });
 
-        // 点击隐藏图层按钮
-        const hideBtn = document.getElementById('hideBtn');
-        hideBtn.addEventListener('click', () => {
-          cleanPointLayer.hide();
-          console.log('已调用hide方法，图层已隐藏');
-        });
+          // 点击隐藏图层按钮
+          const hideBtn = document.getElementById('hideBtn');
+          hideBtn.addEventListener('click', () => {
+            cleanPointLayer.hide();
+            console.log('已调用hide方法，图层已隐藏');
+          });
 
-        // 点击获取所有标记按钮
-        const getAllBtn = document.getElementById('getAllBtn');
-        getAllBtn.addEventListener('click', () => {
-          const allOverlays = cleanPointLayer.getAllOverlay();
-          console.log('已调用getAllOverlay方法，所有标记:', allOverlays);
-          alert(`当前共有 ${allOverlays.length} 个标记`);
-        });
+          // 点击获取所有标记按钮
+          const getAllBtn = document.getElementById('getAllBtn');
+          getAllBtn.addEventListener('click', () => {
+            const allOverlays = cleanPointLayer.getAllOverlay();
+            console.log('已调用getAllOverlay方法，所有标记:', allOverlays);
+            alert(`当前共有 ${allOverlays.length} 个标记`);
+          });
 
-        // 点击清空所有标记按钮
-        const clearAllBtn = document.getElementById('clearAllBtn');
-        clearAllBtn.addEventListener('click', () => {
-          if (confirm('确定要清空所有标记吗？')) {
-            cleanPointLayer.clearAllOverlay();
-            console.log('已调用clearAllOverlay方法，所有标记已清空');
-          }
-        });
+          // 点击清空所有标记按钮
+          const clearAllBtn = document.getElementById('clearAllBtn');
+          clearAllBtn.addEventListener('click', () => {
+            if (confirm('确定要清空所有标记吗？')) {
+              cleanPointLayer.clearAllOverlay();
+              console.log('已调用clearAllOverlay方法，所有标记已清空');
+            }
+          });
 
-        // 点击重新加载图层按钮
-        const reloadBtn = document.getElementById('reloadBtn');
-        reloadBtn.addEventListener('click', () => {
-          window.flag = !window.flag
-          cleanPointLayer.reload();
-          console.log('已调用reload方法，图层已重新加载');
-        });
+          // 点击重新加载图层按钮
+          const reloadBtn = document.getElementById('reloadBtn');
+          reloadBtn.addEventListener('click', () => {
+            window.flag = !window.flag;
+            cleanPointLayer.reload();
+            console.log('已调用reload方法，图层已重新加载');
+          });
 
-        // 点击销毁图层按钮
-        const destroyBtn = document.getElementById('destroyBtn');
-        destroyBtn.addEventListener('click', () => {
-          if (confirm('确定要销毁图层吗？销毁后将无法恢复')) {
-            cleanPointLayer.destroy();
-            console.log('已调用destroy方法，图层已销毁');
-          }
-        });
-      }
+          // 点击销毁图层按钮
+          const destroyBtn = document.getElementById('destroyBtn');
+          destroyBtn.addEventListener('click', () => {
+            if (confirm('确定要销毁图层吗？销毁后将无法恢复')) {
+              cleanPointLayer.destroy();
+              console.log('已调用destroy方法，图层已销毁');
+            }
+          });
+        }
+      };
     </script>
   </body>
 </html>

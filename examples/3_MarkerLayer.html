@@ -285,10 +285,8 @@
       ];
 
       window.onload = () => {
-        console.log('MapUtils', MapUtils.createMapUtils);
 
         const createMapUtils = MapUtils.createMapUtils;
-        console.log('createMapUtils', createMapUtils);
 
         const loaderOpts = {
           version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
@@ -439,19 +437,19 @@
                   // 获取当前标签显示状态并取反
                   const currentLabelShow =
                     cleanPointLayer.overlayList[overlayIndex].labelShowed;
-                  const newLabelShow = !currentLabelShow;
+                 cleanPointLayer.overlayList[overlayIndex].labelShowed = !currentLabelShow;
 
                   // 调用refreshOverlayLabel方法切换标签显示状态
-                  cleanPointLayer.refreshOverlayLabel(id, newLabelShow);
+                  cleanPointLayer.refreshOverlayLabel(id);
 
                   console.log(
-                    `标记 ${id} 的标签显示状态已切换为: ${newLabelShow ? '显示' : '隐藏'}`
+                    `标记 ${id} 的标签显示状态已切换为: ${cleanPointLayer.overlayList[overlayIndex].labelShowed ? '显示' : '隐藏'}`
                   );
                 } else {
                   console.error('未找到指定ID的标记');
                 }
               } catch (error) {
-                console.error('无效的标记ID');
+                console.error('无效的标记ID',error);
               }
             } else {
               console.error('请输入标记ID');
