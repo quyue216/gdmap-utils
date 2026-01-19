@@ -3,15 +3,18 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
-// 获取命令行参数，判断当前模式
+// 获取环境变量或默认值
 const isProduction = process.env.NODE_ENV === 'production';
+
+// 设置mode变量
+const mode = isProduction ? 'production' : 'development';
 
 // 配置对象
 const config = {
   entry: './src/index.ts',
   output: {
     // 打包后的文件名
-    filename: isProduction ? 'index.js' : 'bundle.js',
+    filename: 'index.js',
     // 输出目录路径
     path: path.resolve(__dirname, 'dist'),
     // 库的全局变量名，在浏览器中可以通过 window.MapUtils 访问
@@ -56,9 +59,12 @@ const config = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+    }),
   ],
   devtool: isProduction ? 'source-map' : 'eval-cheap-module-source-map',
-  mode: isProduction ? 'production' : 'development',
+  mode: mode,
 };
 
 // 开发模式下添加开发服务器和HTML模板配置
@@ -78,8 +84,8 @@ if (!isProduction) {
   // 添加HTML模板插件
   config.plugins.push(
     new HtmlWebpackPlugin({
-      // template: path.resolve(__dirname, 'examples', '4_LabelMarkerLayer.html'),
-       template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
+      template: path.resolve(__dirname, 'examples', '4_LabelMarkerLayer.html'),
+      //  template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
       filename: 'index.html',
       inject: { // 精确控制脚本的注入位置
         tagName: 'script',
