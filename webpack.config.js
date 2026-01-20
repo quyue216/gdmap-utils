@@ -2,6 +2,7 @@ const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 // 获取环境变量或默认值
 const isProduction = process.env.NODE_ENV === 'production';
@@ -65,6 +66,27 @@ const config = {
   ],
   devtool: isProduction ? 'source-map' : 'eval-cheap-module-source-map',
   mode: mode,
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: false,
+            drop_debugger: true,
+            pure_funcs: [],
+          },
+          mangle: {
+            keep_fnames: true,
+          },
+          output: {
+            comments: /@preserve|@license|@copyright|@author|@description|@param|@returns|@type/i,
+          },
+        },
+        extractComments: false,
+      }),
+    ],
+  },
 };
 
 // 开发模式下添加开发服务器和HTML模板配置
