@@ -109,6 +109,10 @@ export class MapUtils {
     this.map.setFitView(...opts);
   }
 
+  clearInfoWindow() {
+    this.map.clearInfoWindow();
+  }
+
   seZoomAndCenter(opts: {
     zoom: number;
     center: AMap.LngLat | [number, number];
