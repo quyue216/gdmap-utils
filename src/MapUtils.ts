@@ -33,6 +33,8 @@ export class MapUtils {
 
   static LngLat = MapMixin.LngLat;
 
+  static createAMapInfoWindow = MapMixin.createAMapInfoWindow;
+
   constructor(
     opts: MapUtilsOpts[keyof MapUtilsOpts],
     AMap: Simplify<typeof gdAMap>
@@ -109,6 +111,20 @@ export class MapUtils {
 
   clearInfoWindow() {
     this.map.clearInfoWindow();
+  }
+
+  seZoomAndCenter(opts: {
+    zoom: number;
+    center: AMap.LngLat | [number, number];
+    immediately?: boolean;
+    duration?: number;
+  }): void {
+    const curZoom = this.map.getZoom();
+    const lngAndLat = this.map.getCenter();
+    const curCenter: [number, number] = [lngAndLat.lng, lngAndLat.lat];
+    let { center = curCenter, zoom = curZoom, immediately, duration } = opts;
+
+    this.map.setZoomAndCenter(zoom, center, immediately, duration);
   }
 
   static error(msg: string) {

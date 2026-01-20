@@ -62,6 +62,24 @@ const gdHelperMixin = {
   LngLat(lng: number, lat: number, noWrap?: boolean): AMap.LngLat {
     return new AMap.LngLat(lng, lat, noWrap);
   },
+
+  /*
+   创建点位信息窗体
+   */
+  createAMapInfoWindow(opts: ConstructorParameters<typeof AMap.InfoWindow>[0]) {
+    const defIsCustom = true;
+    const defCloseWhenClickMap = true;
+    const {
+      isCustom = defIsCustom,
+      closeWhenClickMap = defCloseWhenClickMap,
+      ...rest
+    } = opts!;
+    return new AMap.InfoWindow({
+      isCustom,
+      closeWhenClickMap,
+      ...rest,
+    });
+  },
 };
 
 export default gdHelperMixin;
