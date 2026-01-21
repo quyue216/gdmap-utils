@@ -44,5 +44,8 @@
     "src/**/*.{ts,tsx,js,jsx,json,css,md}": [
       "prettier --write"
     ]
+  },
+  "volta": {
+    "node": "20.0.0"
   }
 }
