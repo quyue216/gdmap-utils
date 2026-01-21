@@ -130,6 +130,8 @@ class MarkerLayer {
     this.rawLayer.clearOverlays();
     //@ts-expect-error
     this.rawLayer.setMap(null);
+    //@ts-expect-error
+    this.rawLayer = null;
   }
 
   reload() {

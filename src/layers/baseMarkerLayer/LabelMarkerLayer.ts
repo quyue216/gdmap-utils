@@ -154,6 +154,8 @@ class LabelMarkerLayer {
     this.rawLayer.clear();
 
     this.map.remove(this.rawLayer);
+    //@ts-expect-error
+    this.rawLayer = null;
   }
 
   reload() {
