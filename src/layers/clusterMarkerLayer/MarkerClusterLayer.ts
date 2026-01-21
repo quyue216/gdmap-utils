@@ -1,4 +1,8 @@
-import type { mapIns, MarkerClusterDataOptions } from '@/types/index.d';
+import type {
+  mapIns,
+  MarkerClusterDataOptions,
+  MarkerClusterOptions,
+} from '@/types/index.d';
 
 class MarkerClusterLayer {
   rawLayer: any; //高德未提供cluster的类型
@@ -8,7 +12,7 @@ class MarkerClusterLayer {
   constructor(
     map: mapIns,
     dataOptions: Array<MarkerClusterDataOptions>,
-    opts: any
+    opts: MarkerClusterOptions
   ) {
     this.map = map;
     //@ts-expect-error
