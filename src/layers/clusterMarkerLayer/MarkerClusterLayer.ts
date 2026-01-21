@@ -1,4 +1,4 @@
-import type { mapIns } from '@/types/index.d';
+import type { mapIns, MarkerClusterDataOptions } from '@/types/index.d';
 
 class MarkerClusterLayer {
   rawLayer: any; //高德未提供cluster的类型
@@ -7,7 +7,7 @@ class MarkerClusterLayer {
 
   constructor(
     map: mapIns,
-    dataOptions: Array<{ lnglat: [number, number]; weight: number }>,
+    dataOptions: Array<MarkerClusterDataOptions>,
     opts: any
   ) {
     this.map = map;
@@ -15,13 +15,15 @@ class MarkerClusterLayer {
     this.rawLayer = new AMap.MarkerCluster(map, dataOptions, opts);
   }
 
-  bindEventMarker(clickType: AMap.EventType, callback: () => void) {}
+  bindEventMarker(clickType: AMap.EventType, callback: () => void) {
+    this.rawLayer.on(clickType, callback);
+  }
 
-  add(dataOption: { lnglat: [number, number]; weight: number }) {
+  add(dataOption: MarkerClusterDataOptions) {
     this.rawLayer.addData(dataOption);
   }
 
-  remove(dataOptions: Array<{ lnglat: [number, number]; weight: number }>) {
+  remove(dataOptions: Array<MarkerClusterDataOptions>) {
     this.rawLayer.setData(dataOptions);
   }
 
@@ -29,13 +31,14 @@ class MarkerClusterLayer {
     this.rawLayer.setData([]);
   }
 
-  show(dataOptions: Array<{ lnglat: [number, number]; weight: number }>) {
+  show(dataOptions: Array<MarkerClusterDataOptions>) {
     this.rawLayer.setData(dataOptions);
   }
 
   destroy() {
     this.rawLayer.setData([]);
     this.rawLayer.setMap(null);
+    this.rawLayer = null;
   }
 
   clearAllOvl() {
