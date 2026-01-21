@@ -1,30 +1,46 @@
+import type { mapIns } from '@/types/index.d';
+
 class MarkerClusterLayer {
-  rawLayer = new AMap.OverlayGroup();
+  rawLayer: any; //高德未提供cluster的类型
 
-  constructor() {}
+  map: mapIns;
 
-  createOverlays() {
-    return [];
+  constructor(
+    map: mapIns,
+    dataOptions: Array<{ lnglat: [number, number]; weight: number }>,
+    opts: any
+  ) {
+    this.map = map;
+    //@ts-expect-error
+    this.rawLayer = new AMap.MarkerCluster(map, dataOptions, opts);
   }
+
   bindEventMarker(clickType: AMap.EventType, callback: () => void) {}
 
-  add(markers: Array<AMap.Marker>) {}
+  add(dataOption: { lnglat: [number, number]; weight: number }) {
+    this.rawLayer.addData(dataOption);
+  }
 
-  remove(markers: Array<AMap.Marker>) {}
+  remove(dataOptions: Array<{ lnglat: [number, number]; weight: number }>) {
+    this.rawLayer.setData(dataOptions);
+  }
 
-  highlightOverLay() {}
+  hide() {
+    this.rawLayer.setData([]);
+  }
 
-  hide() {}
+  show(dataOptions: Array<{ lnglat: [number, number]; weight: number }>) {
+    this.rawLayer.setData(dataOptions);
+  }
 
-  show() {}
+  destroy() {
+    this.rawLayer.setData([]);
+    this.rawLayer.setMap(null);
+  }
 
-  getAllOverlay() {}
-
-  destroy() {}
-
-  reload() {}
-
-  overlayFitMap() {}
+  clearAllOvl() {
+    this.rawLayer.setData([]);
+  }
 }
 
 export default MarkerClusterLayer;
