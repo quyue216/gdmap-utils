@@ -1,11 +1,10 @@
 import MarkerClusterLayer from './MarkerClusterLayer';
 import type {
   MarkerClusterLayerType,
-  LayerOpts,
-  ClusterMarkerLayerInfo,
-  OverlayData,
+  OverlayData, //OverLayerData图层公共接口
   MarkerClusterDataOptions,
   MarkerClusterOptions,
+  ClusterMarkerLayerInfo,
 } from '@/types';
 import { MapUtils } from '@/MapUtils';
 import type { MapUtilsConstructor, mapUtilsIns } from '@/MapUtils';
@@ -48,12 +47,6 @@ class ClusterMarkerLayer<
 
   layerType: MarkerClusterLayerType;
 
-  getOverlayOpts: (
-    item: OverlayData<U>,
-    index: number,
-    MapUtils: MapUtilsConstructor
-  ) => V['overlayOpts'];
-
   constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
 
@@ -81,10 +74,6 @@ class ClusterMarkerLayer<
 
     this.overlayList = opts.overlayList;
 
-    this.getIconUrl = opts.getIconUrl;
-
-    this.getOverlayOpts = opts.getOverlayOpts;
-
     this.layerType = opts.layerType;
 
     Object.assign(this, rest);
@@ -106,50 +95,11 @@ class ClusterMarkerLayer<
     overlayList: Array<OverlayData<U>>
   ): Array<MarkerClusterDataOptions> {
     return overlayList.map(item => {
-      const overlayOpts = this.getOverlayOpts(item, 0, MapUtils);
       return {
         lnglat: [item.overlayData.lon, item.overlayData.lat],
         weight: item.overlayData.weight || 1,
-        ...overlayOpts,
       };
     });
-  }
-
-  /**
-   * 将覆盖物数据转换为覆盖物配置
-   * @param overlayList 覆盖物数据列表
-   * @returns 覆盖物配置列表
-   */
-  convertOverlayDataToOpts(
-    overlayList: Array<OverlayData<U>>
-  ): Array<V['overlayOpts']> {
-    const OverlaysLayer = ClusterMarkerLayer.layerClassMap.get(this.layerType)!;
-
-    return overlayList.map((item, index) => {
-      return OverlaysLayer.convertOverlayDataToOvlOpts?.(
-        item,
-        index,
-        this.getIconUrl,
-        this.getOverlayOpts,
-        MapUtils
-      ) as V['overlayOpts'];
-    });
-  }
-
-  createOverlays(overlayList: Array<OverlayData>): Array<V['ovIns']> {
-    const clusterData = this.convertOverlayDataToClusterData(
-      overlayList as Array<OverlayData<U>>
-    );
-    this.rawLayerIns.show(clusterData);
-    return [this.rawLayerIns] as unknown as Array<V['ovIns']>;
-  }
-
-  overlayFitMap() {
-    // 聚合图层的地图适配逻辑
-    const allOverlays = this.getAllOverlay();
-    if (allOverlays && allOverlays.length > 0) {
-      this.mapUtils.map.setFitView(allOverlays);
-    }
   }
 
   bindEventOverlays(clickType: AMap.EventType, callback: () => void) {
@@ -167,11 +117,6 @@ class ClusterMarkerLayer<
     this.rawLayerIns.show(clusterData);
   }
 
-  getAllOverlay() {
-    // 聚合图层返回原始图层实例
-    return [this.rawLayerIns.rawLayer] as unknown as Array<V['ovIns']>;
-  }
-
   destroy() {
     // @ts-ignore
     this.mapUtils.removeLayer(this); //从MapUtils中移除
@@ -184,15 +129,7 @@ class ClusterMarkerLayer<
     this.rawLayerIns.clearAllOvl();
   }
 
-  reload() {
-    this.rawLayerIns.clearAllOvl();
-    this.createOverlays(this.overlayList);
-  }
-
-  findLayerOverlay(ovId: string | number) {
-    // 聚合图层无法直接查找单个标记，返回null
-    return null;
-  }
+  reload() {}
 
   add(overlayList: Array<OverlayData<U>>) {
     const clusterData = this.convertOverlayDataToClusterData(overlayList);
@@ -222,16 +159,6 @@ class ClusterMarkerLayer<
       this.rawLayerIns.remove(clusterData);
     }
     // 聚合图层不支持直接移除单个实例
-  }
-
-  refreshOverlayIcon(overlayId: string) {
-    // 聚合图层不支持单个图标刷新，需要重新加载所有数据
-    this.reload();
-  }
-
-  refreshOverlayLabel(overlayId: string | number) {
-    // 聚合图层不支持单个标签刷新，需要重新加载所有数据
-    this.reload();
   }
 
   // 返回原始图层对象
