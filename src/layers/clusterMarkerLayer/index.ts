@@ -3,11 +3,11 @@ import type {
   MarkerClusterLayerType,
   OverlayData, //OverLayerData图层公共接口
   MarkerClusterDataOptions,
-  MarkerClusterOptions,
   ClusterMarkerLayerInfo,
+  ClusterMarkerLayerOpts,
 } from '@/types';
 import { MapUtils } from '@/MapUtils';
-import type { MapUtilsConstructor, mapUtilsIns } from '@/MapUtils';
+import type { mapUtilsIns } from '@/MapUtils';
 
 class ClusterMarkerLayer<
   U extends object,
@@ -43,11 +43,9 @@ class ClusterMarkerLayer<
 
   mapUtils: mapUtilsIns;
 
-  getIconUrl: (item: OverlayData<U>) => string;
-
   layerType: MarkerClusterLayerType;
 
-  constructor(opts: LayerOpts<U, T>, mapUtils: mapUtilsIns) {
+  constructor(opts: ClusterMarkerLayerOpts<U, T>, mapUtils: mapUtilsIns) {
     const { layerType, layerName, ...rest } = opts;
 
     const OverlaysLayer = ClusterMarkerLayer.layerClassMap.get(layerType);
@@ -57,10 +55,11 @@ class ClusterMarkerLayer<
       const clusterData = this.convertOverlayDataToClusterData(
         opts.overlayList
       );
+
       this.rawLayerIns = new OverlaysLayer(
         mapUtils.map,
         clusterData,
-        opts.overlayLayer as MarkerClusterOptions
+        opts.layerOpts
       );
     } else {
       throw new Error(
@@ -77,13 +76,6 @@ class ClusterMarkerLayer<
     this.layerType = opts.layerType;
 
     Object.assign(this, rest);
-
-    this.initLayer();
-  }
-
-  // 图层事件,覆盖物初始化
-  initLayer() {
-    // 已经在构造函数中初始化了聚合图层
   }
 
   /**
@@ -129,8 +121,6 @@ class ClusterMarkerLayer<
     this.rawLayerIns.clearAllOvl();
   }
 
-  reload() {}
-
   add(overlayList: Array<OverlayData<U>>) {
     const clusterData = this.convertOverlayDataToClusterData(overlayList);
 
@@ -142,8 +132,8 @@ class ClusterMarkerLayer<
     });
   }
 
-  remove(ovs: Array<V['ovIns']> | string[]) {
-    if (Array.isArray(ovs) && typeof ovs[0] === 'string') {
+  remove(ovs: Array<number | string>) {
+    if (Array.isArray(ovs)) {
       // 根据ID移除覆盖物
       const ids = ovs as Array<string | number>;
 

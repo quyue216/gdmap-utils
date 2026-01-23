@@ -63,17 +63,19 @@ type MarkerClusterDataOptions<T extends {} = {}> = {
 type ClusterMarkerLayerInfo = {
   markerClusterLayer: {
     layerIns: MarkerClusterLayerIns;
-    overlayOpts: MarkerClusterOptions;
+    layerOpts: MarkerClusterOptions;
   };
 };
 
 interface ClusterMarkerLayerOpts<
   U = {},
   T extends MarkerClusterLayerType = 'markerClusterLayer',
+  V = ClusterMarkerLayerInfo[T],
 > {
   layerType: T;
   layerName: string;
   overlayList: Array<OverlayData<U>>;
+  layerOpts: V['layerOpts'];
 }
 
 export type {
