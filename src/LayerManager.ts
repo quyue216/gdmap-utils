@@ -1,7 +1,11 @@
-import type { LayerManger } from './types/index.d.ts';
-import type { BaseMarkerLayerClass } from './layers/index.ts';
+import type {
+  BaseMarkerLayerClass,
+  ClusterMarkerLayerClass,
+} from '@/layers/index.ts';
 
-type LayerIns = InstanceType<BaseMarkerLayerClass>;
+type LayerIns =
+  | InstanceType<BaseMarkerLayerClass>
+  | InstanceType<ClusterMarkerLayerClass>;
 export class LayerManager {
   layers: Map<string, LayerIns> = new Map(); //组合模式
 
@@ -39,7 +43,11 @@ export class LayerManager {
   }
 
   reload() {
-    this.layers.forEach(val => val.reload());
+    this.layers.forEach(val => {
+      if (typeof (val as any).reload === 'function') {
+        (val as any).reload();
+      }
+    });
   }
 
   hasLayer(layer: LayerIns): boolean {

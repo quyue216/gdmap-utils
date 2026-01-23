@@ -85,4 +85,5 @@ export type {
   // 图层定义类型代码
   ClusterMarkerLayerInfo,
   ClusterMarkerLayerOpts,
+  MarkerClusterLayerIns,
 };
