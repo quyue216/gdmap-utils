@@ -5,9 +5,12 @@ import type {
   MapUtilsOpts,
   mapIns,
   MarkerLayerBaseType,
+  MarkerClusterLayerType,
   LayerOpts,
+  ClusterMarkerLayerOpts,
 } from './types/index.d';
-import { BaseMarkerLayerIns, BaseMarkerLayer } from './layers/index';
+import { BaseMarkerLayer, ClusterMarkerLayer } from './layers/index';
+import type { BaseMarkerLayerIns, ClusterMarkerLayerIns } from './layers';
 import type { SetOptional, Simplify } from 'type-fest';
 import LayerManager from './LayerManager';
 
@@ -88,7 +91,17 @@ export class MapUtils {
     return layer;
   }
 
-  removeLayer(layer: BaseMarkerLayerIns) {
+  createClusterMarkerLayer<
+    U extends {},
+    T extends MarkerClusterLayerType = 'markerClusterLayer',
+  >(opts: ClusterMarkerLayerOpts<U, T>) {
+    const layer = new ClusterMarkerLayer<U, T>(opts, this);
+
+    this.LayerManager.addLayer(layer);
+    return layer;
+  }
+
+  removeLayer(layer: BaseMarkerLayerIns | ClusterMarkerLayerIns) {
     const isLayerExist = this.LayerManager.hasLayer(layer);
 
     if (isLayerExist) {
