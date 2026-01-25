@@ -1,0 +1,529 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, user-scalable=no, width=device-width"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reset.css@5.0.2/reset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <title>地图显示</title>
+    <style>
+      html,
+      body,
+      #container {
+        width: 100%;
+        height: 100%;
+      }
+
+      .labelTitle {
+        background-color: rgba(27, 204, 253, 0.85);
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        border: 2px solid rgba(27, 204, 253, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        min-width: 100px;
+        line-height: 1.4;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .labelTitle:hover {
+        background-color: rgba(27, 204, 253, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .control-panel {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background-color: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .control-panel button {
+        margin: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .sydw-label {
+        color: #000;
+        font-size: 17px;
+      }
+      .display-none {
+        visibility: hidden;
+      }
+      .amap-marker-label {
+        border: 0;
+        background-color: transparent;
+        box-shadow: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <!-- 控制按钮面板 -->
+    <div class="control-panel">
+      <button id="addBtn">添加标记</button>
+      <button id="removeBtn">删除标记</button>
+      <button id="removeByIdBtn">按ID删除</button>
+      <br /><br />
+      <input type="text" id="markerIdInput" placeholder="输入标记ID" />
+      <br /><br />
+      <button id="fitViewBtn">自适应视图</button>
+      <button id="zoomOutBtn">缩小视图</button>
+      <br /><br />
+      <button id="showBtn">显示图层</button>
+      <button id="hideBtn">隐藏图层</button>
+      <button id="getAllBtn">获取所有标记</button>
+      <br /><br />
+      <button id="clearAllBtn">清空所有标记</button>
+      <button id="destroyBtn">销毁图层</button>
+    </div>
+    <!-- 加载地图JSAPI脚本 -->
+    <!-- <script src="../dist/index.js"></script> -->
+    <script>
+      const data = [
+        {
+          id: 5194,
+          sydmc: '世茂滨江花园南区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515844,
+          wd: 31.218427,
+          zt: 1,
+          sbsj: '2025-07-16 10:09:37',
+          dwsx: '1',
+        },
+        {
+          id: 2972,
+          sydmc: '滨江兰庭',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.516452,
+          wd: 31.220885,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 2842,
+          sydmc: '浦城小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.514702,
+          wd: 31.225064,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 1182,
+          sydmc: '南泉大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.521759,
+          wd: 31.219519,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 509,
+          sydmc: '东南新村',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515997,
+          wd: 31.225962,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 1603,
+          sydmc: '天后宫大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.515854,
+          wd: 31.226379,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 974,
+          sydmc: '兰园小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.513274,
+          wd: 31.224613,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 3168,
+          sydmc: '百富达公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.517998,
+          wd: 31.219241,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3526,
+          sydmc: '蔚蓝海岸天科苑',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.51708,
+          wd: 31.220443,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3059,
+          sydmc: '爱建大楼',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.517637,
+          wd: 31.222101,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 3253,
+          sydmc: '竹南小区',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.529235,
+          wd: 31.22615,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 1465,
+          sydmc: '地铁4号线世纪大道站',
+          sydlx: '0',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.528294,
+          wd: 31.228321,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 879,
+          sydmc: '众城公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.530018,
+          wd: 31.224475,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 3067,
+          sydmc: '爵士大厦',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.529722,
+          wd: 31.225217,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '1',
+        },
+        {
+          id: 2726,
+          sydmc: '浦东南路1780弄',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.518546,
+          wd: 31.216307,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 913,
+          sydmc: '保利One56',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.513294,
+          wd: 31.21825,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+        {
+          id: 582,
+          sydmc: '东港公寓',
+          sydlx: '1',
+          ssqy: '潍坊街道',
+          cphm: '沪EB2317',
+          jd: 121.518218,
+          wd: 31.218001,
+          zt: 1,
+          sbsj: '2025-07-16 10:07:29',
+          dwsx: '0',
+        },
+      ];
+
+      window.onload = () => {
+        // idDom获取
+        const getAllBtn = document.getElementById('getAllBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const removeByIdBtn = document.getElementById('removeByIdBtn');
+        const markerIdInput = document.getElementById('markerIdInput');
+        const fitViewBtn = document.getElementById('fitViewBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        // 显示/隐藏/销毁
+        const destroyBtn = document.getElementById('destroyBtn');
+        const showBtn = document.getElementById('showBtn');
+        const hideBtn = document.getElementById('hideBtn');
+
+        const { createMapUtils, MapUtils: gdMapUtils } = MapUtils;
+
+        const loaderOpts = {
+          version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+          plugins: ['AMap.MarkerCluster'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
+          key: '9506c73ed67acb0a09f1aabf88df4819',
+        };
+
+        test();
+        const config = {
+          icon: 'https://www.shpfyh.com/static/img/sydw_icon.630a9e8f.png',
+          name: 'qy',
+          iconActive:
+            'https://www.shpfyh.com/static/img/sydw_icon_active.e3216544.png',
+          className: 'qyCollectionPoint',
+          size: [30, 30],
+          pixel: [0, 0],
+          windowConfig: {
+            offset: [0, -90],
+          },
+          updateTime: 10000 * 6, // 更新定时器时间
+        };
+
+        async function test() {
+          window.mapUtils = await createMapUtils(
+            {
+              viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
+              zoom: 11, // 初始化地图层级
+              center: [data[0].jd, data[1].wd], // 初始化地图中心点
+              mountSelector: 'container',
+            },
+            loaderOpts
+          );
+
+          const defaultIcon = gdMapUtils.createIcon({
+            size: config.size,
+            image: config.icon,
+            imageSize: config.size,
+            imageOffset: config.pixel,
+          });
+
+          // 激活图标
+          const activeIcon = gdMapUtils.createIcon({
+            size: config.size,
+            image: config.iconActive,
+            imageSize: config.size,
+            imageOffset: config.pixel,
+          });
+
+          //图层创建
+          window.clusterMarkerLayer = mapUtils.createClusterMarkerLayer({
+            layerType: 'markerClusterLayer',
+            layerName: 'sydwCollecte',
+            overlayList: data.slice(0, 10).map(item => {
+              return {
+                overlayData: {
+                  lon: item.jd,
+                  lat: item.wd,
+                  title: item.sydmc,
+                  id: item.id,
+                  extData: item,
+                },
+                id: item.id,
+                labelShowed: false,
+                iconActive: false,
+              };
+            }),
+            layerOpts: {
+              gridSize: 80,
+              renderClusterMarker(context) {
+                // 绘制聚合点时调用
+                const count = data.length;
+                const factor = Math.pow(context.count / count, 1 / 18);
+                const div = document.createElement('div');
+                const Hue = 180 - factor * 180;
+                const bgColor = 'hsla(' + Hue + ',100%,50%,0.7)';
+                const fontColor = 'hsla(' + Hue + ',100%,20%,1)';
+                const borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+                const shadowColor = 'hsla(' + Hue + ',100%,50%,1)';
+                div.style.backgroundColor = bgColor;
+                const size = Math.round(
+                  30 + Math.pow(context.count / count, 1 / 5) * 20
+                );
+                div.style.width = div.style.height = size + 'px';
+                div.style.border = 'solid 1px ' + borderColor;
+                div.style.borderRadius = size / 2 + 'px';
+                div.style.boxShadow = '0 0 1px ' + shadowColor;
+                div.innerHTML = context.count;
+                div.style.lineHeight = size + 'px';
+                div.style.color = fontColor;
+                div.style.fontSize = '14px';
+                div.style.textAlign = 'center';
+                const Pixel = gdMapUtils.Size(-size / 2, -size / 2);
+                context.marker.setOffset(Pixel);
+                context.marker.setContent(div);
+              }, // 自定义聚合点样式
+              renderMarker: context => {
+                const {
+                  overlayData: { extData },
+                  iconActive,
+                  labelShowed,
+                } = context.data[0];
+
+                const curIcon = iconActive ? activeIcon : defaultIcon;
+
+                context.marker.setOffset(gdMapUtils.Pixel(...config.pixel));
+                context.marker.setExtData(extData);
+                context.marker.setIcon(curIcon);
+                context.marker.setLabel({
+                  offset: gdMapUtils.Pixel(0, 0),
+                  content: `<div class="${!labelShowed ? 'display-none' : ''} sydw-label">${extData.sydmc}</div>`,
+                  direction: 'top',
+                });
+              },
+            },
+          });
+
+          // 事件绑定
+          clusterMarkerLayer.bindEventOverlays('click', rest => {
+            const { lnglat, marker, clusterData } = rest;
+
+            clusterData[0].labelShowed = true;
+
+            if (clusterData.length > 1) {
+              //点击集合样式地图放大一级
+              mapUtils.map.setCenter(lnglat, false);
+              mapUtils.map.zoomIn(); // 放大地图
+            }
+
+            marker?.dom
+              ?.querySelector('.sydw-label')
+              .classList.remove('display-none');
+          });
+
+          // 显示按钮点击事件
+          showBtn.addEventListener('click', () => {
+            clusterMarkerLayer.show();
+          });
+
+          // 隐藏按钮点击事件
+          hideBtn.addEventListener('click', () => {
+            clusterMarkerLayer.hide();
+          });
+
+          // 获取所有标记按钮点击事件
+          getAllBtn.addEventListener('click', () => {
+            const allMarkers = clusterMarkerLayer.overlayList;
+
+            alert(allMarkers.length + '个标记');
+          });
+
+          // 自适应按钮点击事件
+          fitViewBtn.addEventListener('click', () => {
+            mapUtils.map.setFitView();
+          });
+
+          clearAllBtn.addEventListener('click', () => {
+            clusterMarkerLayer.clearAllOverlay();
+          });
+          destroyBtn.addEventListener('click', () => {
+            clusterMarkerLayer.destroy();
+          });
+
+          zoomOutBtn.addEventListener('click', () => {
+            mapUtils.map.zoomOut();
+          });
+          const markerIdInput = document.querySelector('#markerIdInput');
+          // 添加一个新的标记按钮点击事件
+          addBtn.addEventListener('click', () => {
+            const newMarkerId = markerIdInput.value; // 生成一个唯一的ID
+
+            if (!newMarkerId) {
+              alert('请输入标记ID');
+              return;
+            }
+
+            // 创建一个新的标记数据
+            const newMarker = {
+              overlayData: {
+                lon: 121.515844 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成经度
+                lat: 31.218427 + Math.random() * 0.02 - 0.01, // 在中心点附近随机生成纬度
+                title: `新标记${newMarkerId}`,
+                id: newMarkerId,
+                extData: { id: newMarkerId, sydmc: `新标记${newMarkerId}` },
+              },
+              id: newMarkerId,
+              labelShowed: true,
+              iconActive: true,
+            };
+
+            clusterMarkerLayer.add([newMarker]);
+          });
+        
+          removeBtn.addEventListener('click', () => {
+            const markerId = markerIdInput.value; // 生成一个唯一的ID
+
+            if (!markerId) {
+              alert('请输入标记ID');
+              return;
+            }
+
+            clusterMarkerLayer.remove([markerId]);
+          });
+        }
+      };
+    </script>
+  </body>
+</html>

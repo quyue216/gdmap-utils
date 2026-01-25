@@ -23,7 +23,7 @@ class MarkerClusterLayer {
     this.rawLayer.on(clickType, callback);
   }
 
-  add(dataOption: MarkerClusterDataOptions) {
+  add(dataOption: MarkerClusterDataOptions[]) {
     this.rawLayer.addData(dataOption);
   }
 

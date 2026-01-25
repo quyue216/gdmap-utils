@@ -26,7 +26,9 @@ class ClusterMarkerLayer<
     layerClass: ClusterMarkerLayerTypeClass
   ) {
     if (typeof layerType !== 'string' || typeof layerClass !== 'function') {
-      MapUtils.error('[LayerManager Error]: Invalid layer type or layer class');
+      MapUtils.error(
+        '[ClusterMarkerLayer Error]: Invalid layer type or layer class'
+      );
       return;
     }
 
@@ -88,6 +90,7 @@ class ClusterMarkerLayer<
   ): Array<MarkerClusterDataOptions> {
     return overlayList.map(item => {
       return {
+        ...item,
         lnglat: [item.overlayData.lon, item.overlayData.lat],
         weight: item.overlayData.weight || 1,
       };
@@ -127,9 +130,7 @@ class ClusterMarkerLayer<
     this.overlayList.push(...overlayList);
 
     // 逐个添加聚合数据
-    clusterData.forEach(data => {
-      this.rawLayerIns.add(data);
-    });
+    this.rawLayerIns.add(clusterData);
   }
 
   remove(ovs: Array<number | string>) {
