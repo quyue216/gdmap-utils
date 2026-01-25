@@ -106,8 +106,7 @@ if (!isProduction) {
   // 添加HTML模板插件
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'examples', '4_LabelMarkerLayer.html'),
-      //  template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
+      template: path.resolve(__dirname, 'examples', '5_markerCluster.html'),
       filename: 'index.html',
       inject: { // 精确控制脚本的注入位置
         tagName: 'script',
