@@ -130,6 +130,10 @@ export class MapUtils {
     this.map.setFitView(...opts);
   }
 
+  /**
+   * 清楚地图弹窗
+   * @memberof MapUtils
+   */
   clearInfoWindow() {
     this.map.clearInfoWindow();
   }
