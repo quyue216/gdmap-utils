@@ -80,6 +80,34 @@ const gdHelperMixin = {
       ...rest,
     });
   },
+
+  /**
+   * 创建高德地图折线
+   * @param {Object} options 折线配置
+   * @returns {AMap.Polyline} 折线对象
+   */
+  createAMapPolyline(options: AMap.PolylineOptions) {
+    const defOpts = {
+      showDir: true,
+      lineJoin: 'round',
+      strokeColor: '#28F', //蓝色
+      strokeOpacity: 1, //线透明度
+      strokeWeight: 6,
+    };
+
+    const opts = Object.assign(options, defOpts);
+
+    return new AMap.Polyline(opts);
+  },
+
+  loadPlugins(plugins: string | string[]) {
+    return new Promise(resolve => {
+      AMap.plugin(plugins, function () {
+        //@ts-expect-error
+        resolve();
+      });
+    });
+  },
 };
 
 export default gdHelperMixin;

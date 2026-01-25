@@ -42,6 +42,10 @@ export class MapUtils {
 
   static createAMapInfoWindow = MapMixin.createAMapInfoWindow;
 
+  static createAMapPolyline = MapMixin.createAMapPolyline;
+
+  static loadPlugins = MapMixin.loadPlugins;
+
   constructor(
     opts: MapUtilsOpts[keyof MapUtilsOpts],
     AMap: Simplify<typeof gdAMap>
