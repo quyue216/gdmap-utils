@@ -2,6 +2,7 @@ import type {
   BaseMarkerLayerClass,
   ClusterMarkerLayerClass,
 } from '@/layers/index.ts';
+import { MapUtils } from '@/MapUtils';
 
 type LayerIns =
   | InstanceType<BaseMarkerLayerClass>
@@ -11,7 +12,8 @@ export class LayerManager {
 
   addLayer(layer: LayerIns) {
     if (this.hasLayer(layer)) {
-      throw new Error(`Layer with name "${layer.layerName}" already exists`);
+      const errorMsg = `Layer with name "${layer.layerName}" already exists`;
+      return MapUtils.error(errorMsg);
     }
     this.layers.set(layer.layerName, layer);
   }
@@ -24,6 +26,9 @@ export class LayerManager {
     let layer = this.layers.get(LayerName);
     if (layer) {
       layer.show();
+    } else {
+      const errorMsg = `Layer with name "${LayerName}" not found`;
+      return MapUtils.error(errorMsg);
     }
   }
 
@@ -31,6 +36,9 @@ export class LayerManager {
     let layer = this.layers.get(LayerName);
     if (layer) {
       layer.hide();
+    } else {
+      const errorMsg = `Layer with name "${LayerName}" not found`;
+      return MapUtils.error(errorMsg);
     }
   }
 

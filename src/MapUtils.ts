@@ -144,6 +144,43 @@ export class MapUtils {
     this.map.setZoomAndCenter(zoom, center, immediately, duration);
   }
 
+  /**
+   * 显示指定图层
+   * @param {string} layerName - 图层名称
+   */
+  showLayer(layerName: string): void {
+    this.LayerManager.show(layerName);
+  }
+
+  /**
+   * 隐藏指定图层
+   * @param {string} layerName - 图层名称
+   */
+  hideLayer(layerName: string): void {
+    this.LayerManager.hide(layerName);
+  }
+
+  /**
+   * 显示所有图层
+   */
+  showAllLayers(): void {
+    this.LayerManager.showAll();
+  }
+
+  /**
+   * 隐藏所有图层
+   */
+  hideAllLayers(): void {
+    this.LayerManager.hideAll();
+  }
+
+  /**
+   * 重新加载所有图层
+   */
+  reloadLayers(): void {
+    this.LayerManager.reload();
+  }
+
   static error(msg: string) {
     console.error(`[MapUtils Error]:${msg}`);
   }
