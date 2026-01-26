@@ -11,7 +11,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "prepare": "husky",
-    "release": "pnpm run build && pnpm publish"
+    "release": "pnpm run build && pnpm publish",
+    "docs": "typedoc && node scripts/cleanDocs.js"
   },
   "keywords": [
     "map",
@@ -34,6 +35,8 @@
     "prettier": "^3.7.4",
     "ts-loader": "^9.5.4",
     "type-fest": "^5.3.1",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3",
     "webpack": "^5.103.0",
     "webpack-cli": "^6.0.1",

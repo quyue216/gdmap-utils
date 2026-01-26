@@ -99,6 +99,10 @@ export class MapUtils {
     return layer;
   }
 
+  /**
+   * 创建聚合标记图层
+   * @param {ClusterMarkerLayerOpts<U, T>} opts - 图层配置选项
+   */
   createClusterMarkerLayer<
     U extends {},
     T extends MarkerClusterLayerType = 'markerClusterLayer',
@@ -109,6 +113,10 @@ export class MapUtils {
     return layer;
   }
 
+  /**
+   * `removeLayer`接收图层实例将其从mapUtils的关联中移除
+   * @param {(BaseMarkerLayerIns | ClusterMarkerLayerIns)} layer
+   */
   removeLayer(layer: BaseMarkerLayerIns | ClusterMarkerLayerIns) {
     const isLayerExist = this.LayerManager.hasLayer(layer);
 
@@ -131,13 +139,25 @@ export class MapUtils {
   }
 
   /**
-   * 清楚地图弹窗
+   * 地图弹窗关闭
    * @memberof MapUtils
    */
   clearInfoWindow() {
     this.map.clearInfoWindow();
   }
 
+  /**
+   * 地图跳转参数
+   * @typedef {Object} GotoOpts
+   * @property {number} zoom                   - 目标缩放级别
+   * @property {AMap.LngLat|[number,number]} center - 目标中心点（高德坐标实例或 [lng,lat] 数组）
+   * @property {boolean} [immediately=false]   - 是否立即跳转，默认平滑过渡
+   * @property {number} [duration]             - 过渡动画时长（毫秒）
+   */
+  /**
+   * 将地图视图切换到指定状态
+   * @param {GotoOpts} opts 跳转配置
+   */
   seZoomAndCenter(opts: {
     zoom: number;
     center: AMap.LngLat | [number, number];
@@ -153,7 +173,7 @@ export class MapUtils {
   }
 
   /**
-   * 显示指定图层
+   * 地图指定图层显示, `layerName`为创建图层所传递的参数，用于标识图层名称。
    * @param {string} layerName - 图层名称
    */
   showLayer(layerName: string): void {
@@ -161,7 +181,7 @@ export class MapUtils {
   }
 
   /**
-   * 隐藏指定图层
+   * 地图指定图层隐藏, `layerName`为创建图层所传递的参数，用于标识图层名称。
    * @param {string} layerName - 图层名称
    */
   hideLayer(layerName: string): void {
@@ -169,26 +189,30 @@ export class MapUtils {
   }
 
   /**
-   * 显示所有图层
+   * 地图显示所有图层
    */
   showAllLayers(): void {
     this.LayerManager.showAll();
   }
 
   /**
-   * 隐藏所有图层
+   * 地图所有图层隐藏
    */
   hideAllLayers(): void {
     this.LayerManager.hideAll();
   }
 
   /**
-   * 重新加载所有图层
+   * 地图所有图层重新渲染
    */
   reloadLayers(): void {
     this.LayerManager.reload();
   }
 
+  /**
+   * @ignore
+   * @param msg
+   */
   static error(msg: string) {
     console.error(`[MapUtils Error]:${msg}`);
   }
