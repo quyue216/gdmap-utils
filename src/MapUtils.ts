@@ -75,8 +75,6 @@ export class MapUtils {
   }
 
   /**
-   *
-   *
    * @param {AMap.EventType} type  地图事件类型
    * @param {(e: any) => void} fn  回调函数
    * @param {*} [context]          事件上下文，缺省为当前实例
@@ -101,7 +99,6 @@ export class MapUtils {
   }
 
   /**
-   *
    * @ignore
    * @return {*}
    */
@@ -239,20 +236,23 @@ export type { mapUtilsIns, MapUtilsConstructor };
 
 /**
  * 
- * `createMapUtils`具备将高德地图实例包装成工具函数 (为其扩展功能), 地图创建并为其扩展功能, 高德地图依赖加载 ( 高德AMap函数加载 )
+ * `createMapUtils`功能如下: 
+ * 1. 支持将高德地图实例包装成工具函数 (为其扩展功能), 
+ * 2.  地图创建并为其扩展功能,
+ * 3.  高德地图依赖加载 ( 高德AMap函数加载 )
  * @param {MapUtilsOpts[keyof MapUtilsOpts]} opts 
- * - 地图配置选项，支持两种模式：
+ * - 工具函数配置选项，支持两种模式：
  * 1. 使用现有地图实例（MapUtilsUseExistingOpts）
  * 2. 创建新地图实例（MapUtilsCreateOpts）
  * 
- * `MapOptions`
+ * [MapOptions文档地址](https://lbs.amap.com/api/javascript-api-v2/documentation#map)
  * ```
  * interface MapUtilsCreateOpts extends MapOptions {
-     mountSelector: string;
+     mountSelector: string; //选择器
    }
 
     interface MapUtilsUseExistingOpts extends MapOptions {
-      mapIns: mapIns;
+      mapIns: mapIns; //高德地图实例
     }
  * ```
  * @param {loaderOpts} [loaderOPts]
@@ -260,7 +260,7 @@ export type { mapUtilsIns, MapUtilsConstructor };
  * ```
  *   type loaderOpts = {
         key: string;
-        version: string;
+         version: string;
         plugins?: string[] | undefined;
         AMapUI?: {
             version?: string | undefined;
