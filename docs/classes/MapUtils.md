@@ -98,7 +98,7 @@
 
 ### setFitView()
 
-> **setFitView**(...`opts`): `void`
+> **setFitView**(opts: Parameters<mapIns['setFitView']>): `void`
 
 根据地图上添加的覆盖物分布情况，自动缩放地图到合适的视野级别
 ***
@@ -112,14 +112,14 @@
 
 ### seZoomAndCenter()
 
-> **seZoomAndCenter**(`opts`): `void`
+> **seZoomAndCenter**(opts: { zoom: number; center: AMap.LngLat | [number, number]; immediately?: boolean; duration?: number }): `void`
 
 将地图视图切换到指定状态
 ***
 
 ### showLayer()
 
-> **showLayer**(`layerName`): `void`
+> **showLayer**(opts: Parameters<mapIns['setFitView']>): `void`
 
 地图指定图层显示, `layerName`为创建图层所传递的参数，用于标识图层名称。
 ***
@@ -142,12 +142,12 @@
 
 > **hideAllLayers**(): `void`
 
-地图所有图层隐藏
+地图隐藏所有图层
 ***
 
 ### reloadLayers()
 
 > **reloadLayers**(): `void`
 
-地图所有图层重新渲染
+地图重新渲染所有图层
 

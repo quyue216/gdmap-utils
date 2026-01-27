@@ -46,6 +46,9 @@ export class MapUtils {
 
   static loadPlugins = MapMixin.loadPlugins;
 
+  /**
+   * @ignore
+   */
   constructor(
     opts: MapUtilsOpts[keyof MapUtilsOpts],
     AMap: Simplify<typeof gdAMap>
@@ -69,26 +72,39 @@ export class MapUtils {
         this.map = this.initMap(mountSelector, rest); //地图初始化
       }
     }
-
-    this.bindMapClickEvent();
   }
 
-  // 初始化绑定地图事件
-  bindMapClickEvent() {
-    this.map.on('click', () => {
-      // if (this.clickMapRestMarkers) {
-      //   this.overlayGroupManagerMap.forEach((overlayGroup) => {
-      //     overlayGroup.resetActiveMarker(); // 清除图层上的所有覆盖物
-      //   });
-      // }
-    });
+  /**
+   *
+   *
+   * @param {AMap.EventType} type  地图事件类型
+   * @param {(e: any) => void} fn  回调函数
+   * @param {*} [context]          事件上下文，缺省为当前实例
+   * @param {boolean} [once]       事件是否执行一次
+   * @memberof MapUtils
+   */
+  bindMapClickEvent(
+    type: AMap.EventType,
+    fn: (e: any) => void,
+    context?: any,
+    once?: boolean
+  ) {
+    this.map.on(type, fn, context, once);
   }
 
+  /**
+   * @ignore
+   */
   initMap(id: string, opts: MapOptions): mapIns {
     //参数要作检验吗
     return new window.AMap.Map(id, opts);
   }
 
+  /**
+   *
+   * @ignore
+   * @return {*}
+   */
   createBaseMarkerLayer<
     U extends {},
     T extends MarkerLayerBaseType = 'markerLayer',
@@ -101,6 +117,7 @@ export class MapUtils {
 
   /**
    * 创建聚合标记图层
+   * @ignore
    * @param {ClusterMarkerLayerOpts<U, T>} opts - 图层配置选项
    */
   createClusterMarkerLayer<
@@ -173,7 +190,7 @@ export class MapUtils {
   }
 
   /**
-   * 地图指定图层显示, `layerName`为创建图层所传递的参数，用于标识图层名称。
+   * 图层`layerName`显示, `layerName`为创建图层所传递的参数，用于标识图层名称。
    * @param {string} layerName - 图层名称
    */
   showLayer(layerName: string): void {
@@ -181,7 +198,7 @@ export class MapUtils {
   }
 
   /**
-   * 地图指定图层隐藏, `layerName`为创建图层所传递的参数，用于标识图层名称。
+   * 图层`layerName`隐藏, `layerName`为创建图层所传递的参数，用于标识图层名称。
    * @param {string} layerName - 图层名称
    */
   hideLayer(layerName: string): void {
@@ -196,14 +213,14 @@ export class MapUtils {
   }
 
   /**
-   * 地图所有图层隐藏
+   * 地图隐藏所有图层
    */
   hideAllLayers(): void {
     this.LayerManager.hideAll();
   }
 
   /**
-   * 地图所有图层重新渲染
+   * 地图重新渲染所有图层
    */
   reloadLayers(): void {
     this.LayerManager.reload();
@@ -220,6 +237,42 @@ export class MapUtils {
 
 export type { mapUtilsIns, MapUtilsConstructor };
 
+/**
+ * 
+ * `createMapUtils`具备将高德地图实例包装成工具函数 (为其扩展功能), 地图创建并为其扩展功能, 高德地图依赖加载 ( 高德AMap函数加载 )
+ * @param {MapUtilsOpts[keyof MapUtilsOpts]} opts 
+ * - 地图配置选项，支持两种模式：
+ * 1. 使用现有地图实例（MapUtilsUseExistingOpts）
+ * 2. 创建新地图实例（MapUtilsCreateOpts）
+ * 
+ * `MapOptions`
+ * ```
+ * interface MapUtilsCreateOpts extends MapOptions {
+     mountSelector: string;
+   }
+
+    interface MapUtilsUseExistingOpts extends MapOptions {
+      mapIns: mapIns;
+    }
+ * ```
+ * @param {loaderOpts} [loaderOPts]
+ * - 高德地图环境加载所传递的配置对象
+ * ```
+ *   type loaderOpts = {
+        key: string;
+        version: string;
+        plugins?: string[] | undefined;
+        AMapUI?: {
+            version?: string | undefined;
+            plugins?: string[] | undefined;
+        } | undefined;
+        Loca?: {
+            version?: string | undefined;
+        } | undefined;
+    }
+ * ```
+ * @return {*} 
+ */
 export async function createMapUtils(
   opts: MapUtilsOpts[keyof MapUtilsOpts],
   loaderOPts?: loaderOpts
@@ -234,7 +287,26 @@ export async function createMapUtils(
   return new MapUtils(opts, AMap);
 }
 
-// 地图拆分
+/**
+ *
+ * @param {loaderOpts} Opts
+ * - 高德地图环境加载所传递的配置对象
+ *  ```
+ * type loaderOpts = {
+        key: string;
+        version: string;
+        plugins?: string[] | undefined;
+        AMapUI?: {
+            version?: string | undefined;
+            plugins?: string[] | undefined;
+        } | undefined;
+        Loca?: {
+            version?: string | undefined;
+        } | undefined;
+    }
+ *  ```
+ * @return {*} 
+ */
 export async function initMapSource(Opts: loaderOpts) {
   return await MapSourceImport.loadScript(Opts);
 }

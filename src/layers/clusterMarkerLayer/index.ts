@@ -71,7 +71,7 @@ class ClusterMarkerLayer<
 
     this.layerName = layerName;
 
-    this.mapUtils = mapUtils; //上层,mapUtils的实例
+    this.mapUtils = mapUtils; //mapUtils的实例
 
     this.overlayList = opts.overlayList;
 
@@ -113,7 +113,6 @@ class ClusterMarkerLayer<
   }
 
   destroy() {
-    // @ts-ignore
     this.mapUtils.removeLayer(this); //从MapUtils中移除
     this.rawLayerIns.destroy(); //地图层面移除
     this.overlayList = [];
