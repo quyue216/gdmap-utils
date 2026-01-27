@@ -75,7 +75,7 @@ interface ClusterMarkerLayerOpts<
   layerType: T;
   layerName: string;
   overlayList: Array<OverlayData<U>>;
-  layerOpts: V['layerOpts'];
+  layerOpts: V['layerOpts']; //类型动态计算
 }
 
 export type {
@@ -85,4 +85,5 @@ export type {
   // 图层定义类型代码
   ClusterMarkerLayerInfo,
   ClusterMarkerLayerOpts,
+  MarkerClusterLayerIns,
 };

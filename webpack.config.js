@@ -18,8 +18,8 @@ const config = {
     filename: 'index.js',
     // 输出目录路径
     path: path.resolve(__dirname, 'dist'),
-    // 库的全局变量名，在浏览器中可以通过 window.MapUtils 访问
-    library: 'MapUtils',
+    // 库的全局变量名，在浏览器中可以通过 window.GdMapUtils 访问
+    library: 'GdMapUtils',
     // 库的输出格式，生产模式使用umd，开发模式使用window
     libraryTarget: isProduction ? 'umd' : 'window',
     // 浏览器: window node.js:global  Web Worker: self
@@ -106,8 +106,7 @@ if (!isProduction) {
   // 添加HTML模板插件
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'examples', '4_LabelMarkerLayer.html'),
-      //  template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
+      template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
       filename: 'index.html',
       inject: { // 精确控制脚本的注入位置
         tagName: 'script',

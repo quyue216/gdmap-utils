@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "plugin": ["typedoc-plugin-markdown"],
+  "exclude": ["**/*.d.ts"],
+  "includeVersion": false,
+  "readme": "README.md",
+  "name": "GdMapUtils",
+  "theme": "markdown",
+  "categorizeByGroup": false,
+  "sort": ["source-order"],
+  "skipErrorChecking": true,
+  "hidePageTitle": true,
+  "disableSources": true
+}
