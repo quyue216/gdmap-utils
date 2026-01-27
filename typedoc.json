@@ -1,9 +1,12 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": [
+    "src/layers/clusterMarkerLayer/index.ts",
+    "src/layers/baseMarkerLayer/index.ts"
+  ],
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown"],
-  "exclude": ["**/*.d.ts"],
+  "exclude": ["**/*.d.ts", "node_modules/**", "**/*.test.ts", "**/LabelMarkerLayer.ts", "**/MarkerLayer.ts", "**/MarkerClusterLayer.ts"],
   "includeVersion": false,
   "readme": "README.md",
   "name": "GdMapUtils",
@@ -12,5 +15,12 @@
   "sort": ["source-order"],
   "skipErrorChecking": true,
   "hidePageTitle": true,
-  "disableSources": true
+  "disableSources": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "hideGenerator": true,
+  "gitRevision": "main",
+  "excludeExternals": true,
+  "excludeNotDocumented": true
 }

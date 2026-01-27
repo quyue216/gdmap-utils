@@ -15,11 +15,16 @@ class ClusterMarkerLayer<
   V extends ClusterMarkerLayerInfo[T] = ClusterMarkerLayerInfo[T],
 > {
   // 图层类型与控制器类的映射关系
+
+  /**
+   *@ignore
+   */
   static layerClassMap = new Map<string, ClusterMarkerLayerTypeClass>();
   /**
    * 注册图层类型与控制器类的关联
    * @param {string} layerType - 图层类型
    * @param {Function} layerClass - 图层控制器类
+   * @ignore
    */
   static registerLayer(
     layerType: MarkerClusterLayerType,
@@ -132,6 +137,12 @@ class ClusterMarkerLayer<
     this.rawLayerIns.add(clusterData);
   }
 
+  /**
+   * `remove`
+   *
+   * @param {(Array<number | string>)} ovs
+   * @memberof ClusterMarkerLayer
+   */
   remove(ovs: Array<number | string>) {
     if (Array.isArray(ovs)) {
       // 根据ID移除覆盖物
@@ -151,7 +162,11 @@ class ClusterMarkerLayer<
     // 聚合图层不支持直接移除单个实例
   }
 
-  // 返回原始图层对象
+  /**
+   *
+   *`getRawLayer`方法返回高德覆盖物管理对象, 例如: 图层类型为`markerClusterLayer`,方法返回的对象类型为`new AMap.MarkerCluster(xx,'xxx')`
+   * @return {*}
+   */
   getRawLayer() {
     return this.rawLayerIns.rawLayer;
   }
