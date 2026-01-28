@@ -113,7 +113,7 @@ export class MapUtils {
   }
 
   /**
-   * 创建聚合标记图层
+   * 聚合标记图层适用于点位数据较多的数据渲染。目前，聚合图层只支持一种图层类型，因为聚合图层只包装`MarkerCluster`。
    * @param {ClusterMarkerLayerOpts<U, T>} opts - 图层配置选项
    */
   createClusterMarkerLayer<
