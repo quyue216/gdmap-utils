@@ -333,20 +333,35 @@ BaseMarkerLayer.registerLayer('markerLayer', MarkerLayer);
 BaseMarkerLayer.registerLayer('labelMarkerLayer', LabelMarkerLayer);
 
 // MarkerLayer 类型
+/**
+ * @ignore
+ */
 export type MarkerLayerIns = InstanceType<typeof MarkerLayer>;
 
 // LabelMarkerLayer 类型
+/**
+ * @ignore
+ */
 export type LabelMarkerLayerIns = InstanceType<typeof LabelMarkerLayer>;
 
 // 所有图层类型的联合类型
+/**
+ * @ignore
+ */
 export type BaseMarkerLayerTypeIns = MarkerLayerIns | LabelMarkerLayerIns;
-
+/**
+ * @ignore
+ */
 export type BaseMarkerLayerTypeClass =
   | typeof MarkerLayer
   | typeof LabelMarkerLayer;
-
+/**
+ * @ignore
+ */
 export type BaseMarkerLayerClass = typeof BaseMarkerLayer;
-
+/**
+ * @ignore
+ */
 export type BaseMarkerLayerIns = InstanceType<BaseMarkerLayerClass>;
 
 export { LabelMarkerLayer, MarkerLayer };

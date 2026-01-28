@@ -175,16 +175,28 @@ class ClusterMarkerLayer<
 // 注册聚合图层类型
 ClusterMarkerLayer.registerLayer('markerClusterLayer', MarkerClusterLayer);
 
-// MarkerClusterLayer 类型
+/**
+ * MarkerClusterLayer 类型
+ * @ignore
+ */
 export type MarkerClusterLayerIns = InstanceType<typeof MarkerClusterLayer>;
 
-// 所有聚合图层类型的联合类型
+/**
+ * 所有聚合图层类型的联合类型
+ * @ignore
+ */
 export type ClusterMarkerLayerTypeIns = MarkerClusterLayerIns;
-
+/**
+ * @ignore
+ */
 export type ClusterMarkerLayerTypeClass = typeof MarkerClusterLayer;
-
+/**
+ * @ignore
+ */
 export type ClusterMarkerLayerClass = typeof ClusterMarkerLayer;
-
+/**
+ * @ignore
+ */
 export type ClusterMarkerLayerIns = InstanceType<ClusterMarkerLayerClass>;
 
 export { MarkerClusterLayer };
