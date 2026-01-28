@@ -114,7 +114,6 @@ export class MapUtils {
 
   /**
    * 创建聚合标记图层
-   * @ignore
    * @param {ClusterMarkerLayerOpts<U, T>} opts - 图层配置选项
    */
   createClusterMarkerLayer<

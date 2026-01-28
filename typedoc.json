@@ -1,9 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "src/layers/clusterMarkerLayer/index.ts",
-    "src/layers/baseMarkerLayer/index.ts"
-  ],
+  "entryPoints": ["src/index.ts"],
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown"],
   "exclude": ["**/*.d.ts", "node_modules/**", "**/*.test.ts", "**/LabelMarkerLayer.ts", "**/MarkerLayer.ts", "**/MarkerClusterLayer.ts"],
@@ -21,6 +18,5 @@
   "excludeInternal": true,
   "hideGenerator": true,
   "gitRevision": "main",
-  "excludeExternals": true,
-  "excludeNotDocumented": true
+  "excludeExternals": true
 }
