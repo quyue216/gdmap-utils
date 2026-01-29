@@ -124,9 +124,28 @@ function processMarkdownFiles(dir) {
   });
 }
 
+// 在分类标题后添加描述文字
+function addCategoryDescription(content) {
+  // 定义分类描述映射
+  const categoryDescriptions = {
+    '高德地图工具': '本分类封装了高德地图（AMap）的核心功能，包括标记点、图标、折线、信息窗口等常用地图元素的创建和管理。这些静态方法提供了便捷的API，帮助开发者快速构建地图应用。'
+  };
+  
+  // 遍历所有分类，添加描述文字
+  Object.keys(categoryDescriptions).forEach(category => {
+    const regex = new RegExp(`##\\s*${category}\\s*\\n`, 'g');
+    content = content.replace(regex, `## ${category}\n\n${categoryDescriptions[category]}\n\n`);
+  });
+  
+  return content;
+}
+
 // 处理单个Markdown文件，移除Params和Return部分，并添加参数类型
 function processMarkdownFile(filePath, paramTypes) {
   let content = fs.readFileSync(filePath, 'utf8');
+  
+  // 在分类标题后添加描述文字
+  content = addCategoryDescription(content);
   
   // 移除Params部分
   content = content.replace(/#### Parameters[\s\S]*?(?=#### Returns|\*\*\*|$)/g, '');

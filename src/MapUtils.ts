@@ -30,20 +30,37 @@ export class MapUtils {
 
   LayerManager: LayerManager = new LayerManager();
 
+  /**
+   *@category 高德地图工具
+   */
   static createAMapMarker = MapMixin.createAMapMarker;
-
+  /**
+   *@category 高德地图工具
+   */
   static createIcon = MapMixin.createIcon;
-
+  /**
+   *@category 高德地图工具
+   */
   static Size = MapMixin.Size;
-
+  /**
+   *@category 高德地图工具
+   */
   static Pixel = MapMixin.Pixel;
-
+  /**
+   *@category 高德地图工具
+   */
   static LngLat = MapMixin.LngLat;
-
+  /**
+   *@category 高德地图工具
+   */
   static createAMapInfoWindow = MapMixin.createAMapInfoWindow;
-
+  /**
+   *@category 高德地图工具
+   */
   static createAMapPolyline = MapMixin.createAMapPolyline;
-
+  /**
+   *@category 高德地图工具
+   */
   static loadPlugins = MapMixin.loadPlugins;
 
   /**
@@ -113,7 +130,8 @@ export class MapUtils {
   }
 
   /**
-   * 聚合标记图层适用于点位数据较多的数据渲染。目前，聚合图层只支持一种图层类型，因为聚合图层只包装`MarkerCluster`。
+   * 高德地图中 `MarkerCluster, MassMarks`用于渲染海量点，它们调用方式也比较接近，将其聚合为一个统一的图层管理
+   * 目前, 聚合图层只包装`MarkerCluster`
    * @param {ClusterMarkerLayerOpts<U, T>} opts - 图层配置选项
    */
   createClusterMarkerLayer<
