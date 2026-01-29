@@ -8,7 +8,7 @@
   "readme": "README.md",
   "name": "GdMapUtils",
   "theme": "markdown",
-  "categorizeByGroup": false,
+  "categorizeByGroup": true,
   "sort": ["source-order"],
   "skipErrorChecking": true,
   "hidePageTitle": true,
