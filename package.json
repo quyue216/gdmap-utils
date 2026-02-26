@@ -1,6 +1,6 @@
 {
   "name": "gdmap-utils",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "高德地图工具库",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
