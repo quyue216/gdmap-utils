@@ -61,5 +61,13 @@ export class LayerManager {
   hasLayer(layer: LayerIns): boolean {
     return this.layers.has(layer.layerName);
   }
+
+  clear() {
+    this.layers.forEach(layer => {
+      if (typeof (layer as any).destroy === 'function') {
+        (layer as any).destroy();
+      }
+    });
+  }
 }
 export default LayerManager;

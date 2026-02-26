@@ -178,6 +178,20 @@ export class MapUtils {
   }
 
   /**
+   * 销毁地图实例，释放资源
+   * - 清空所有图层
+   * - 销毁地图实例
+   * - 清理 LayerManager
+   * @memberof MapUtils
+   */
+  destroyMap() {
+    // 清空所有图层
+    this.LayerManager.clear();
+    // 销毁地图实例
+    this.map.destroy();
+  }
+
+  /**
    * 地图跳转参数
    * @typedef {Object} GotoOpts
    * @property {number} zoom                   - 目标缩放级别
