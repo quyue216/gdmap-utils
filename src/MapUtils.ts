@@ -204,8 +204,8 @@ export class MapUtils {
    * @param {GotoOpts} opts 跳转配置
    */
   seZoomAndCenter(opts: {
-    zoom: number;
-    center: AMap.LngLat | [number, number];
+    zoom?: number;
+    center?: AMap.LngLat | [number, number];
     immediately?: boolean;
     duration?: number;
   }): void {
