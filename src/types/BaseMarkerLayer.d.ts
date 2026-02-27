@@ -45,7 +45,6 @@ interface LayerOpts<
   layerType: T;
   layerName: string;
   overlayList: Array<OverlayData<U>>;
-  createOverlays: (mapUtilsIns) => Array<V['overlayIns']>; // 未使用上
   getIconUrl: (item: OverlayData<U>) => string; //overlayList中优先级更高
   getOverlayOpts: (
     item: OverlayData<U>,

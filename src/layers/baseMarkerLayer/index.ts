@@ -33,7 +33,7 @@ class BaseMarkerLayer<
     BaseMarkerLayer.layerClassMap.set(layerType, layerClass);
   }
 
-  overlayList: Array<OverlayData<U>>;
+  overlayList: Array<OverlayData<U>> = [];
   // 策略模式
   rawLayerIns: V['layerIns'];
 
