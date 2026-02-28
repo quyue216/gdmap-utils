@@ -251,6 +251,23 @@ mapUtils.bindMapClickEvent('moveend', () => {
 
 创建图层
 ```javascript
+interface LayerOpts<
+  U = {},
+  T extends MarkerLayerBaseType = 'markerLayer',
+  V = BaseMarkerLayerInfo[T],
+> {
+  layerType: T;
+  layerName: string;
+  overlayList: Array<OverlayData<U>>;
+  getIconUrl: (item: OverlayData<U>) => string; //overlayList中优先级更高
+  getOverlayOpts: (
+    item: OverlayData<U>,
+    index: number,
+    MapUtils: MapUtilsConstructor
+  ) => V['overlayOpts']; //动态生成覆盖物配置
+  overlayLayer?: AMap.LabelsLayerOptions;
+}
+
 const markerLayer = mapUtils.createBaseMarkerLayer({
   layerType: 'markerLayer',
   layerName: 'markerLayer',
@@ -280,45 +297,45 @@ const markerLayer = mapUtils.createBaseMarkerLayer({
         extData: item,
       },
       id: item.id, //覆盖物id 唯一
-      labelShowed: true,
+      labelShowed: true,  //label是否显示
+      overlaySelected: false; // 当前marker是否被选中
     };
   }),
 });
 ```
-注意[`AMap.LabelsLayerOptions`](https://lbs.amap.com/api/javascript-api-v2/documentation#labelslayer)在layerType为`labelMarkerLayer`时必传，LayerOpts属性具体介绍参考属性文档。`overlayList`基本格式如上,它的格式必须符合规范否则产生error
+注意:overlayLayer类型为[`AMap.LabelsLayerOptions`](https://lbs.amap.com/api/javascript-api-v2/documentation#labelslayer)在layerType为`labelMarkerLayer`时必传，LayerOpts属性具体介绍参考属性文档。`overlayList`基本格式如上,它的格式必须符合**规范**否则产生error。
 
 
 ### 属性
 
 | 属性名 | 类型 | 默认值 | 描述 |
 |--------|------|--------|------|
-| layerType | `'markerLayer'\|'labelMarkerLayer'`(字符串) | `undefind` | 图层类型分别管理两类覆盖物类型`marker, labelMarker` |
-| layerName | `string` | `undefind` | 图层的唯一标识名称，创建时传入，用于区分不同图层（不可重复）|
+| layerType | `markerLayer`|'' | 图层类型分别管理两类覆盖物类型`marker, labelMarker` |
+| layerName | `string` | `undefined` | 图层的唯一标识名称，创建时传入，用于区分不同图层（不可重复）|
 | layerVisible | `boolean` | `true` | 图层的显示状态，`true` 为显示在地图上，`false` 为隐藏|
 | mapUtils | `MapUtils` | `mapUtils` | 关联的`MapUtils` 实例，用于操作地图和图层管理 |
 | getIconUrl | `(item: OverlayData) => string` | `undefined` | 获取图标 URL 的回调函数，根据覆盖物数据返回对应的图标地址 （根据状态计算图标） |
 | rawLayerIns | `MarkerLayer` | `LabelMarkerLayer` | 原始高德图层实例的包装对象。`markerLayer` 类型时为 `MarkerLayer`（内部使用`AMap.OverlayGroup`），`labelMarkerLayer` 类型时为 `LabelMarkerLayer`（内部使用`AMap.LabelsLayer`）|
-| overlayList | `Array<OverlayData<U>>`([详细](https://github.com/quyue216/gdmap-utils/blob/master/src/types/BaseMarkerLayer.d.ts)) | [] | 点位信息对象: 位置信息，标题，扩展数据，收运重量。点位状态对象 标题是否显示，图标是否激活|
+| overlayList | `Array<OverlayData<U>>`([详细](https://github.com/quyue216/gdmap-utils/blob/master/src/types/BaseMarkerLayer.d.ts)) | [] | 点位信息对象: 位置信息，标题，扩展数据，收运重量。点位状态对象 标题是否显示，图标是否激活(外部传入) |
 | getOverLayOpts| `getOverlayOpts: (item: OverlayData<U>,index: number,MapUtils: MapUtilsConstructor) => ['overlayOpts']`| `undefined` |函数返回原始高德覆盖物配置对象,`layerType`为 `MarkerLayer`（['overlayOpts']为[`AMap.MarkerOptions`](https://lbs.amap.com/api/javascript-api-v2/documentation#marker)）, `layerType`为`labelMarkerLayer`(['overlayOpts']为)[`AMap.labelMarkerLayer`](https://lbs.amap.com/api/javascript-api-v2/documentation#labelmarker)|
 
 ### 方法
 
-| 方法名 | 说明 |
-|--------|------|
-| `createOverlays` | 创建覆盖物，将配置列表转换为高德覆盖物实例并添加到图层 |
-| `add` | 向图层中添加新的覆盖物数据，会自动创建对应的覆盖物实例 |
-| `remove` | 从图层中移除指定的覆盖物，支持传入覆盖物实例数组或 ID 数组 |
-| `hide` | 隐藏当前图层及其所有覆盖物 |
-| `show` | 显示当前图层及其所有覆盖物 |
-| `getAllOverlay` | 获取图层中所有的覆盖物实例数组（返回浅拷贝） |
-| `clearAllOverlay` | 清空图层中的所有覆盖物，同时清空 `overlayList` 数据 |
-| `reload` | 重新加载图层，先清空所有覆盖物，然后根据 `overlayList` 重新创建 |
-| `overlayFitMap` | 根据图层中的所有覆盖物，自动调整地图视野以适应所有覆盖物 |
-| `findLayerOverlay` | 根据覆盖物 ID 查找对应的覆盖物实例 |
-| `bindEventOverlays` | 为图层中的所有覆盖物绑定指定类型的事件 |
-| `refreshOverlayIcon` | 根据 `getIconUrl` 重新计算并刷新指定覆盖物的图标 |
-| `refreshOverlayLabel` | 根据 `getOverlayOpts` 重新计算并刷新指定覆盖物的标签/文本 |
-| `getRawLayer` | 获取高德地图的原始图层实例（`AMap.OverlayGroup` 或 `AMap.LabelsLayer`） |
-| `destroy` | 销毁图层，从 `MapUtils` 中移除并清空所有覆盖物 |
+| 方法名 | 说明 | 参数 |
+|--------|------|-----|
+| `add(overlayList: Array<OverlayData<U>>)` | 向图层中添加新的覆盖物数据，会自动创建对应的覆盖物实例 |`Array<OverlayData<U>>`[类型详细说明文档](https://github.com/quyue216/gdmap-utils/blob/master/src/types/BaseMarkerLayer.d.ts)|
+| `remove(ovs:Array<AMap.Marker |AMap.LabelMarker> | string[])` | 从图层中移除指定的覆盖物，支持传入覆盖物实例数组或 ID 数组 |`ovs`字符串数组表示需要移除的覆盖物id集合，ovs对象数组内部的元素类型为图层所管理的覆盖物对象|
+| `hide` | 隐藏当前图层及其所有覆盖物 |无|
+| `show` | 显示当前图层及其所有覆盖物 |无|
+| `getAllOverlay` | 获取图层中所有的覆盖物实例数组（返回浅拷贝）`Array<AMap.Marker | AMap.LabelMarker>` |无|
+| `clearAllOverlay` | 清空图层中的所有覆盖物，同时清空 `overlayList` 数据 |无|
+| `reload` | 重新加载图层，先清空所有覆盖物，然后根据 `overlayList` 重新创建 |无|
+| `overlayFitMap` | 根据图层中的所有覆盖物，自动调整地图视野以适应所有覆盖物 |无|
+| `findLayerOverlay` | 根据覆盖物 ID 查找对应的覆盖物实例 |图层创建传递的overList属性存储覆盖物列表信息，在其中每个Item需要指定覆盖物的id|
+| `bindEventOverlays(clickType: AMap.EventType, callback: () => void)` | 为图层中的所有覆盖物绑定指定类型的事件 |clickType为事件类型(覆盖物支持事件查阅原始高德文档)，callback事件对应回调|
+| `refreshOverlayIcon` | 根据 `getIconUrl` 重新计算并刷新指定覆盖物的图标 |传递指定覆盖物ID刷新Icon|
+| `refreshOverlayLabel` | 根据 `getOverlayOpts` 重新计算并刷新指定覆盖物的标签/文本 |传递指定覆盖物ID刷新Label|
+| `getRawLayer` | 获取高德地图的原始图层实例（`AMap.OverlayGroup` 或 `AMap.LabelsLayer`） |无|
+| `destroy` | 销毁图层，从 `MapUtils` 中移除并清空所有覆盖物 |无|
 
 ## clusterMarkerLayer图层
