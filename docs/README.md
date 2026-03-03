@@ -1,16 +1,23 @@
 # gdmap-utils
 
-公司许多业务与地图相关 （地图厂商为高德）创建工具函数统一地图使用风格，代码一致性，在大屏场景下，地图展示
+公司许多业务与地图相关 （地图厂商为高德）创建工具函数统一地图使用风格，代码一致性，在大屏场景下。公司业务大屏，地图中存在多种类型的覆盖物，第一版开发为每种覆盖物都编写一套几乎相同控制逻辑代码导致代码重复度较高，代码修改成本较高。工具库在此基础上扩展图层管理来解决上述问题
 
-统一 简化使用 快速 代码复用 风格统一
+业务背景
+公司大屏业务深度依赖地图能力（基于高德地图），涉及车辆监控、站点管理、设施分布等多类场景，地图覆盖物类型繁多（车辆、中转站、公厕、压缩站等）。
 
-起因，为什么要写
-`gdMap-utils`基于业务提炼出工具函数，将`LabelMarker, Marker ClusterMarker`以图层为单位进行管理,
+问题痛点
+初期开发采用分散式实现，为每种覆盖物独立编写控制逻辑（显隐切换、标签管理、生命周期控制）。随着覆盖物类型增加，代码出现高度重复——同类逻辑分散在数十个方法中，导致：
 
-1. 高德地图AMap常用函数：统一管理、调用。
-2. 常用覆盖物统一管理
-
+维护成本高：修改通用逻辑需同步调整多处，极易遗漏
+一致性难保障：复制粘贴引入微小差异，形成"看似相同、行为不同"的隐患
+新增效率低：增加新覆盖物类型需编写大量样板代码。
 # 特性
+
+1. 将 `AMap.Marker`, `AMap.LabelMarker`, `AMap.MarkerCluster` 统一封装为图层，支持图层显示/隐藏、覆盖物增删查改、事件绑定等功能
+2. 数据驱动的覆盖物更新：图标和标签与数据属性关联，属性发生变化调用 `refreshOverlayIcon` / `refreshOverlayLabel` 即可实现刷新
+3. 灵活的初始化方式：支持创建新地图实例或包装已有实例
+4. 工具函数集成：封装常用的 Map 实例方法和 AMap 静态工具方法
+5. TypeScript 全支持：完整的类型定义和泛型支持
 
 # 示例
 
@@ -339,3 +346,129 @@ const markerLayer = mapUtils.createBaseMarkerLayer({
 | `destroy` | 销毁图层，从 `MapUtils` 中移除并清空所有覆盖物 |无|
 
 ## clusterMarkerLayer图层
+`clusterMarkerLayer`图层适合点位数据量较大的场景，它对原始高德`new AMap.MarkerCluster`进行包装 (支持用户自行根据业务进行扩展如:`AMap.MassMarks`..., `MarkerCluster,MassMarks`调用方式相似，数据量渲染都较大所以将其抽象到一起)。
+
+
+[`clusterMarkerLayer`类型文档参考](https://github.com/quyue216/gdmap-utils/blob/master/src/types/clusterMarkerLayer.d.ts)，图层创建示例: 
+```javascript
+
+  interface ClusterMarkerLayerOpts<
+    U = {},
+    T extends MarkerClusterLayerType = 'markerClusterLayer',
+    V = ClusterMarkerLayerInfo[T],
+  > {
+    layerType: T;
+    layerName: string;
+    overlayList: Array<OverlayData<U>>;
+    layerOpts: V['layerOpts']; //类型动态计算，图层类型layerType决定layerOpts参数传递方式
+  }
+
+ const defaultIcon = gdMapUtils.createIcon({
+        size: config.size,
+        image: config.icon,
+        imageSize: config.size,
+        imageOffset: config.pixel,
+      });
+
+    // 激活图标
+    const activeIcon = gdMapUtils.createIcon({
+      size: config.size,
+      image: config.iconActive,
+      imageSize: config.size,
+      imageOffset: config.pixel,
+    });
+
+    //图层创建
+    window.clusterMarkerLayer = mapUtils.createClusterMarkerLayer({
+      layerType: 'markerClusterLayer',
+      layerName: 'sydwCollecte',
+      overlayList: data.slice(0, 10).map(item => {
+        return {
+          overlayData: {
+            lon: item.jd,
+            lat: item.wd,
+            title: item.sydmc,
+            id: item.id,
+            extData: item,
+          },
+          id: item.id,
+          labelShowed: false,
+          iconActive: false,
+        };
+      }),
+      layerOpts: {
+        gridSize: 80,
+        renderClusterMarker(context) {
+          // 绘制聚合点时调用
+          const count = data.length;
+          const factor = Math.pow(context.count / count, 1 / 18);
+          const div = document.createElement('div');
+          const Hue = 180 - factor * 180;
+          const bgColor = 'hsla(' + Hue + ',100%,50%,0.7)';
+          const fontColor = 'hsla(' + Hue + ',100%,20%,1)';
+          const borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+          const shadowColor = 'hsla(' + Hue + ',100%,50%,1)';
+          div.style.backgroundColor = bgColor;
+          const size = Math.round(
+            30 + Math.pow(context.count / count, 1 / 5) * 20
+          );
+          div.style.width = div.style.height = size + 'px';
+          div.style.border = 'solid 1px ' + borderColor;
+          div.style.borderRadius = size / 2 + 'px';
+          div.style.boxShadow = '0 0 1px ' + shadowColor;
+          div.innerHTML = context.count;
+          div.style.lineHeight = size + 'px';
+          div.style.color = fontColor;
+          div.style.fontSize = '14px';
+          div.style.textAlign = 'center';
+          const Pixel = gdMapUtils.Size(-size / 2, -size / 2);
+          context.marker.setOffset(Pixel);
+          context.marker.setContent(div);
+        }, // 自定义聚合点样式
+        renderMarker: context => {
+          const {
+            overlayData: { extData },
+            iconActive,
+            labelShowed,
+          } = context.data[0];
+
+          const curIcon = iconActive ? activeIcon : defaultIcon;
+
+          context.marker.setOffset(gdMapUtils.Pixel(...config.pixel));
+          context.marker.setExtData(extData);
+          context.marker.setIcon(curIcon);
+          context.marker.setLabel({
+            offset: gdMapUtils.Pixel(0, 0),
+            content: `<div class="${!labelShowed ? 'display-none' : ''} sydw-label">${extData.sydmc}</div>`,
+            direction: 'top',
+          });
+        },****
+      },
+    });
+```
+
+### 属性
+
+| 属性名 | 类型 | 默认值 | 描述 |
+|--------|------|--------|------|
+| layerType | `MarkerClusterLayerType`|'' | 图层类型只管理一类覆盖物`new AMap.MarkerCluster` |
+| layerName | `string` | `undefined` | 图层的唯一标识名称，创建时传入，用于区分不同图层（不可重复）|
+| layerVisible | `boolean` | `true` | 图层的显示状态，`true` 为显示在地图上，`false` 为隐藏|
+| mapUtils | `MapUtils` | `mapUtils` | 关联的`MapUtils` 实例，用于操作地图和图层管理 |
+| getIconUrl | `(item: OverlayData) => string` | `undefined` | 获取图标 URL 的回调函数，根据覆盖物数据返回对应的图标地址 （根据状态计算图标） |
+| rawLayerIns | `MarkerLayer` | `LabelMarkerLayer` | 原始高德图层实例的包装对象。`markerLayer` 类型时为 `MarkerLayer`（内部使用`new AMap.MarkerCluster`）|
+| overlayList | `Array<OverlayData<U>>`([详细](https://github.com/quyue216/gdmap-utils/blob/master/src/types/BaseMarkerLayer.d.ts)) | [] | 点位信息对象: 位置信息，标题，扩展数据，收运重量。点位状态对象 标题是否显示，图标是否激活(外部传入) |
+| layerOpts| `AMap.MarkerClusterOptions`| `undefined` | 聚合图层配置选项，由`layerType`决定对应的配置类型。当`layerType`为`'markerClusterLayer'`时，对应高德`AMap.MarkerCluster`的构造参数配置 |
+
+### 方法
+
+| 方法名 | 说明 | 参数 |
+|--------|------|-----|
+| `add(overlayList: Array<OverlayData<U>>)` | 向图层中添加新的覆盖物数据，会自动转换为聚合数据格式并添加到地图 | [`overlayList`类型说明](https://github.com/quyue216/gdmap-utils/blob/master/src/types/clusterMarkerLayer.d.ts): 覆盖物数据数组，包含位置、标题、权重等信息 |
+| `remove(ovs: Array<number \| string>)` | 根据覆盖物ID从图层中移除指定的覆盖物，会更新内部数据列表并重新渲染聚合图层 | `ovs`: 覆盖物ID数组，字符串或数字类型，表示需要移除的覆盖物id集合 |
+| `hide()` | 隐藏当前聚合图层及其所有聚合标记 | 无 |
+| `show()` | 显示当前聚合图层，会将当前`overlayList`数据转换为聚合格式后重新渲染 | 无 |
+| `clearAllOverlay()` | 清空图层中的所有覆盖物，同时清空内部的`overlayList`数据 | 无 |
+| `bindEventOverlays(clickType: AMap.EventType, callback: () => void)` | 为图层中的聚合标记绑定指定类型的事件 | `clickType`: 事件类型（如`'click'`等，参考高德地图事件文档）<br>`callback`: 事件触发时的回调函数 |
+| `getRawLayer()` | 获取高德地图的原始聚合图层实例（`AMap.MarkerCluster`） | 无 |
+| `destroy()` | 销毁图层，从`MapUtils`中移除图层管理，销毁地图实例，并清空`overlayList`数据 | 无 |
