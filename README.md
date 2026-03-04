@@ -310,7 +310,7 @@ const markerLayer = mapUtils.createBaseMarkerLayer({
 
 | 属性名 | 类型 | 默认值 | 描述 |
 |--------|------|--------|------|
-| layerType | `markerLayer`|'' | 图层类型分别管理两类覆盖物类型`marker, labelMarker` |
+| layerType | `markerLayer`|`undefined` | 图层类型分别管理两类覆盖物类型`marker, labelMarker` |
 | layerName | `string` | `undefined` | 图层的唯一标识名称，创建时传入，用于区分不同图层（不可重复）|
 | layerVisible | `boolean` | `true` | 图层的显示状态，`true` 为显示在地图上，`false` 为隐藏|
 | mapUtils | `MapUtils` | `mapUtils` | 关联的`MapUtils` 实例，用于操作地图和图层管理 |
@@ -331,7 +331,7 @@ const markerLayer = mapUtils.createBaseMarkerLayer({
 | `clearAllOverlay` | 清空图层中的所有覆盖物，同时清空 `overlayList` 数据 |无|
 | `reload` | 重新加载图层，先清空所有覆盖物，然后根据 `overlayList` 重新创建 |无|
 | `overlayFitMap` | 根据图层中的所有覆盖物，自动调整地图视野以适应所有覆盖物 |无|
-| `findLayerOverlay` | 根据覆盖物 ID 查找对应的覆盖物实例 |图层创建传递的overList属性存储覆盖物列表信息，在其中每个Item需要指定覆盖物的id|
+| `findLayerOverlay` | `id`根据覆盖物 ID 查找对应覆盖物实例 |图层创建传递的overList属性存储覆盖物列表信息，overListItem中指定覆盖物id|
 | `bindEventOverlays(clickType: AMap.EventType, callback: () => void)` | 为图层中的所有覆盖物绑定指定类型的事件 |clickType为事件类型 （仅支持绑定覆盖物支持的事件），callback事件对应回调|
 | `refreshOverlayIcon` | 根据 `getIconUrl` 重新计算并刷新指定覆盖物的图标 |传递指定覆盖物ID刷新Icon|
 | `refreshOverlayLabel` | 根据 `getOverlayOpts` 重新计算并刷新指定覆盖物的标签/文本 |传递指定覆盖物ID刷新Label|
@@ -449,7 +449,7 @@ const markerLayer = mapUtils.createBaseMarkerLayer({
 | layerVisible | `boolean` | `true` | 图层的显示状态，`true` 为显示在地图上，`false` 为隐藏|
 | mapUtils | `MapUtils` | `mapUtils` | 关联的`MapUtils` 实例，用于操作地图和图层管理 |
 | getIconUrl | `(item: OverlayData) => string` | `undefined` | 获取图标 URL 的回调函数，根据覆盖物数据返回对应的图标地址 （根据状态计算图标） |
-| rawLayerIns | `MarkerLayer` | `LabelMarkerLayer` | 原始高德图层实例的包装对象。`markerLayer` 类型时为 `MarkerLayer`（内部使用`new AMap.MarkerCluster`）|
+| rawLayerIns | `MarkerLayer` | `LabelMarkerLayer` | 原始高德图层实例的包装对象。`markerLayer` 类型时为 `markerClusterLayer`（内部使用`new AMap.MarkerCluster`）|
 | overlayList | `Array<OverlayData<U>>`（[类型定义](https://github.com/quyue216/gdmap-utils/blob/master/src/types/BaseMarkerLayer.d.ts)） | `[]` | 覆盖物数据数组，包含点位信息（位置、标题、扩展数据等）和状态信息（标题显隐、图标激活状态），格式须符合规范 |
 | layerOpts| `AMap.MarkerClusterOptions`| `undefined` | 聚合图层配置选项，由`layerType`决定对应的配置类型。当`layerType`为`'markerClusterLayer'`时，对应高德`AMap.MarkerCluster`的构造参数配置 |
 
