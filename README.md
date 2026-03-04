@@ -152,7 +152,7 @@ loadPlugins(plugins: string | string[]): Promise<void>
 await MapUtils.loadPlugins(['AMap.MapType', 'AMap.MoveAnimation']);
 ```
 
-### MapUtils图层管理
+### MapUtils实例方法
 
 #### seZoomAndCenter
 `seZoomAndCenter`用于将地图视野切换成指定的状态，函数声明如下：
