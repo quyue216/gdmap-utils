@@ -106,12 +106,9 @@ if (!isProduction) {
   // 添加HTML模板插件
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'examples', '3_MarkerLayer.html'),
+      template: path.resolve(__dirname, 'examples', '4_LabelMarkerLayer.html'),
       filename: 'index.html',
-      inject: { // 精确控制脚本的注入位置
-        tagName: 'script',
-        insertBefore: 'body > script:first-of-type' // 将库脚本注入到body内第一个script标签之前
-      },
+      inject: 'body',
       scriptLoading: 'blocking', // 使用阻塞加载方式确保脚本按顺序执行
     })
   );

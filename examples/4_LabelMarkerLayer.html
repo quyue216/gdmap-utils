@@ -76,6 +76,8 @@
     </div>
     <!-- 加载地图JSAPI脚本 -->
     <!-- <script src="../dist/index.js"></script> -->
+    <!-- 加载大数据量点位数据 -->
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/data/mock_position.js"></script>
     <script>
       const data = [
         {
@@ -300,7 +302,7 @@
             {
               viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
               zoom: 11, // 初始化地图层级
-              center: [data[0].jd, data[1].wd], // 初始化地图中心点
+              center: [116.441504, 40.031386], // 初始化地图中心点（北京区域）
               mountSelector: 'container',
             },
             loaderOpts
@@ -336,17 +338,17 @@
               }, */
               };
             },
-            overlayList: data.slice(0, 10).map(item => {
+            overlayList: Positions.slice(0, 1000).map((pos, index) => {
               return {
                 overlayData: {
-                  lon: item.jd,
-                  lat: item.wd,
-                  title: item.sydmc,
-                  id: item.id,
-                  extData: item,
+                  lon: parseFloat(pos[0]),
+                  lat: parseFloat(pos[1]),
+                  title: `点位${index + 1}`,
+                  id: index + 1,
+                  extData: { lon: pos[0], lat: pos[1] },
                 },
-                id: item.id,
-                labelShowed: true,
+                id: index + 1,
+                labelShowed: false, // 大数据量默认不显示标签
               };
             }),
           });
